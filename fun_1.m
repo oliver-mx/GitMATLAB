@@ -28,7 +28,7 @@ function [output1, output2, output3] = fun(input,option_data,obj,option_mesh,opt
 %
 tic;
 %% Read data
-if option_data == 0; DATA = @(x)ERD_test_data(input); end
+if option_data == 0; DATA = @(x)Sim_0_data(input); end
 % Simulations
 if option_data == 0.11; DATA = @(x)Sim_11_data(input); end
 if option_data == 0.12; DATA = @(x)Sim_12_data(input); end
@@ -63,7 +63,7 @@ ode_options = bvpset('Stats','off','NMax', option_mesh, 'RelTol', option_BVP);
 try
 n=25;
 x = linspace(0,1,n);    
-
+  
 %% Create initial guess for the BVP
 J_wd_0 = (983/1018)/J_r;          % guess for J_wd(0)
 J_wf_0 = 0.01353/J_r;             % should be close to 0
@@ -480,18 +480,6 @@ subplot(2,2,4);lc='k';rc='#b81414';osm_diff=p_osm_d(2:end)-p_osm_f(2:end); %a=mi
 plot(x*L, (p_d-p_f)*p_r,'Color', lc,'LineWidth',lw);xlabel('x [m]','Fontsize',10); ylabel('[Pa]','Fontsize',10); ay=gca;ay.YAxis.Exponent = 6; hold on; %ylim([a b]); 
 yyaxis right; 
 plot(x2*L, osm_diff*p_r,'Color', rc,'LineWidth',lw); ylabel('[Pa]','Fontsize',10); legend('\Delta P^{PRO}(x)','\Delta \pi^{PRO}(x)','Location','southeast');xlim([0 L]); ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc; %ylim([a b]);
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

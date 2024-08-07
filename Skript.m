@@ -8,7 +8,7 @@
 % figures for SWRO, PRO and the ERD
 % original .m file from: C:>User>bav1839>Documents>MATLAB>Counter-current-solver
 close all;
-[Sim_3b_output1, Sim_3b_output2, time]=fun_1(1,.32,'sol',1e6,1e-6), %exportFigures(32);
+[Output1, Output2, time]=fun_1(1,0,'sol',1e6,1e-6),
 %figure(1); set(gcf,'color','w'); f = gcf; exportgraphics(f,'Figure_6.png');
 %figure(2); set(gcf,'color','w'); f = gcf; exportgraphics(f,'Figure_7.png');
 %figure(3); set(gcf,'color','w'); f = gcf; exportgraphics(f,'Figure_8_ERD.png');
