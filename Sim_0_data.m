@@ -113,8 +113,8 @@ pe=0.5;                     % electricity price [$/kWh]
 mixer_ERD=1;                % PRO Draw outlet mixer adjustment (only if 2nd ERDs) (mixer_ERD=1 --> all flow to ERD2 no turbine needed)    
 
 %% display figures
-fig=[1,0,0,0,0,0,0,0,1,0,0]; % f(i)=1 --> figure i will be displayed
-%fig=[0,0,0,0,0,0,0,0,0,0,0]; % f(i)=1 --> figure i will be displayed
+%fig=[1,0,0,0,0,0,0,0,1,0,0]; % f(i)=1 --> figure i will be displayed
+fig=[0,0,0,0,0,0,0,0,0,0,0]; % f(i)=1 --> figure i will be displayed
 
 %% model specific changes:
 % co-current

@@ -1,4 +1,4 @@
-function [output1, output2, output3] = fun(input,option_data,obj,option_mesh,option_BVP)
+function [output1, output2, output3] = fun_1(input,option_data,obj,option_mesh,option_BVP)
 %%  fun   Solves BVP for SWRO-PRO hybrid system using bvp5c
 %
 %       fun(input,option_data,obj,option_mesh,option_BVP) will solve the
@@ -29,6 +29,10 @@ function [output1, output2, output3] = fun(input,option_data,obj,option_mesh,opt
 tic;
 %% Read data
 if option_data == 0; DATA = @(x)Sim_0_data(input); end
+
+
+
+
 % Simulations
 if option_data == 0.11; DATA = @(x)Sim_11_data(input); end
 if option_data == 0.12; DATA = @(x)Sim_12_data(input); end

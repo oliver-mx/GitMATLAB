@@ -1,28 +1,34 @@
-%% Matlab file for the Paper 2024:
+%% Matlab skript for the Paper 2024:
+%
 % - reproduce the simulations
 % - reproduce optimisation results
 % - reproduce all figures.png (converted to .eps using LibreOfficeDraw)
 % - test average computation time
+%
 
 %% Numerical Simulations
-% figures for SWRO, PRO and the ERD
-% original .m file from: C:>User>bav1839>Documents>MATLAB>Counter-current-solver
+%
+% Create figures form chapter: Numerical simulations
+% 
 close all;
-[Output1, Output2, time]=fun_1(1,0,'sol',1e6,1e-6),
+[Output1, Output2, time]=fun_1(1,0,'sol',1e4,1e-4),
+%
 %figure(1); set(gcf,'color','w'); f = gcf; exportgraphics(f,'Figure_6.png');
 %figure(2); set(gcf,'color','w'); f = gcf; exportgraphics(f,'Figure_7.png');
 %figure(3); set(gcf,'color','w'); f = gcf; exportgraphics(f,'Figure_8_ERD.png');
 %
 
 %% Average simulation time:
-% manually disable figures first
-T=zeros(1,100);
+%
+% IMPORTANT: manually comment out line: 116<->117 in "SIM_0_data"
+%
+T=zeros(1,100); 
 for i=1:length(T)
-[Sim_3b_output1, Sim_3b_output2, time]=fun_1(1,.32,'sol',1e6,1e-6);
+[Output1, Output2, time]=fun_1(1,0,'sol',1e4,1e-4);
 T(i)=time;
 end
-mean(T)
-%5.9319
+mean(T) %= 0.9600
+%
 
 %% Optimisation-1(blue)
 c1=datetime("now");
