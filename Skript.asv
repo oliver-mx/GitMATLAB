@@ -20,11 +20,11 @@ close all;
 
 %% Average simulation time:
 %
-% calculate average computation time of previous simulation
+% IMPORTANT: manually comment out line: 116<->117 in "SIM_0_data"
 %
 T=zeros(1,100); 
 for i=1:length(T)
-[Output1, Output2, time]=fun_1(1,0.1,'sol',1e4,1e-4);
+[Output1, Output2, time]=fun_1(1,0,'sol',1e4,1e-4);
 T(i)=time;
 end
 mean(T) %= 0.9600
@@ -37,7 +37,7 @@ mean(T) %= 0.9600
 load("DATA_case2.mat")
 % 
 % load("DATA_case2.mat")
-% save DATA_case2.mat X2 Y2 X2_P Y2_P time2 time2_P
+% save DATA_case2.mat X_2
 % 
 % X2  -  set of operating conditions for epsilon constraint method (2x40)
 % Y2  -  system output using X2 (4x40)
@@ -48,6 +48,10 @@ load("DATA_case2.mat")
 % time2    - time for epsilon constraint method (40points)
 % time2_P  - time for paretosearch solver (200 points)
 %
+
+X2=zeros(2,40);Y2=zeros(4,40);X2_P=zeros(2,200);
+
+
 
 load("DATA_T1.mat")
 c1=datetime("now");

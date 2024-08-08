@@ -251,6 +251,52 @@ W_p4 = 1/LP_eff * (p_f(1)-pE)*(Q_f(1)*Z)./local_ro_f(1); W_p4 = W_p4*W_r;
             Q_exit = mixer_ERD*abs(Q_d(1))*(1-eta_ERD);
             c_exit = (c_d(1)*mixer_ERD*abs(Q_wd(1))*(1 - eta_ERD)+cE*J_wE_sea-C_ERD2*2*J_E)/(mixer_ERD*abs(Q_wd(1))*(1 - eta_ERD)+J_wE_sea-2*J_E);
         end
+
+
+%% Removed comments
+
+%Y(:,4+6)=abs(Y(:,4+6)) % ??why is this here??
+
+% -3.9191    0.3247    0.0131   32.8727    7.1201       NaN       NaN
+%
+% 1.0e+03 *
+% -1.2742   -0.9744         0   -0.4873   -0.0010    0.1885
+
+% In ideal cases take mean of some quantities. 
+% In ideal cases salt will fluctuate around 1e-16. We take mean here for 
+% 
+% This is just for figures. (), otherwise one could use ylim ) 
+%if version(4)==0 ; J_f=J_wf; J_sf=zeros(1,n); J_sd=mean(J_sd)*ones(1,n); C_f=zeros(1,n); end
+%if version(5)==0 ; Q_f=Q_wf; Q_sf=zeros(1,n); Q_sd=mean(Q_sd)*ones(1,n); c_f=zeros(1,n); end
+
+        %f_ERD=0; pMax=rho_ERD*(ERD_eff*( P_d(end)*J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end) - p_exit*Q_exit*swro_Z/rho_exit ) +  pE*J_E*swro_Z/rho_E -f_ERD )/J_ERD/swro_Z;
+        %if pERD > pMax; pERD=pMax; end
+        %if pERD < 0; pERD=pMax; end  
+        %display(['pERD:              ',num2str(pERD)]) % pERD use in the model
+        %display(['pERD_theoretical:  ',num2str(pMax)]) % theoretical pERD with no leak, friction perm and 100% efficiency
+
+        %f_ERD=0;pMax=rho_ERD*(ERD_eff*( P_d(end)*J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end) - p_d(1)*qq*Q_d(1)*Z/local_ro_d(1) ) +  pE*J_E*swro_Z/rho_E -f_ERD )/J_ERD/swro_Z;
+        %if pERD > pMax; pERD=pMax; end
+        %if pERD < 0; pERD=pMax; end  
+
+        %f_ERD=0;pMax=rho_ERD*(ERD_eff*( P_d(end)*J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end) - p_d(end)*abs(qq*Q_d(end))*Z/local_ro_d(end) ) +  pE*J_E*swro_Z/rho_E -f_ERD )/J_ERD/swro_Z;       
+        %display(['pERD:              ',num2str(pERD)]) % pERD use in the model
+        %display(['pERD_theoretical:  ',num2str(pMax)]) % theoretical pERD with no leak, friction perm and 100% efficiency
+        %if pERD > pMax; pERD=pMax; end
+        %if pERD < 0; pERD=pMax; end     
+
+        %J_wERD = J_E/(C_ERD+1);
+
+
+
+
+
+
+
+
+
+
+
         rho_exit= (ro_salt*(c_exit+1))/(c_exit*ro_water+ro_salt); p_exit=pE;
         %calculation of Pressure P_ERD2
             if version(1) == 0 %co-current
@@ -258,13 +304,19 @@ W_p4 = 1/LP_eff * (p_f(1)-pE)*(Q_f(1)*Z)./local_ro_f(1); W_p4 = W_p4*W_r;
                 f_2= J_E*swro_Z/rho_ERD2*mix_density*(qq*mixer_ERD*Q_d(end)*Z*(1-eta_ERD)/local_ro_d(end)/A_ERD)^2;  
                 f_ERD= ERD_fric*(ERD_eff*f_2 - f_1)/100;
                 pERD2 = rho_ERD2*(ERD_eff*( p_d(end)*qq*mixer_ERD*Q_d(end)*Z*(1-eta_ERD)/local_ro_d(end) - p_exit*qq*Q_exit*Z/rho_exit ) +  pE*J_E_sea*swro_Z/rho_E -f_ERD )/2/J_E/swro_Z;
+                f_ERD=0;pMax = rho_ERD2*(ERD_eff*( p_d(end)*qq*mixer_ERD*Q_d(end)*Z*(1-eta_ERD)/local_ro_d(end) - p_exit*qq*Q_exit*Z/rho_exit ) +  pE*J_E_sea*swro_Z/rho_E -f_ERD )/2/J_E/swro_Z;
+                if pERD2 > pMax; pERD2=pMax; end
+                %if pERD2 < 0; pERD2=pMax; end  
+                
             end
             if version (1) == 1 %counter-current 
                 f_1= qq*Q_exit*Z/rho_exit*mix_density*(J_E_sea*swro_Z/rho_E/A_ERD)^2;  
                 f_2= J_E*swro_Z/rho_ERD2*mix_density*(qq*mixer_ERD*abs(Q_d(1))*Z*(1-eta_ERD)/local_ro_d(1)/A_ERD)^2;  
                 f_ERD= ERD_fric*(ERD_eff*f_2 - f_1)/100;
                 pERD2 = rho_ERD2*(ERD_eff*( p_d(1)*qq*mixer_ERD*abs(Q_d(1))*Z*(1-eta_ERD)/local_ro_d(1) - p_exit*qq*Q_exit*Z/rho_exit ) +  pE*J_E_sea*swro_Z/rho_E -f_ERD )/2/J_E/swro_Z;            
-
+                f_ERD=0;pMax = rho_ERD2*(ERD_eff*( p_d(1)*qq*mixer_ERD*abs(Q_d(1))*Z*(1-eta_ERD)/local_ro_d(1) - p_exit*qq*Q_exit*Z/rho_exit ) +  pE*J_E_sea*swro_Z/rho_E -f_ERD )/2/J_E/swro_Z;            
+                if pERD2 > pMax; pERD2=pMax; end
+                %if pERD2 < 0; pERD2=pMax; end  
             end     
             %calculation of Pressure P_ERD
             if version(1) == 0 %co-current
@@ -272,6 +324,9 @@ W_p4 = 1/LP_eff * (p_f(1)-pE)*(Q_f(1)*Z)./local_ro_f(1); W_p4 = W_p4*W_r;
                 f_2= J_ERD*swro_Z/rho_ERD*mix_density*(J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end)/A_ERD)^2;  
                 f_ERD= ERD_fric*(ERD_eff*f_2 - f_1)/100;
                 pERD = rho_ERD*(ERD_eff*( P_d(end)*J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end) - p_d(1)*qq*Q_d(1)*Z/local_ro_d(1) ) +  pERD2*J_E*swro_Z/rho_ERD2 -f_ERD )/J_ERD/swro_Z;
+                f_ERD=0; pMax = rho_ERD*(ERD_eff*( P_d(end)*J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end) - p_d(1)*qq*Q_d(1)*Z/local_ro_d(1) ) +  pERD2*J_E*swro_Z/rho_ERD2 -f_ERD )/J_ERD/swro_Z;
+                if pERD > pMax; pERD=pMax; end
+                %if pERD < 0; pERD=pMax; end  
                 W_p3 = 1/HP_eff * (P_d(1)-pERD)*(J_ERD*swro_Z)/rho_ERD;
                 W_t = T_eff * (p_d(end)-pE)*((1-mixer_ERD)*Q_d(end)*Z)/local_ro_d(end); 
             end
@@ -279,10 +334,13 @@ W_p4 = 1/LP_eff * (p_f(1)-pE)*(Q_f(1)*Z)./local_ro_f(1); W_p4 = W_p4*W_r;
                 f_1= abs(qq*Q_d(end))*Z/local_ro_d(end)*mix_density*(J_E*swro_Z/rho_ERD2/A_ERD)^2  ;
                 f_2= J_ERD*swro_Z/rho_ERD*mix_density*(J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end)/A_ERD)^2  ;
                 f_ERD= ERD_fric*(ERD_eff*f_2 - f_1)/100;
-                pERD = rho_ERD*(ERD_eff*( P_d(end)*J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end) - p_d(end)*abs(qq*Q_d(end))*Z/local_ro_d(end) ) +  pERD2*J_E*swro_Z/rho_ERD2 -f_ERD )/J_ERD/swro_Z;           
+                pERD = rho_ERD*(ERD_eff*( P_d(end)*J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end) - p_d(end)*abs(qq*Q_d(end))*Z/local_ro_d(end) ) +  pERD2*J_E*swro_Z/rho_ERD2 -f_ERD )/J_ERD/swro_Z;            
+                f_ERD=0; pMax=rho_ERD*(ERD_eff*( P_d(end)*J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end) - p_d(end)*abs(qq*Q_d(end))*Z/local_ro_d(end) ) +  pERD2*J_E*swro_Z/rho_ERD2 -f_ERD )/J_ERD/swro_Z;            
+                if pERD > pMax; pERD=pMax; end 
+                %if pERD < 0; pERD=pMax; end  
                 W_p3 = 1/HP_eff * (P_d(1)-pERD)*(J_ERD*swro_Z)/rho_ERD;
                 W_t = T_eff * (p_d(1)-pE)*(abs((1-mixer_ERD)*Q_d(1))*Z)/local_ro_d(1);
-            end
+            end         
     % Recalculation for Pump 1
     W_p1 = 1/HP_eff * (P_d(1)-pERD2)*(J_E *swro_Z)/rho_ERD2; W_p1 = W_p1*swro_W_r;
     end
@@ -299,13 +357,6 @@ if version(1)==1; SE_net = W_net./(Q_f(1)*Q_r*Z/(rho_r*local_ro_f(1)))/1000/3600
 SEC_net = W_net*(swro_local_ro_f(end)*rho_r)./(J_f(end)*J_r*swro_Z)/1000/3600; %in [kWh/m^3]  
 Rev= pw*FW + pe*SEC_net*FW; %in [$/h]
 tt=toc;
-
-
-
-
-
-
-
 %% if BVP-solver failed
 catch
     sol.stats.maxerr =1000;
@@ -781,77 +832,5 @@ end
 
 
 
-
 end
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-%% Removed comments
-
-%Y(:,4+6)=abs(Y(:,4+6)) % ??why is this here??
-
-% -3.9191    0.3247    0.0131   32.8727    7.1201       NaN       NaN
-%
-% 1.0e+03 *
-% -1.2742   -0.9744         0   -0.4873   -0.0010    0.1885
-
-% In ideal cases take mean of some quantities. 
-% In ideal cases salt will fluctuate around 1e-16. We take mean here for 
-% 
-% This is just for figures. (), otherwise one could use ylim ) 
-%if version(4)==0 ; J_f=J_wf; J_sf=zeros(1,n); J_sd=mean(J_sd)*ones(1,n); C_f=zeros(1,n); end
-%if version(5)==0 ; Q_f=Q_wf; Q_sf=zeros(1,n); Q_sd=mean(Q_sd)*ones(1,n); c_f=zeros(1,n); end
-
-        %f_ERD=0; pMax=rho_ERD*(ERD_eff*( P_d(end)*J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end) - p_exit*Q_exit*swro_Z/rho_exit ) +  pE*J_E*swro_Z/rho_E -f_ERD )/J_ERD/swro_Z;
-        %if pERD > pMax; pERD=pMax; end
-        %if pERD < 0; pERD=pMax; end  
-        %display(['pERD:              ',num2str(pERD)]) % pERD use in the model
-        %display(['pERD_theoretical:  ',num2str(pMax)]) % theoretical pERD with no leak, friction perm and 100% efficiency
-
-        %f_ERD=0;pMax=rho_ERD*(ERD_eff*( P_d(end)*J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end) - p_d(1)*qq*Q_d(1)*Z/local_ro_d(1) ) +  pE*J_E*swro_Z/rho_E -f_ERD )/J_ERD/swro_Z;
-        %if pERD > pMax; pERD=pMax; end
-        %if pERD < 0; pERD=pMax; end  
-
-        %f_ERD=0;pMax=rho_ERD*(ERD_eff*( P_d(end)*J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end) - p_d(end)*abs(qq*Q_d(end))*Z/local_ro_d(end) ) +  pE*J_E*swro_Z/rho_E -f_ERD )/J_ERD/swro_Z;       
-        %display(['pERD:              ',num2str(pERD)]) % pERD use in the model
-        %display(['pERD_theoretical:  ',num2str(pMax)]) % theoretical pERD with no leak, friction perm and 100% efficiency
-        %if pERD > pMax; pERD=pMax; end
-        %if pERD < 0; pERD=pMax; end     
-
-        %J_wERD = J_E/(C_ERD+1);
-
-        %f_ERD=0;pMax = rho_ERD2*(ERD_eff*( p_d(end)*qq*mixer_ERD*Q_d(end)*Z*(1-eta_ERD)/local_ro_d(end) - p_exit*qq*Q_exit*Z/rho_exit ) +  pE*J_E_sea*swro_Z/rho_E -f_ERD )/2/J_E/swro_Z;
-        %if pERD2 > pMax; pERD2=pMax; end
-        %if pERD2 < 0; pERD2=pMax; end  
-
-        %f_ERD=0;pMax = rho_ERD2*(ERD_eff*( p_d(1)*qq*mixer_ERD*abs(Q_d(1))*Z*(1-eta_ERD)/local_ro_d(1) - p_exit*qq*Q_exit*Z/rho_exit ) +  pE*J_E_sea*swro_Z/rho_E -f_ERD )/2/J_E/swro_Z;            
-        %if pERD2 > pMax; pERD2=pMax; end
-        %if pERD2 < 0; pERD2=pMax; end  
-
-        %f_ERD=0; pMax = rho_ERD*(ERD_eff*( P_d(end)*J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end) - p_d(1)*qq*Q_d(1)*Z/local_ro_d(1) ) +  pERD2*J_E*swro_Z/rho_ERD2 -f_ERD )/J_ERD/swro_Z;
-        %if pERD > pMax; pERD=pMax; end
-        %if pERD < 0; pERD=pMax; end  
-
-        %f_ERD=0; pMax=rho_ERD*(ERD_eff*( P_d(end)*J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end) - p_d(end)*abs(qq*Q_d(end))*Z/local_ro_d(end) ) +  pERD2*J_E*swro_Z/rho_ERD2 -f_ERD )/J_ERD/swro_Z;            
-        %if pERD > pMax; pERD=pMax; end 
-        %if pERD < 0; pERD=pMax; end  
