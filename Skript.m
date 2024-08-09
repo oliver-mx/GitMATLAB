@@ -11,7 +11,7 @@
 % Create figures form chapter: Numerical simulations
 % 
 close all;
-[Output1, Output2, time]=fun_1(1,0,'sol',1e4,1e-4),
+[Output1, Output2, time]=fun_1(1,0,'sol',1e4,1e-6),
 %
 %figure(1); set(gcf,'color','w'); f = gcf; exportgraphics(f,'Figure_6.png');
 %figure(2); set(gcf,'color','w'); f = gcf; exportgraphics(f,'Figure_7.png');
@@ -20,17 +20,66 @@ close all;
 
 %% Average simulation time:
 %
-% calculate average computation time of previous simulation
+% calculate average computation time of the simulation above
 %
 T=zeros(1,100); 
 for i=1:length(T)
-[Output1, Output2, time]=fun_1(1,0.1,'sol',1e4,1e-4);
+[~, ~, time]=fun_1(1,0.1,'sol',1e4,1e-6);
 T(i)=time;
 end
 mean(T) %= 0.9600
 %
 
-%% Optimisation - case2 (with epsilon constraints)
+%% Optimisation - case1 (epsilon constraint method)
+%
+% Create Paretofront for SWRO+ERD 
+%
+load("DATA_case1.mat")
+% 
+% load("DATA_case1.mat")
+% save DATA_case1.mat X1 Y1 X1_P Y1_P time1 time1_P
+% 
+% X1  -  set of operating conditions for epsilon constraint method (2x40)
+% Y1  -  system output using X2 (5x40)
+%
+% X1_P  -  set of operating conditions from paretosearch (2x200)
+% Y1_P  -  system output using X2_P (4x200)
+%
+% time1    - time for epsilon constraint method (40points)
+% time1_P  - time for paretosearch solver (200 points)
+%
+startTime=datetime("now");
+A= [-1 1]; b= -.1; Aeq=[]; beq=[]; lb = [30;30]; ub = [70;70];
+option_mesh = 1e4; option_BVP = 1e-6; option_data = 1;
+foptions = optimoptions('fmincon','Display','off','Algorithm','interior-point', 'StepTolerance', 1e-12, 'OptimalityTolerance',1e-4, 'MaxFunEvals',100);
+%foptions = optimoptions('fmincon','Display','iter-detailed','Algorithm','interior-point', 'StepTolerance', 1e-12, 'OptimalityTolerance',1e-3, 'MaxFunEvals',100);
+rng default
+%
+FWmin=linspace(0.0065, 0.3861, 40); 
+X0=[linspace(60,69.99,40);linspace(55,50,40)];
+%
+parfor i=1:40
+    epsilon=1;
+    minFW=-FWmin(i);
+    x0=X0(:,i);
+    while epsilon > .9
+        [x_neu, minSEC] = fmincon(@(x)fun_1(x,option_data,'SEC',option_mesh,option_BVP),x0   ,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'FW' ,option_data,option_mesh,option_BVP,-minFW ),foptions);
+        [x0, minFW]     = fmincon(@(x)fun_1(x,option_data,'FW' ,option_mesh,option_BVP),x_neu,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'SEC',option_data,option_mesh,option_BVP,-minSEC),foptions);
+        epsilon = max(norm(x0-x_neu)),
+    end
+    X1(:,i)=x0; %x_neu;
+    Y1(:,i)=fun_1([X1(:,i)],option_data,'sol',option_mesh,option_BVP);
+end
+endTime=datetime("now");
+time1 = endTime - startTime;
+save DATA_case1.mat X1 Y1 X1_P Y1_P time1 time1_P
+%scatter
+f=figure(1); f.Position = [1200 500 800 500];
+scatter(Y1(1,:),Y1(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
+grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
+legend('Single SWRO unit','SWRO with ERD','Location', 'Northeast');ylabel('FW [m^3/h]','FontSize',16);xlabel('SEC_{net} [kWh/m^3]','FontSize',16);
+
+% Optimisation - case2 (epsilon constraint method)
 %
 % Create Paretofront for SWRO+ERD 
 %
@@ -48,27 +97,78 @@ load("DATA_case2.mat")
 % time2    - time for epsilon constraint method (40points)
 % time2_P  - time for paretosearch solver (200 points)
 %
-
-load("DATA_T1.mat")
-c1=datetime("now");
-x0=[69.9 51.5];
-FWmin=linspace(0.3770, 0.0015, 40);
-for i=1:40
-clc,
-i, 
-close all; A= [-1 1]; b= -.1; Aeq=[]; beq=[]; lb = [30;30]; ub = [70;70];
-foptions = optimoptions('fmincon','Display','iter-detailed','Algorithm','interior-point', 'StepTolerance', 1e-16, 'OptimalityTolerance',1e-4, 'MaxFunEvals',100);
-option_mesh = 1e4; option_BVP = 1e-4; option_data = 1;
-[x_opt, f_opt]=fmincon(@(x)fun_1(x,1,'SEC',option_mesh,option_BVP),x0,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'FW',1,option_mesh,option_BVP, FWmin(i)),foptions);
+startTime=datetime("now");
+A= [-1 1]; b= -.1; Aeq=[]; beq=[]; lb = [30;30]; ub = [70;70];
+option_mesh = 1e4; option_BVP = 1e-6; option_data = 1;
+foptions = optimoptions('fmincon','Display','off','Algorithm','interior-point', 'StepTolerance', 1e-12, 'OptimalityTolerance',1e-4, 'MaxFunEvals',100);
+rng default
+%
+FWmin=linspace(0.0015, 0.3769, 40); 
+X0=[linspace(37,70,40);linspace(36,50,40)];
+%
+parfor i=1:40
+    epsilon=1;
+    minFW=-FWmin(i);
+    x0=X0(:,i);
+    while epsilon > .9
+        [x_neu, minSEC] = fmincon(@(x)fun_1(x,option_data,'SEC',option_mesh,option_BVP),x0   ,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'FW' ,option_data,option_mesh,option_BVP,-minFW ),foptions);
+        [x0, minFW]     = fmincon(@(x)fun_1(x,option_data,'FW' ,option_mesh,option_BVP),x_neu,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'SEC',option_data,option_mesh,option_BVP,-minSEC),foptions);
+        epsilon = max(norm(x0-x_neu)),
+    end
+    X2(:,i)=x0; %x_neu;
+    Y2(:,i)=fun_1([X1(:,i)],option_data,'sol',option_mesh,option_BVP);
 end
-c2=datetime("now"); %von 2 bis 39
-save DATA_T1.mat c1 c2 % 00:02:30
+endTime=datetime("now");
+time2 = endTime - startTime;
+save DATA_case2.mat X2 Y2 X2_P Y2_P time2 time2_P
+%scatter
+scatter(Y2(1,:),Y2(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold on
+grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
+legend('Single SWRO unit','SWRO with ERD','Location', 'Northeast');ylabel('FW [m^3/h]','FontSize',16);xlabel('SEC_{net} [kWh/m^3]','FontSize',16);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 %% Optimisation - case2 (with paretosearch)
+load("DATA_case2.mat")
 %
-% Create Paretofront for SWRO+ERD 
+startTime=datetime("now");
+A= [-1 1]; b= -.1; Aeq=[]; beq=[]; lb = [30;30]; ub = [70;70];
+option_mesh = 1e4; option_BVP = 1e-4; option_data = 2;
 %
-
+rng default
+% take 200 random data points
+% run paretosearch 
+%
+% endTime
+% runTime ...
+% scater plot togerther with other 40 points
+% define all variables as floating points and see that the
 
 
 %% Optimisation-2 (red)
@@ -118,6 +218,10 @@ scatter(SEC_Pareto_1,FW_Pareto_1);hold on
 scatter(SEC_Pareto_2,FW_Pareto_2)
 
 %% red - Paretosearch
+%
+%  UseCompletePoll =true --> paretosearch in parallel
+%  UseParallel =true --> paralell paretosearch
+%
 %
 close all; clear all; clc
 rng default % For reproducibility

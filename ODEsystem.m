@@ -31,7 +31,7 @@ swro_del_c = J_p(1)./(J_p(1) + 1) - J_p(3)./(J_p(3) + J_p(4));     % delta c_sal
 J_cross = ((J_p(5) - J_p(6)) - sigma.*(swro_p_osm_d - swro_p_osm_f)) ./   (1 + p_r*swro_alpha*swro_KK*sigma.*(swro_p_osm_d - swro_p_osm_f));
 if version(4)==0; J_cross =((J_p(5) - J_p(6)) - sigma.*(swro_p_osm_d - swro_p_osm_f)); end
 J_sin = swro_beta*swro_del_c;
-if version(7)==1 %% version with ICP and ECP
+if version(7)==1 && version(4)>0
     J_cross = ((J_p(5)-J_p(6))-sigma.*(swro_p_osm_d - swro_p_osm_f) + swro_beta*(J_p(5)-J_p(6))*(swro_KK +1/swro_KD + 1/swro_KF)) ./   (1 + swro_alpha*swro_beta*(1/swro_KD + 1/swro_KF + swro_KK) + p_r*swro_alpha*sigma.*(-swro_p_osm_d/swro_KD -swro_p_osm_f*(swro_KK + 1/swro_KF) ));
     J_sin = swro_beta*( swro_del_c-J_cross*( J_p(1)./(J_p(1) + 1)./swro_KD +  J_p(3)./(J_p(3) + J_p(4))*(swro_KK+1/swro_KF)))/(1+swro_alpha*swro_beta*(swro_KK+1/swro_KF+1/swro_KD));
 end
@@ -66,7 +66,7 @@ del_c = J_p(1+6)./(J_p(1+6) + 1) - J_p(3+6)./(J_p(3+6) + J_p(4+6)); % delta c_sa
 Q_cross = ((p_osm_d - p_osm_f) - (J_p(5+6) - J_p(6+6)) - (J_p(5+6) - J_p(6+6))*beta*KK*alpha*p_r)./(1 + KK*alpha*p_r*(beta +p_osm_f));
 if version(5)==0; Q_cross = ((p_osm_d - p_osm_f) - (J_p(5+6) - J_p(6+6))) ; end 
 Q_sin = beta*del_c;
-if version(8)==1 %% version with ICP and ECP
+if version(8)==1 && version(4)>0
     Q_cross=((p_osm_d - p_osm_f) - (J_p(5+6) - J_p(6+6)) - (J_p(5+6) - J_p(6+6))*beta*(KK+1/KF+1/KD)*p_r*alpha)./(1 +alpha* beta*(KK+1/KF+1/KD) + alpha*p_r*(p_osm_f*(KK+1/KF) + p_osm_d/KD));
     Q_sin=beta*( del_c-Q_cross*( J_p(1+6)./(J_p(1+6) + 1)./KD +  J_p(3+6)./(J_p(3+6) + J_p(4+6))*(KK+1/KF)))/(1+alpha*beta*(KK+1/KF+1/KD));
 end

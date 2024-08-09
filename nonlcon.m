@@ -1,4 +1,4 @@
-function [c, ceq] = nonlcon(input,option,option_data,option_mesh,option_BVP, minFW)
+function [c, ceq] = nonlcon(input,option,option_data,option_mesh,option_BVP, minConstraint)
 %%  nonlcon  Nonlinear condition in fmincon 
 %
 %       nonlcon(input,option,option_data,option_mesh,option_BVP, minFW)
@@ -13,7 +13,7 @@ function [c, ceq] = nonlcon(input,option,option_data,option_mesh,option_BVP, min
 %       option_data   -   Selects Data function used: data(input)
 %       option_mesh   -   NMax of bvp5c
 %       option_BVP    -   RelTol of bvp5c
-%       minFW         -   lower bound for FW
+%       minConstraint -   lower bound for FW/SEC_net
 %
 %   Output:
 %       c(x) ≤0
@@ -31,7 +31,10 @@ switch (option)
     c=[];
     case 'FW'
     % output from fun: -FW    
-    c= fun_1(input,option_data,'FW',option_mesh,option_BVP) + minFW; 
+    c= fun_1(input,option_data,'FW',option_mesh,option_BVP) + minConstraint; 
+    case 'SEC'
+    % output from fun: -SEC_net    
+    c= fun_1(input,option_data,'SEC',option_mesh,option_BVP) + minConstraint; 
 end
 ceq=[];
 end

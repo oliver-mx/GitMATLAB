@@ -1,11 +1,11 @@
-function [H,Z,swro_Z,ro_water,ro_salt,Mw,Ms,Rw,T0,eta,sigma,p_r,rho_r,C_r,swro_L,swro_alpha,swro_R,swro_KK,swro_x_r,swro_b1,swro_b2,J_r,swro_gamma,swro_gamma2,swro_W_r,L,alpha,R,KK,x_r,b1,b2,Q_r,gamma,gamma2,W_r,cE,pE,rho_E,J_sf_0,J_wf_0,Pd_0,Pd_L,Pf_L,Q_sf_0,pd_0,pf_0,pd_L,pf_L,HP_eff,LP_eff,T_eff,V_m,ERD_eff,ERD_fric,A_ERD,eta_ERD,mix_density,pw,pe,swro_beta_fix,beta_fix,mixer_ERD,version,fig,swro_KF,swro_KD,KF,KD]= Sim_0a_data(input1, input2)
-%%  Sim_0a_data(input)
+function [H,Z,swro_Z,ro_water,ro_salt,Mw,Ms,Rw,T0,eta,sigma,p_r,rho_r,C_r,swro_L,swro_alpha,swro_R,swro_KK,swro_x_r,swro_b1,swro_b2,J_r,swro_gamma,swro_gamma2,swro_W_r,L,alpha,R,KK,x_r,b1,b2,Q_r,gamma,gamma2,W_r,cE,pE,rho_E,J_sf_0,J_wf_0,Pd_0,Pd_L,Pf_L,Q_sf_0,pd_0,pf_0,pd_L,pf_L,HP_eff,LP_eff,T_eff,V_m,ERD_eff,ERD_fric,A_ERD,eta_ERD,mix_density,pw,pe,swro_beta_fix,beta_fix,mixer_ERD,version,fig,swro_KF,swro_KD,KF,KD]= Pareto_1_data(input1, input2)
+%%  Pareto_2_data(input)
 %
-%   Data for Simulation in chapter 3
+%   Data for Berechung der roten Pareto front
 %
-%   SWRO-PRO hybrid system I (realistic ERD)
+%   only SWRO
 %
-%   option_data = 0
+%   option_data = 1
 %
 %   Input:
 %       input1        -   x
@@ -19,7 +19,7 @@ version(3)=0;  % 0 = PRO beta fixed
 version(4)=1;  % 0 = ideal SWRO
 version(5)=1;  % 0 = ideal PRO
 % ERD
-version(6)=3;
+version(6)=0;
 % version(6) = 0 --> only SWRO (no ERD)
 % version(6) = 1 --> only SWRO (with ERD)
 % version(6) = 2 --> only PRO
@@ -87,8 +87,8 @@ J_sf_0 = 0;              % salt flux in fresh side at 0
 J_wf_0 = 0;              % water flux in fresh side at L               
 Pf_L = pE;               % pressure fresh side at L
 
-Pd_0 =  66e5/p_r;        % pressure draw side at 0
-Pd_L =  60e5/p_r;        % pressure draw side at L (not need in the hybrid system)
+Pd_0 =  input1(1);       % pressure draw side at 0
+Pd_L =  input1(2);       % pressure draw side at L (not need in the hybrid system)
 
 %% PRO operation conditions 
 Q_sf_0 = 0;              % salt flux in fresh side at 0
@@ -113,8 +113,8 @@ pe=0.14;                    % electricity price [$/kWh]
 mixer_ERD=1;                % PRO Draw outlet mixer adjustment (only if 2nd ERDs) (mixer_ERD=1 --> all flow to ERD2 no turbine needed)    
 
 %% display figures
-fig=[1,1,1,0]; % f(i)=1 --> figure i will be displayed
-%fig=[0,0,0,0]; % f(i)=1 --> figure i will be displayed
+%fig=[1,1,1,0]; % f(i)=1 --> figure i will be displayed
+fig=[0,0,0,0]; % f(i)=1 --> figure i will be displayed
 
 %% model specific changes:
 % co-current
