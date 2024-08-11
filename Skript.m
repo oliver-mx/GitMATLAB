@@ -39,7 +39,7 @@ load("DATA_case1.mat")
 % load("DATA_case1.mat")
 % save DATA_case1.mat X1 Y1 X1_P Y1_P time1 time1_P
 % 
-% X1  -  set of operating conditions for epsilon constraint method (2x40)
+% X1  -  set of operating conditions for epsilon constraint method (2x200)
 % Y1  -  system output using X2 (5x40)
 %
 % X1_P  -  set of operating conditions from paretosearch (2x200)
@@ -52,23 +52,25 @@ startTime=datetime("now");
 A= [-1 1]; b= -.1; Aeq=[]; beq=[]; lb = [30;30]; ub = [70;70];
 option_mesh = 1e4; option_BVP = 1e-6; option_data = 1;
 foptions = optimoptions('fmincon','Display','off','Algorithm','interior-point', 'StepTolerance', 1e-12, 'OptimalityTolerance',1e-4, 'MaxFunEvals',100);
-%foptions = optimoptions('fmincon','Display','iter-detailed','Algorithm','interior-point', 'StepTolerance', 1e-12, 'OptimalityTolerance',1e-3, 'MaxFunEvals',100);
 rng default
 %
-FWmin=linspace(0.0065, 0.3861, 40); 
-X0=[linspace(60,69.99,40);linspace(55,50,40)];
+FWmin=linspace(0.0065, 0.3861, 200); 
+X0=[linspace(60,69.99,200);linspace(55,50,200)];
 %
-parfor i=1:40
+parfor i=1:200
     epsilon=1;
     minFW=-FWmin(i);
     x0=X0(:,i);
-    while epsilon > .9
+    while epsilon > .1
         [x_neu, minSEC] = fmincon(@(x)fun_1(x,option_data,'SEC',option_mesh,option_BVP),x0   ,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'FW' ,option_data,option_mesh,option_BVP,-minFW ),foptions);
         [x0, minFW]     = fmincon(@(x)fun_1(x,option_data,'FW' ,option_mesh,option_BVP),x_neu,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'SEC',option_data,option_mesh,option_BVP,-minSEC),foptions);
-        epsilon = max(norm(x0-x_neu)),
+        y_neu = fun_1(x_neu,option_data,'Pareto',option_mesh,option_BVP),
+        y_0   = fun_1(x0,option_data,'Pareto',option_mesh,option_BVP),
+        epsilon = min(norm(x0-x_neu), norm(y_neu-y_0));
     end
-    X1(:,i)=x0; %x_neu;
+    X1(:,i)=x0;
     Y1(:,i)=fun_1([X1(:,i)],option_data,'sol',option_mesh,option_BVP);
+    i,
 end
 endTime=datetime("now");
 time1 = endTime - startTime;
@@ -79,7 +81,7 @@ scatter(Y1(1,:),Y1(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold o
 grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
 legend('Single SWRO unit','SWRO with ERD','Location', 'Northeast');ylabel('FW [m^3/h]','FontSize',16);xlabel('SEC_{net} [kWh/m^3]','FontSize',16);
 
-% Optimisation - case2 (epsilon constraint method)
+%% Optimisation - case2 (epsilon constraint method)
 %
 % Create Paretofront for SWRO+ERD 
 %
@@ -99,24 +101,27 @@ load("DATA_case2.mat")
 %
 startTime=datetime("now");
 A= [-1 1]; b= -.1; Aeq=[]; beq=[]; lb = [30;30]; ub = [70;70];
-option_mesh = 1e4; option_BVP = 1e-6; option_data = 1;
+option_mesh = 1e4; option_BVP = 1e-6; option_data = 2;
 foptions = optimoptions('fmincon','Display','off','Algorithm','interior-point', 'StepTolerance', 1e-12, 'OptimalityTolerance',1e-4, 'MaxFunEvals',100);
 rng default
 %
-FWmin=linspace(0.0015, 0.3769, 40); 
-X0=[linspace(37,70,40);linspace(36,50,40)];
+FWmin=linspace(0.0015, 0.3769, 16); 
+X0=[linspace(37,70,16);linspace(36,50,16)];
 %
-parfor i=1:40
+parfor i=1:16
     epsilon=1;
     minFW=-FWmin(i);
     x0=X0(:,i);
-    while epsilon > .9
+    while epsilon > .1
         [x_neu, minSEC] = fmincon(@(x)fun_1(x,option_data,'SEC',option_mesh,option_BVP),x0   ,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'FW' ,option_data,option_mesh,option_BVP,-minFW ),foptions);
         [x0, minFW]     = fmincon(@(x)fun_1(x,option_data,'FW' ,option_mesh,option_BVP),x_neu,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'SEC',option_data,option_mesh,option_BVP,-minSEC),foptions);
-        epsilon = max(norm(x0-x_neu)),
+        y_neu = fun_1(x_neu,option_data,'Pareto',option_mesh,option_BVP),
+        y_0   = fun_1(x0,option_data,'Pareto',option_mesh,option_BVP),
+        epsilon = min(norm(x0-x_neu), norm(y_neu-y_0));
     end
-    X2(:,i)=x0; %x_neu;
-    Y2(:,i)=fun_1([X1(:,i)],option_data,'sol',option_mesh,option_BVP);
+    X2(:,i)=x0; 
+    Y2(:,i)=fun_1([X2(:,i)],option_data,'sol',option_mesh,option_BVP);
+    i,
 end
 endTime=datetime("now");
 time2 = endTime - startTime;
@@ -126,8 +131,16 @@ scatter(Y2(1,:),Y2(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold o
 grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
 legend('Single SWRO unit','SWRO with ERD','Location', 'Northeast');ylabel('FW [m^3/h]','FontSize',16);xlabel('SEC_{net} [kWh/m^3]','FontSize',16);
 
+%% test 
 
-
+X0=[linspace(37,70,16);linspace(36,50,16)];
+A=zeros(1,16);B=A;
+parfor i=1:16
+    Y0=fun_1([X0(:,i)],option_data,'sol',option_mesh,option_BVP);
+    A(i)=Y0(1);
+    B(i)=Y0(2);
+end
+scatter(A,B,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','g'); hold on
 
 
 
