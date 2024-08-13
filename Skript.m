@@ -75,7 +75,7 @@ end
 endTime=datetime("now");
 time1 = endTime - startTime;
 save DATA_case1.mat X1 Y1 X1_P Y1_P time1 time1_P
-%scatter
+%%scatter
 f=figure(1); f.Position = [1200 500 800 500];
 scatter(Y1(1,:),Y1(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
 grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
@@ -105,10 +105,11 @@ option_mesh = 1e4; option_BVP = 1e-6; option_data = 2;
 foptions = optimoptions('fmincon','Display','off','Algorithm','interior-point', 'StepTolerance', 1e-12, 'OptimalityTolerance',1e-4, 'MaxFunEvals',100);
 rng default
 %
-FWmin=linspace(0.0015, 0.3769, 16); 
-X0=[linspace(37,70,16);linspace(36,50,16)];
+FWmin=linspace(0.0015, 0.3769, 200);
+X0=X1;
+%X0=[linspace(37,70,16);linspace(36,50,16)];
 %
-parfor i=1:16
+parfor i=1:200
     epsilon=1;
     minFW=-FWmin(i);
     x0=X0(:,i);
@@ -132,22 +133,15 @@ grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
 legend('Single SWRO unit','SWRO with ERD','Location', 'Northeast');ylabel('FW [m^3/h]','FontSize',16);xlabel('SEC_{net} [kWh/m^3]','FontSize',16);
 
 %% test 
-
-X0=[linspace(37,70,16);linspace(36,50,16)];
-A=zeros(1,16);B=A;
-parfor i=1:16
-    Y0=fun_1([X0(:,i)],option_data,'sol',option_mesh,option_BVP);
+X0=X1;
+%X0=[linspace(37,70,16);linspace(36,50,16)];
+A=zeros(1,200);B=A;
+parfor i=1:200
+    Y0=fun_1([X0(:,i)],2,'sol',1e4,1e-4);
     A(i)=Y0(1);
     B(i)=Y0(2);
 end
 scatter(A,B,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','g'); hold on
-
-
-
-
-
-
-
 
 
 
