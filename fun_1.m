@@ -156,21 +156,21 @@ FW = (Freshwater*swro_Z/(swro_local_ro_f(end)*rho_r))*3600; %in [m^3/h]
 SWRO_Recovery =(J_f(end)./J_d(1))*100;     % SWRO freshwater recovery [%]
 PRO_Recovery = (1- Q_f(end)./Q_f(1))*100;  % PRO recovery rate [%]
 % warning flags:
-    if FW < 0 
-        %fprintf(2,' \nERROR: Waring: Freshwater production is negative! \n');
+    if FW < 0 && strcmp(obj,'sol')==1
+        fprintf(2,' \nERROR: Waring: Freshwater production is negative! \n');
     end
-    if SWRO_Recovery > 100 
-        %fprintf(2,' \nERROR: Waring: SWRO recovery is greater then 100 %% \n');
+    if SWRO_Recovery > 100 && strcmp(obj,'sol')==1
+        fprintf(2,' \nERROR: Waring: SWRO recovery is greater then 100 %% \n');
     end
-    if SWRO_Recovery < 0 
-        %fprintf(2,' \nERROR: Waring: SWRO recovery is negative! \n');
+    if SWRO_Recovery < 0 && strcmp(obj,'sol')==1
+        fprintf(2,' \nERROR: Waring: SWRO recovery is negative! \n');
     end
     if version(6)>1
-        if PRO_Recovery > 100 
-            %fprintf(2,' \nERROR: Waring: PRO recovery is greater then 100 %% \n');
+        if PRO_Recovery > 100 && strcmp(obj,'sol')==1 
+            fprintf(2,' \nERROR: Waring: PRO recovery is greater then 100 %% \n');
         end
-        if PRO_Recovery < 0 
-            %fprintf(2,' \nERROR: Waring: PRO recovery is negative! \n');
+        if PRO_Recovery < 0 && strcmp(obj,'sol')==1
+            fprintf(2,' \nERROR: Waring: PRO recovery is negative! \n');
         end
     end
 %% Output of System
@@ -198,8 +198,8 @@ W_p4 = 1/LP_eff * (p_f(1)-pE)*(Q_f(1)*Z)./local_ro_f(1); W_p4 = W_p4*W_r;
         if pERD > pMax; pERD=pMax; end
         if pERD < 0; pERD=pMax; end  
         W_p3 = 1/HP_eff * (P_d(1)-pERD)*(J_ERD*swro_Z)/rho_ERD; W_p3=W_p3*swro_W_r; W_p4=0; W_t=0;
-            if W_p3 < 0 
-                %fprintf(2,' \nERROR: Waring: Pump 3 generates generates power! \n');
+            if W_p3 < 0 && strcmp(obj,'sol')==1 
+                fprintf(2,' \nERROR: Waring: Pump 3 generates generates power! \n');
                 sol.stats.maxerr =1000;
             end
     end
@@ -323,7 +323,7 @@ PD_net = W_net./(Z*L); %in [W/m^2]
     end 
 end
 SEC_net = W_net*(swro_local_ro_f(end)*rho_r)./(J_f(end)*J_r*swro_Z)/1000/3600; %in [kWh/m^3]  
-    if SEC_net > 0 
+    if SEC_net > 0 && strcmp(obj,'sol')==1
         fprintf(2,' \nERROR: Waring: SEC_net is positive! \n');
     end
 Rev= pw*FW + pe*SEC_net*FW; %in [$/h]
