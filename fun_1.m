@@ -355,7 +355,7 @@ switch (obj)
             end
         case 'Pareto' % SEC_net and FW maximization  -->  output1 = [-SEC_net, -FW]
             if sol.stats.maxerr > option_BVP    
-            output1 = [20, 20]; %[NaN, NaN];
+            output1 = [NaN, NaN]; %[20, 20]
             else; output1 = [-SEC_net, -FW];
             end 
         case 'PD_net' 

@@ -32,7 +32,7 @@ mean(T) %= 0.9600
 
 %% Optimisation - case1 (epsilon constraint method)
 %
-% Create Paretofront for SWRO+ERD 
+% Create Paretofront for single SWRO
 %
 load("DATA_case1.mat")
 % 
@@ -49,7 +49,7 @@ load("DATA_case1.mat")
 % time1_P  - time for paretosearch solver (200 points)
 %
 startTime=datetime("now");
-A= [-1 1]; b= -.1; Aeq=[]; beq=[]; lb = [30;30]; ub = [70;70];
+A= [-1 1]; b= -0; Aeq=[]; beq=[]; lb = [30;30]; ub = [70;70];
 option_mesh = 1e4; option_BVP = 1e-6; option_data = 1;
 foptions = optimoptions('fmincon','Display','off','Algorithm','interior-point', 'StepTolerance', 1e-12, 'OptimalityTolerance',1e-4, 'MaxFunEvals',100);
 rng default
@@ -72,14 +72,69 @@ parfor i=1:200
     Y1(:,i)=fun_1([X1(:,i)],option_data,'sol',option_mesh,option_BVP);
     i,
 end
-endTime=datetime("now");
-time1 = endTime - startTime;
+endTime=datetime("now");      % computation time homePC: 02:22:08 
+time1 = endTime - startTime;  % computation time uni-PC: 04:55:45
 save DATA_case1.mat X1 Y1 X1_P Y1_P time1 time1_P
 %%scatter
-f=figure(1); f.Position = [1200 500 800 500];
+%f=figure(1); f.Position = [1200 500 800 500];
 scatter(Y1(1,:),Y1(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
 grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
-legend('Single SWRO unit','SWRO with ERD','Location', 'Northeast');ylabel('FW [m^3/h]','FontSize',16);xlabel('SEC_{net} [kWh/m^3]','FontSize',16);
+legend('Single SWRO unit','Location', 'Northeast');ylabel('FW [m^3/h]','FontSize',16);xlabel('SEC_{net} [kWh/m^3]','FontSize',16);
+
+%% Optimisation - case1 (paretosearch)
+%
+load("DATA_case1.mat")
+% 
+% load("DATA_case1.mat")
+% save DATA_case1.mat X1 Y1 X1_P Y1_P time1 time1_P
+% 
+% X1  -  set of operating conditions for epsilon constraint method (2x200)
+% Y1  -  system output using X2 (5x40)
+%
+% X1_P  -  set of operating conditions from paretosearch (2x200)
+% Y1_P  -  system output using X2_P (4x200)
+
+startTime=datetime("now");
+A= [-1 1]; b= -0; Aeq=[]; beq=[]; lb = [30;30]; ub = [70;70];
+option_mesh = 1e4; option_BVP = 1e-6; option_data = 1;
+rng default
+%
+%X0=[linspace(X1(1,1),X1(1,end),200); linspace(X1(2,1),X1(2,end),200)]';
+X_init=[X1(1,1:4:end); X1(2,1:4:end)];
+X0=repmat(X_init, 1, 4)';
+options = optimoptions('paretosearch','ParetoSetSize',200, 'InitialPoints',X0,'Display','iter', 'MaxFunctionEvaluations',10000, 'ParetoSetChangeTolerance',1e-4,'UseParallel', true);
+% paretosearch:
+[X, Y] = paretosearch(@(x)fun_1(x,2,'Pareto',option_mesh,option_BVP),2,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'default'),options); 
+%
+parfor i=1:200
+    X1_P(:,i)=X(i,:)
+    Y1_P(:,i)=fun_1([X1_P(:,i)],option_data,'sol',option_mesh,option_BVP);
+end
+endTime=datetime("now");
+time1_P = endTime - startTime;
+save DATA_case1.mat X1 Y1 X1_P Y1_P time1 time1_P
+% scatter
+f=figure(1); f.Position = [1200 500 800 500];
+scatter(Y1(1,:),Y1(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
+scatter(Y1_P(1,:),Y1_P(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','m'); hold on
+grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
+legend('epsilon constraint method', 'paretosearch','Location', 'Northeast');ylabel('FW [m^3/h]','FontSize',16);xlabel('SEC_{net} [kWh/m^3]','FontSize',16);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 %% Optimisation - case2 (epsilon constraint method)
 %
@@ -98,27 +153,27 @@ load("DATA_case2.mat")
 %
 % time2    - time for epsilon constraint method (40points)
 % time2_P  - time for paretosearch solver (200 points)
-%
+% 
 startTime=datetime("now");
-A= [-1 1]; b= -.1; Aeq=[]; beq=[]; lb = [30;30]; ub = [70;70];
+A= [-1 1]; b= -0; Aeq=[]; beq=[]; lb = [30;30]; ub = [70;70];
 option_mesh = 1e4; option_BVP = 1e-6; option_data = 2;
 foptions = optimoptions('fmincon','Display','off','Algorithm','interior-point', 'StepTolerance', 1e-12, 'OptimalityTolerance',1e-4, 'MaxFunEvals',100);
 rng default
 %
 FWmin=linspace(0.0015, 0.3769, 200);
-X0=X1;
-%X0=[linspace(37,70,16);linspace(36,50,16)];
+%X0=X1;
+X0=[linspace(37,70,16);linspace(36,50,16)];
 %
 parfor i=1:200
     epsilon=1;
     minFW=-FWmin(i);
     x0=X0(:,i);
-    while epsilon > .1
+    while epsilon > .001
         [x_neu, minSEC] = fmincon(@(x)fun_1(x,option_data,'SEC',option_mesh,option_BVP),x0   ,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'FW' ,option_data,option_mesh,option_BVP,-minFW ),foptions);
         [x0, minFW]     = fmincon(@(x)fun_1(x,option_data,'FW' ,option_mesh,option_BVP),x_neu,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'SEC',option_data,option_mesh,option_BVP,-minSEC),foptions);
         y_neu = fun_1(x_neu,option_data,'Pareto',option_mesh,option_BVP),
         y_0   = fun_1(x0,option_data,'Pareto',option_mesh,option_BVP),
-        epsilon = min(norm(x0-x_neu), norm(y_neu-y_0));
+        epsilon = max(norm(x0-x_neu), norm(y_neu-y_0));
     end
     X2(:,i)=x0; 
     Y2(:,i)=fun_1([X2(:,i)],option_data,'sol',option_mesh,option_BVP);
@@ -127,7 +182,7 @@ end
 endTime=datetime("now");
 time2 = endTime - startTime;
 save DATA_case2.mat X2 Y2 X2_P Y2_P time2 time2_P
-%scatter
+%%scatter
 scatter(Y2(1,:),Y2(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold on
 grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
 legend('Single SWRO unit','SWRO with ERD','Location', 'Northeast');ylabel('FW [m^3/h]','FontSize',16);xlabel('SEC_{net} [kWh/m^3]','FontSize',16);
