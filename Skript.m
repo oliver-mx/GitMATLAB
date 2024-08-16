@@ -155,20 +155,28 @@ load("DATA_case2.mat")
 % time2_P  - time for paretosearch solver (200 points)
 % 
 startTime=datetime("now");
-A= [-1 1]; b= -0; Aeq=[]; beq=[]; lb = [30;30]; ub = [70;70];
+A= [-1 1]; b= -.1; Aeq=[]; beq=[]; lb = [30;30]; ub = [70;70];
 option_mesh = 1e4; option_BVP = 1e-6; option_data = 2;
+%
+% COMPARE POINTWISE with old skript
+%
+% test single pairs of pressures
+%
+% why is result different
+%
+% what quantities are same/different
+%
 foptions = optimoptions('fmincon','Display','off','Algorithm','interior-point', 'StepTolerance', 1e-12, 'OptimalityTolerance',1e-4, 'MaxFunEvals',100);
 rng default
 %
-FWmin=linspace(0.0015, 0.3769, 200);
-%X0=X1;
-X0=[linspace(37,70,16);linspace(36,50,16)];
+FWmin=linspace(0.0015, 0.3770, 200);
+X0=[[linspace(36.4,69.9,160) linspace(69.9,69.999,40)];[linspace(36.2,60.41,160) linspace(60.41,49.31,40)]];
 %
 parfor i=1:200
     epsilon=1;
     minFW=-FWmin(i);
     x0=X0(:,i);
-    while epsilon > .001
+    while epsilon > .01
         [x_neu, minSEC] = fmincon(@(x)fun_1(x,option_data,'SEC',option_mesh,option_BVP),x0   ,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'FW' ,option_data,option_mesh,option_BVP,-minFW ),foptions);
         [x0, minFW]     = fmincon(@(x)fun_1(x,option_data,'FW' ,option_mesh,option_BVP),x_neu,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'SEC',option_data,option_mesh,option_BVP,-minSEC),foptions);
         y_neu = fun_1(x_neu,option_data,'Pareto',option_mesh,option_BVP),
