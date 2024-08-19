@@ -88,7 +88,5 @@ dJ_dp(3+6) = +gamma*(Q_sin);                           %Q_sf'
 dJ_dp(4+6) = -gamma*(Q_cross);                         %Q_wf'
 dJ_dp(5+6) = +gamma2*(-fmix_d*(J_p(2+6).*(J_p(1+6) + 1))*abs(J_p(2+6).*(J_p(1+6) + 1))/(2*local_ro_d*b1^2*DH_rect) - b1^-2*( dJ_dp(2+6).*(J_p(1+6).*J_p(2+6).*(1/ro_salt + 1/ro_water) + 2*J_p(2+6)/ro_water) ));
 dJ_dp(6+6) = +gamma2*(-fmix_f*(J_p(3+6) + J_p(4+6))*abs(J_p(3+6) + J_p(4+6))/(2*local_ro_f*b1^2*DH_rect)- b1^-2*( dJ_dp(4+6).*(J_p(3+6)*(1/ro_salt + 1/ro_water) + 2*J_p(4+6)/ro_water)) );
-%dJ_dp(5+6) = -fmix_d*(J_p(2+6).*(J_p(1+6) + 1))*abs(J_p(2+6).*(J_p(1+6) + 1))/4/local_ro_d - b1*( dJ_dp(2+6).*(J_p(1+6).*J_p(2+6).*(1/ro_salt + 1/ro_water) + 2*J_p(2+6)/ro_water));
-%dJ_dp(6+6) = -fmix_f*(J_p(3+6) + J_p(4+6))*abs(J_p(3+6) + J_p(4+6))/4/local_ro_f-b1*( dJ_dp(4+6).*(J_p(3+6)*(1/ro_salt + 1/ro_water) + 2*J_p(4+6)/ro_water));             %Pf'
 
 end

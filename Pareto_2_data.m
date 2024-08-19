@@ -59,7 +59,7 @@ swro_gamma2= J_r^2./(swro_x_r^2 * p_r * rho_r); % SWRO scaling factor - momentum
 swro_W_r=J_r*p_r/rho_r;                         % net work [W/m^2]
 sigma=0.999 ;                                   % Rejection coefficient
 swro_beta_fix=4.43e-4/J_r*swro_x_r;             % value for fixed SWRO beta [kg/sm^2]
- 
+
 %% PRO
 Z=1;                    % width of the PRO membrane [m]
 L=1.5;                  % length of the PRO membrane [m]      

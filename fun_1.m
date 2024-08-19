@@ -88,10 +88,12 @@ if version(6) == 3; sol = bvp5c(@(x,J_p)ODEsystem(x, J_p, DATA), @(ya,yb)Boundar
 if version(6) == 4; sol = bvp5c(@(x,J_p)ODEsystem(x, J_p, DATA), @(ya,yb)Boundary4(ya,yb, DATA),solinit,ode_options); end   
             
 %% Evaluate the solution
-n=100;
+if any([0,0,0,0] ~= fig)
+    n=100; % higher resolution plots
+end
 x=linspace(0,1,n);
 y = deval(sol,x); Y = y'; Y = real(Y);
-
+%display(Y(:,4)) 
 %% SWRO evaluation
 C_d = Y(:,1);
 C_f = Y(:,3)./Y(:,4);
@@ -149,12 +151,13 @@ if version(8)==1 && version(4)>0
 Q_cross = ((p_osm_d - p_osm_f) - (Y(:,5+6) - Y(:,6+6)) - (Y(:,5+6) - Y(:,6+6)).*beta'.*(KK+1./KF+1./KD).*p_r.*alpha)./(ones(1,n) + alpha.*beta.*(KK+1./KF+1./KD) + alpha.*p_r.*(p_osm_f'.*(KK+1./KF) + p_osm_d'./KD))';
 Q_sin = beta'.*( del_c-Q_cross.*( Y(:,1+6)./(Y(:,1+6) + 1)./KD +  Y(:,3+6)./(Y(:,3+6) + Y(:,4+6)).*(KK+1/KF)))./(1+alpha.*beta');
 end
-    
+
 %% Freswater production and recovery rates
 Freshwater = J_wf(end)*J_r; %in [kg/s] 
 FW = (Freshwater*swro_Z/(swro_local_ro_f(end)*rho_r))*3600; %in [m^3/h] 
 SWRO_Recovery =(J_f(end)./J_d(1))*100;     % SWRO freshwater recovery [%]
 PRO_Recovery = (1- Q_f(end)./Q_f(1))*100;  % PRO recovery rate [%]
+
 % warning flags:
     if FW < 0 && strcmp(obj,'sol')==1
         fprintf(2,' \nERROR: Waring: Freshwater production is negative! \n');
@@ -198,10 +201,6 @@ W_p4 = 1/LP_eff * (p_f(1)-pE)*(Q_f(1)*Z)./local_ro_f(1); W_p4 = W_p4*W_r;
         if pERD > pMax; pERD=pMax; end
         if pERD < 0; pERD=pMax; end  
         W_p3 = 1/HP_eff * (P_d(1)-pERD)*(J_ERD*swro_Z)/rho_ERD; W_p3=W_p3*swro_W_r; W_p4=0; W_t=0;
-            if W_p3 < 0 && strcmp(obj,'sol')==1 
-                fprintf(2,' \nERROR: Waring: Pump 3 generates generates power! \n');
-                sol.stats.maxerr =1000;
-            end
     end
     %% Version(6)=2 --> only PRO
     if version(6)==2
@@ -223,9 +222,8 @@ W_p4 = 1/LP_eff * (p_f(1)-pE)*(Q_f(1)*Z)./local_ro_f(1); W_p4 = W_p4*W_r;
                 f_2= J_ERD*swro_Z/rho_ERD*mix_density*(J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end)/A_ERD)^2;  
                 f_ERD= ERD_fric*(ERD_eff*f_2 - f_1)/100;
                 pERD = rho_ERD*(ERD_eff*( P_d(end)*J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end) - p_d(1)*qq*Q_d(1)*Z/local_ro_d(1) ) +  pE*J_E*swro_Z/rho_E -f_ERD )/J_ERD/swro_Z;
-                pMax=rho_ERD*(ERD_eff*( P_d(end)*J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end) - p_d(1)*qq*Q_d(1)*Z/local_ro_d(1) ) +  pE*J_E*swro_Z/rho_E)/J_ERD/swro_Z;
+                pMax=rho_ERD*(ERD_eff*( P_d(end)*J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end) - p_d(1)*qq*Q_d(1)*Z/local_ro_d(1) ) +  pE*J_E*swro_Z/rho_E )/J_ERD/swro_Z;
                 if pERD > pMax; pERD=pMax; end
-                if pERD < 0; pERD=pMax; end  
                 W_p3 = 1/HP_eff * (P_d(1)-pERD)*(J_ERD*swro_Z)/rho_ERD;
                 W_t = T_eff * (p_d(end)-pE)*(Q_d(end)*Z)/local_ro_d(end); 
             end
@@ -235,8 +233,7 @@ W_p4 = 1/LP_eff * (p_f(1)-pE)*(Q_f(1)*Z)./local_ro_f(1); W_p4 = W_p4*W_r;
                 f_ERD= ERD_fric*(ERD_eff*f_2 - f_1)/100;
                 pERD = rho_ERD*(ERD_eff*( P_d(end)*J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end) - p_d(end)*abs(qq*Q_d(end))*Z/local_ro_d(end) ) +  pE*J_E*swro_Z/rho_E -f_ERD )/J_ERD/swro_Z;     
                 pMax=rho_ERD*(ERD_eff*( P_d(end)*J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end) - p_d(end)*abs(qq*Q_d(end))*Z/local_ro_d(end) ) +  pE*J_E*swro_Z/rho_E )/J_ERD/swro_Z;       
-                if pERD > pMax; pERD=pMax; end
-                if pERD < 0; pERD=pMax; end  
+                if pERD > pMax; pERD=pMax; end    
                 W_p3 = 1/HP_eff * (P_d(1)-pERD)*(J_ERD*swro_Z)/rho_ERD;
                 W_t = T_eff * (p_d(1)-pE)*(abs(Q_d(1))*Z)/local_ro_d(1);
             end
@@ -271,7 +268,6 @@ W_p4 = 1/LP_eff * (p_f(1)-pE)*(Q_f(1)*Z)./local_ro_f(1); W_p4 = W_p4*W_r;
                 pERD2 = rho_ERD2*(ERD_eff*( p_d(end)*qq*mixer_ERD*Q_d(end)*Z*(1-eta_ERD)/local_ro_d(end) - p_exit*qq*Q_exit*Z/rho_exit ) +  pE*J_E_sea*swro_Z/rho_E -f_ERD )/2/J_E/swro_Z;
                 pMax = rho_ERD2*(ERD_eff*( p_d(end)*qq*mixer_ERD*Q_d(end)*Z*(1-eta_ERD)/local_ro_d(end) - p_exit*qq*Q_exit*Z/rho_exit ) +  pE*J_E_sea*swro_Z/rho_E )/2/J_E/swro_Z;
                 if pERD2 > pMax; pERD2=pMax; end
-                if pERD2 < 0; pERD2=pMax; end  
             end
             if version (1) == 1 %counter-current 
                 f_1= qq*Q_exit*Z/rho_exit*mix_density*(J_E_sea*swro_Z/rho_E/A_ERD)^2;  
@@ -280,7 +276,6 @@ W_p4 = 1/LP_eff * (p_f(1)-pE)*(Q_f(1)*Z)./local_ro_f(1); W_p4 = W_p4*W_r;
                 pERD2 = rho_ERD2*(ERD_eff*( p_d(1)*qq*mixer_ERD*abs(Q_d(1))*Z*(1-eta_ERD)/local_ro_d(1) - p_exit*qq*Q_exit*Z/rho_exit ) +  pE*J_E_sea*swro_Z/rho_E -f_ERD )/2/J_E/swro_Z;            
                 pMax = rho_ERD2*(ERD_eff*( p_d(1)*qq*mixer_ERD*abs(Q_d(1))*Z*(1-eta_ERD)/local_ro_d(1) - p_exit*qq*Q_exit*Z/rho_exit ) +  pE*J_E_sea*swro_Z/rho_E )/2/J_E/swro_Z;            
                 if pERD2 > pMax; pERD2=pMax; end
-                if pERD2 < 0; pERD2=pMax; end 
             end     
             %calculation of Pressure P_ERD
             if version(1) == 0 %co-current
@@ -290,7 +285,6 @@ W_p4 = 1/LP_eff * (p_f(1)-pE)*(Q_f(1)*Z)./local_ro_f(1); W_p4 = W_p4*W_r;
                 pERD = rho_ERD*(ERD_eff*( P_d(end)*J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end) - p_d(1)*qq*Q_d(1)*Z/local_ro_d(1) ) +  pERD2*J_E*swro_Z/rho_ERD2 -f_ERD )/J_ERD/swro_Z;
                 pMax = rho_ERD*(ERD_eff*( P_d(end)*J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end) - p_d(1)*qq*Q_d(1)*Z/local_ro_d(1) ) +  pERD2*J_E*swro_Z/rho_ERD2 )/J_ERD/swro_Z;
                 if pERD > pMax; pERD=pMax; end
-                if pERD < 0; pERD=pMax; end 
                 W_p3 = 1/HP_eff * (P_d(1)-pERD)*(J_ERD*swro_Z)/rho_ERD;
                 W_t = T_eff * (p_d(end)-pE)*((1-mixer_ERD)*Q_d(end)*Z)/local_ro_d(end); 
             end
@@ -298,10 +292,9 @@ W_p4 = 1/LP_eff * (p_f(1)-pE)*(Q_f(1)*Z)./local_ro_f(1); W_p4 = W_p4*W_r;
                 f_1= abs(qq*Q_d(end))*Z/local_ro_d(end)*mix_density*(J_E*swro_Z/rho_ERD2/A_ERD)^2  ;
                 f_2= J_ERD*swro_Z/rho_ERD*mix_density*(J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end)/A_ERD)^2  ;
                 f_ERD= ERD_fric*(ERD_eff*f_2 - f_1)/100;
-                pERD = rho_ERD*(ERD_eff*( P_d(end)*J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end) - p_d(end)*abs(qq*Q_d(end))*Z/local_ro_d(end) ) +  pERD2*J_E*swro_Z/rho_ERD2 -f_ERD )/J_ERD/swro_Z;
+                pERD = rho_ERD*(ERD_eff*( P_d(end)*J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end) - p_d(end)*abs(qq*Q_d(end))*Z/local_ro_d(end) ) +  pERD2*J_E*swro_Z/rho_ERD2 -f_ERD )/J_ERD/swro_Z;            
                 pMax=rho_ERD*(ERD_eff*( P_d(end)*J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end) - p_d(end)*abs(qq*Q_d(end))*Z/local_ro_d(end) ) +  pERD2*J_E*swro_Z/rho_ERD2 )/J_ERD/swro_Z;            
                 if pERD > pMax; pERD=pMax; end 
-                if pERD < 0; pERD=pMax; end 
                 W_p3 = 1/HP_eff * (P_d(1)-pERD)*(J_ERD*swro_Z)/rho_ERD;
                 W_t = T_eff * (p_d(1)-pE)*(abs((1-mixer_ERD)*Q_d(1))*Z)/local_ro_d(1);
             end
