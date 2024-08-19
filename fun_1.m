@@ -34,8 +34,10 @@ end
 if option_data == 0; DATA = @(x)Sim_0a_data(input); end
 if option_data == 0.1; DATA = @(x)Sim_0b_data(input); end
 %
-if option_data==1; DATA = @(x)Pareto_1_data(input); end
-if option_data==2; DATA = @(x)Pareto_2_data(input); end
+if option_data == 0.3; DATA = @(x)Length_opt_data(input); end
+%
+if option_data == 1; DATA = @(x)Pareto_1_data(input); end
+if option_data == 2; DATA = @(x)Pareto_2_data(input); end
 %
 
 % Simulations
@@ -384,71 +386,72 @@ switch (obj)
 if sol.stats.maxerr ==1000
 fprintf(2,' \nERROR: bvp5c could not satisfy the relative error tolerance ---> no figures could be displayed\n');
 else
+close all
 lw=1.5; %Linewidth for all figures
 if fig(1) == 1
 f=figure(1); %
-f.Position = [276.3333 196.3333 1100 1000];
+f.Position = [277.6667 275 1100 1000];
 x2=x(2:end);
 % total mass flows
 subplot(3,2,1);lc='#0072bD';rc='#77AC30';
 plot(x*swro_L, J_d*J_r,'Color', lc,'LineWidth',lw);xlabel('x [m]','Fontsize',10); ylabel('[kg/sm]','Fontsize',10); ay=gca; ay.YAxis.Exponent = 0;xlim([0 swro_L]); hold on
 yyaxis right
-plot(x*swro_L, J_f*J_r,'Color', rc,'LineWidth',lw); ylabel('[kg/sm]','Fontsize',10); legend('J_{d}^{RO}(x)','J_{f}^{RO}(x)','Location','northeast');xlim([0 swro_L]); ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc;
+plot(x*swro_L, J_f*J_r,'Color', rc,'LineWidth',lw); ylabel('[kg/sm]','Fontsize',10); legend('J_{d}^{RO}(x)','J_{f}^{RO}(x)','Location','best');xlim([0 swro_L]); ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc;
 % concentrations
 subplot(3,2,3);lc='#0072bD';rc='#77AC30';
 plot(x*swro_L, 100*C_d*C_r,'Color', lc,'LineWidth',lw);xlabel('x [m]','Fontsize',10); ylabel('[%]','Fontsize',10); ay=gca; ay.YAxis.Exponent = 0;hold on
 yyaxis right; C_f=C_f(2:end);
-plot(x2*swro_L, 100*C_f*C_r,'Color', rc,'LineWidth',lw); ylabel('[%]','Fontsize',10); legend('C_d^{RO}(x)','C_f^{RO}(x)','Location','southeast');xlim([0 swro_L]);ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc;
+plot(x2*swro_L, 100*C_f*C_r,'Color', rc,'LineWidth',lw); ylabel('[%]','Fontsize',10); legend('C_d^{RO}(x)','C_f^{RO}(x)','Location','best');xlim([0 swro_L]);ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc;
 % Pressures
 subplot(3,2,5);lc='#0072bD';rc='#77AC30';
 plot(x*swro_L, P_d*p_r,'Color', lc,'LineWidth',lw);xlabel('x [m]','Fontsize',10); ylabel('[Pa]','Fontsize',10); ay=gca; ay.YAxis.Exponent = 5; hold on
 yyaxis right
-plot(x*swro_L, P_f*p_r,'Color', rc,'LineWidth',lw); ylabel('[Pa]','Fontsize',10); legend('P_d^{RO}(x)','P_f^{RO}(x)','Location','northeast');xlim([0 swro_L]);ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc;
+plot(x*swro_L, P_f*p_r,'Color', rc,'LineWidth',lw); ylabel('[Pa]','Fontsize',10); legend('P_d^{RO}(x)','P_f^{RO}(x)','Location','best');xlim([0 swro_L]);ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc;
 % total mass flows
 subplot(3,2,2);lc='#0072bD';rc='#77AC30';
 plot(x*L,  Q_d*Q_r,'Color', lc,'LineWidth',lw);xlabel('x [m]','Fontsize',10); ylabel('[kg/sm]','Fontsize',10); ay=gca; ay.YAxis.Exponent = 0;xlim([0 swro_L]); hold on
 yyaxis right
-plot(x*L, Q_f*Q_r,'Color', rc,'LineWidth',lw); ylabel('[kg/sm]','Fontsize',10); legend('J_{d}^{PRO}(x)','J_{f}^{PRO}(x)','Location','northeast');xlim([0 L]); ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc;
+plot(x*L, Q_f*Q_r,'Color', rc,'LineWidth',lw); ylabel('[kg/sm]','Fontsize',10); legend('J_{d}^{PRO}(x)','J_{f}^{PRO}(x)','Location','best');xlim([0 L]); ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc;
 % concentrations
 subplot(3,2,4);lc='#0072bD';rc='#77AC30';
 plot(x*L, 100*c_d*C_r,'Color', lc,'LineWidth',lw);xlabel('x [m]','Fontsize',10); ylabel('[%]','Fontsize',10); ay=gca; ay.YAxis(1).Exponent = 0;hold on
 yyaxis right; c_f=c_f(2:end);
-plot(x2*L, 100*c_f*C_r,'Color', rc,'LineWidth',lw); ylabel('[%]','Fontsize',10); legend('C_d^{PRO}(x)','C_f^{PRO}(x)','Location','northwest');xlim([0 L]);ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc;ay.YAxis(2).Exponent = 0;
+plot(x2*L, 100*c_f*C_r,'Color', rc,'LineWidth',lw); ylabel('[%]','Fontsize',10); legend('C_d^{PRO}(x)','C_f^{PRO}(x)','Location','best');xlim([0 L]);ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc;ay.YAxis(2).Exponent = 0;
 % Pressures
 subplot(3,2,6);lc='#0072bD';rc='#77AC30';
 plot(x*L, p_d*p_r,'Color', lc,'LineWidth',lw);xlabel('x [m]','Fontsize',10); ylabel('[Pa]','Fontsize',10);ay=gca; ay.YAxis.Exponent = 5; hold on
 yyaxis right
-plot(x*L, p_f*p_r,'Color', rc,'LineWidth',lw); ylabel('[Pa]','Fontsize',10); legend('P_d^{PRO}(x)','P_f^{PRO}(x)','Location','northeast');xlim([0 L]);ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc;
+plot(x*L, p_f*p_r,'Color', rc,'LineWidth',lw); ylabel('[Pa]','Fontsize',10); legend('P_d^{PRO}(x)','P_f^{PRO}(x)','Location','best');xlim([0 L]);ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc;
 end
 %% figure 2
 if fig(2) == 1
 f=figure(2); %
-f.Position = [199 232.3333 1.0987e+03 639.3333];
+f.Position = [278.3333 193.6667 1.0987e+03 639.3333];
 % Permeate flows 
 subplot(2,2,1); lc='k';rc='#b81414'; J_cross2=J_cross(2:end);J_sin2=J_sin(2:end);
 plot(x2*swro_L, J_cross2*J_r/swro_x_r, 'Color', lc, 'LineWidth',lw);xlabel('x [m]','Fontsize',10);  ylabel('[kg/sm^2]','Fontsize',10);ay=gca; ay.YAxis.Exponent = 0;ylim([min( J_cross2*J_r/swro_x_r) 1.1*max( J_cross2*J_r/swro_x_r)]); hold on
 yyaxis right
-plot(x2*swro_L, J_sin2*J_r/swro_x_r, 'Color', rc, 'LineWidth',lw); ylabel('[kg/sm^2]','Fontsize',10); legend('J_{w,in}^{RO}(x)','J_{s,in}^{RO}(x)','Location','northeast');xlim([0 swro_L]);ylim([min( J_sin2*J_r/swro_x_r) 1.1*max( J_sin2*J_r/swro_x_r)+.00001]);ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc;
+plot(x2*swro_L, J_sin2*J_r/swro_x_r, 'Color', rc, 'LineWidth',lw); ylabel('[kg/sm^2]','Fontsize',10); legend('J_{w,in}^{RO}(x)','J_{s,in}^{RO}(x)','Location','best');xlim([0 swro_L]);ylim([min( J_sin2*J_r/swro_x_r) 1.1*max( J_sin2*J_r/swro_x_r)+.00001]);ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc;
 % Osmotic/ Hydraulic pressure difference
 subplot(2,2,3);lc='k';rc='#b81414'; osm_diff=swro_p_osm_d(2:end)-swro_p_osm_f(2:end); a=min([min(osm_diff*p_r) min((P_d-P_f)*p_r)]); b=max( [max(osm_diff*p_r), max((P_d-P_f)*p_r)]);
 plot(x*swro_L, (P_d-P_f)*p_r,'Color', lc,'LineWidth',lw);xlabel('x [m]','Fontsize',10); ylabel('[Pa]','Fontsize',10); ylim([a b]);ay=gca; ay.YAxis.Exponent = 6; hold on
 yyaxis right; 
-plot(x2*swro_L, osm_diff*p_r,'Color', rc,'LineWidth',lw); ylabel('[Pa]','Fontsize',10); legend('\Delta P^{RO}(x)','\Delta \pi^{RO}(x)','Location','northeast');xlim([0 swro_L]);ylim([a b]);ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc;
+plot(x2*swro_L, osm_diff*p_r,'Color', rc,'LineWidth',lw); ylabel('[Pa]','Fontsize',10); legend('\Delta P^{RO}(x)','\Delta \pi^{RO}(x)','Location','best');xlim([0 swro_L]);ylim([a b]);ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc;
 % Permeate flows 
 subplot(2,2,2); lc='k';rc='#b81414'; Q_cross2=Q_cross(2:end);Q_sin2=Q_sin(2:end);
 plot(x2*L, -Q_cross2*Q_r/x_r, 'Color', lc, 'LineWidth',lw);xlabel('x [m]','Fontsize',10);  ylabel('[kg/sm^2]','Fontsize',10);ay=gca; ay.YAxis.Exponent = 0; hold on
 yyaxis right
-plot(x2*L, Q_sin2*Q_r/x_r, 'Color', rc, 'LineWidth',lw); ylabel('[kg/sm^2]','Fontsize',10); legend('J_{w,in}^{PRO}(x)','J_{s,in}^{PRO}(x)','Location','southwest');xlim([0 L]);ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc;
+plot(x2*L, Q_sin2*Q_r/x_r, 'Color', rc, 'LineWidth',lw); ylabel('[kg/sm^2]','Fontsize',10); legend('J_{w,in}^{PRO}(x)','J_{s,in}^{PRO}(x)','Location','best');xlim([0 L]);ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc;
 % Osmotic/ Hydraulic pressure difference
 subplot(2,2,4);lc='k';rc='#b81414';osm_diff=p_osm_d(2:end)-p_osm_f(2:end); %a=min([min(osm_diff*p_r) min((p_d-p_f)*p_r)]); b=max( [max(osm_diff*p_r), max((p_d-p_f)*p_r)]);
 plot(x*L, (p_d-p_f)*p_r,'Color', lc,'LineWidth',lw);xlabel('x [m]','Fontsize',10); ylabel('[Pa]','Fontsize',10); ay=gca;ay.YAxis.Exponent = 6; hold on; %ylim([a b]); 
 yyaxis right; 
-plot(x2*L, osm_diff*p_r,'Color', rc,'LineWidth',lw); ylabel('[Pa]','Fontsize',10); legend('\Delta P^{PRO}(x)','\Delta \pi^{PRO}(x)','Location','southeast');xlim([0 L]); ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc; %ylim([a b]);
+plot(x2*L, osm_diff*p_r,'Color', rc,'LineWidth',lw); ylabel('[Pa]','Fontsize',10); legend('\Delta P^{PRO}(x)','\Delta \pi^{PRO}(x)','Location','best');xlim([0 L]); ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc; %ylim([a b]);
 end
 %% figure 3
 if fig(3) == 1
 f=figure(3);  % ERD quantities
-f.Position = [100 1 900 500]; tiledlayout(1,4); 
+f.Position = [1.3783e+03 774.3333 900.0000 500]; tiledlayout(1,4); 
 rot=0; rx=0; %rotation and shift of texts
 vals1 = [pE*p_r; pERD*p_r; 0; P_d(end)*p_r; p_d(end)*p_r];
 vals2 = 100*[cE; C_ERD; 0; C_d(end); c_d(1)];
@@ -488,8 +491,8 @@ lgd.Layout.Tile = 4; axis off ;
 end
 %% figure 4
 if fig(3) == 1 && version(6) ==4
-close all;f=figure(4);  % ERD quantities
-f.Position = [950 1 900 500]; tiledlayout(1,4); 
+f=figure(4);  % ERD quantities
+f.Position = [1.3763e+03 195 900.0000 500]; tiledlayout(1,4); 
 rot=0; rx=0; %rotation and shift of texts
 vals1 = [pE*p_r; pERD2*p_r; 0; p_d(end)*p_r; p_exit*p_r];
 vals2 = 100*[cE; C_ERD2; 0; c_d(end); c_exit];
@@ -500,58 +503,28 @@ nexttile
 b = bar(1,vals1, 'FaceColor', 'b'); b(4).FaceColor = "#77AC30"; b(5).FaceColor = [.2 .6 .5]; b(1).FaceColor = '#0072bD';
 xticklabels({'[kg/ms^2]'}); ylim([0 1.1*max(vals1)]);ay=gca;ay.YAxis(1).Exponent=5;
 t=text(b(1).XEndPoints,b(1).YEndPoints,"P_E",'HorizontalAlignment','center','VerticalAlignment','bottom');
-t=text(b(2).XEndPoints+rx ,b(2).YEndPoints,"P_{ERD 2}",'HorizontalAlignment','center','VerticalAlignment','bottom'); 
-if version(1) == 0; t=text(b(4).XEndPoints,b(4).YEndPoints,"p_d^1",'HorizontalAlignment','center','VerticalAlignment','bottom');  end
-if version(1) == 1; t=text(b(4).XEndPoints,b(4).YEndPoints,"p_d^0",'HorizontalAlignment','center','VerticalAlignment','bottom');  end
+t=text(b(2).XEndPoints+rx ,b(2).YEndPoints,"P_{s}^{out,2}",'HorizontalAlignment','center','VerticalAlignment','bottom'); 
+t=text(b(4).XEndPoints,b(4).YEndPoints,"P_b^{in,2}",'HorizontalAlignment','center','VerticalAlignment','bottom');
 t=text(b(5).XEndPoints,b(5).YEndPoints,"P_E",'HorizontalAlignment','center','VerticalAlignment','bottom'); 
 nexttile
 b = bar(1,vals2, 'FaceColor', 'b'); b(4).FaceColor = "#77AC30"; b(5).FaceColor = [.2 .6 .5]; b(1).FaceColor = '#0072bD';
 xticklabels({'[%]'}); ylim([0 1.12*max(vals2)]);ay=gca;ay.YAxis(1).Exponent=0;
 t= text(b(1).XEndPoints,b(1).YEndPoints,"C_E",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
-t=text(b(2).XEndPoints+rx ,b(2).YEndPoints," C_{ERD 2}",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
-if version(1) == 0; t=text(b(4).XEndPoints,b(4).YEndPoints,"c_d^1",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot; end
-if version(1) == 1; t=text(b(4).XEndPoints,b(4).YEndPoints,"c_d^0",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot; end
+t=text(b(2).XEndPoints+rx ,b(2).YEndPoints," C_{s}^{out,2}",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
+t=text(b(4).XEndPoints,b(4).YEndPoints,"C_{b}^{in,2}",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot; 
 t=text(b(5).XEndPoints,b(5).YEndPoints,"C_{exit}",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot; 
 nexttile
 b = bar(1,vals3, 'FaceColor', 'b'); b(4).FaceColor = "#77AC30"; b(5).FaceColor = [.2 .6 .5]; b(1).FaceColor = '#0072bD';
 xticklabels({'[kg/ms]'}); ylim([0 1.1*max(vals3)]);ay=gca;ay.YAxis(1).Exponent=0;
-t=text(b(1).XEndPoints,b(1).YEndPoints,"J_{sea}",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
-t=text(b(2).XEndPoints+rx ,b(2).YEndPoints,"   2J_{E}",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
-strg=[num2str(mixer_ERD), '*'];
-if version(1) == 0; t=text(b(4).XEndPoints ,b(4).YEndPoints,[strg,"$Q_d^1$"],'Interpreter','latex','HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;end
-if version(1) == 1; t=text(b(4).XEndPoints ,b(4).YEndPoints,[strg,"$-Q_d^0$"],'Interpreter','latex','HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;end
-t=text(b(5).XEndPoints,b(5).YEndPoints,"Q_{exit}",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
+t=text(b(1).XEndPoints,b(1).YEndPoints,"J_{s}^{in,2}",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
+t=text(b(2).XEndPoints+rx ,b(2).YEndPoints,"J_s^{out,2}",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
+t=text(b(4).XEndPoints,b(4).YEndPoints,"J_b^{in,2}",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
+t=text(b(5).XEndPoints,b(5).YEndPoints,"J_b^{out,2}",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
 nexttile
 lgd = legend([b(1) b(2) b(3) b(4)],'LP ERD 2 Seawater Inlet','HP ERD 2 Seawater Outlet','HP ERD 2 Brine Inlet','LP ERD 2 Brine Outlet' , 'Location', 'EastOutside');
 lgd.Layout.Tile = 4; axis off ; 
 end
 end
-%ax = axes; yyaxis('left'); yyaxis('right');
-%ax.YAxis(1).Color = [0 0 0]; ax.YAxis(2).Color = [0 0 0];
 end
 end
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-%% Removed comments
-
-%Y(:,4+6)=abs(Y(:,4+6)) % ??why is this here?? 

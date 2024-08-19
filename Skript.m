@@ -32,11 +32,11 @@ mean(T) %= 0.9600
 
 %% Overview of computation times:
 %
-%                               |  home PC   |  uni PC  |
-%                               |  i12900k   |
-%                               |  16 cores  | 12 cores |
-%                               |  3.2 GHz   |
-%                               |  64GB RAM  |                      
+%                               |  home PC   | uni PC   |
+%                               |  i12900k   | i135000k |
+%                               |  16 cores  | 14 cores |
+%                               |  3.2 GHz   | 2.5 GHz  |
+%                               |  64GB RAM  | 16GB RAM |                  
 %
 % case 1 - epsilon constraint   |  02:22:08  | 04:55:45 |
 % case 1 - paretosearch         |  00:52:50  |    |
@@ -54,31 +54,17 @@ load("DATA_case2.mat")
 f=figure(1); f.Position = [1200 500 800 500];
 scatter(Y1(1,:),Y1(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
 scatter(Y1_P(1,:),Y1_P(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','m'); hold on
+scatter(Y1_R(1),Y1_R(2),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','y'); hold on
 scatter(Y2(1,:),Y2(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold on
 scatter(Y2_P(1,:),Y2_P(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','c'); hold on
 
 grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
-legend('Case1: \epsilon-constraint method', 'Case1: paretosearch','Case2: \epsilon-constraint method', 'Case2: paretosearch','Location', 'Northeast');
+legend('Case1: \epsilon-constraint method', 'Case1: paretosearch','','Case2: \epsilon-constraint method', 'Case2: paretosearch','Location', 'Northeast');
 ylabel('FW [m^3/h]','FontSize',16);xlabel('SEC_{net} [kWh/m^3]','FontSize',16);
 
-%% Optimization - case1 (epsilon constraint method)
-%
-% Create Paretofront for single SWRO
+%% Case1: epsilon-constraint method
 %
 load("DATA_case1.mat")
-% 
-% load("DATA_case1.mat")
-% save DATA_case1.mat X1 Y1 X1_P Y1_P time1 time1_P
-% 
-% X1  -  set of operating conditions for epsilon constraint method (2x200)
-% Y1  -  system output using X2 (5x40)
-%
-% X1_P  -  set of operating conditions from paretosearch (2x200)
-% Y1_P  -  system output using X2_P (5x200)
-%
-% time1    - time for epsilon constraint method
-% time1_P  - time for paretosearch solver
-%
 startTime=datetime("now");
 A= [-1 1]; b= -0; Aeq=[]; beq=[]; lb = [30;30]; ub = [70;70];
 option_mesh = 1e4; option_BVP = 1e-6; option_data = 1;
@@ -96,7 +82,7 @@ parfor i=1:200
         [x0, minFW]     = fmincon(@(x)fun_1(x,option_data,'FW' ,option_mesh,option_BVP),x_neu,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'SEC',option_data,option_mesh,option_BVP,-minSEC),foptions);
         y_neu = fun_1(x_neu,option_data,'Pareto',option_mesh,option_BVP),
         y_0   = fun_1(x0,option_data,'Pareto',option_mesh,option_BVP),
-        epsilon = min(norm(x0-x_neu), norm(y_neu-y_0));
+        epsilon = max(norm(x0-x_neu), norm(y_neu-y_0));
     end
     X1(:,i)=x0;
     Y1(:,i)=fun_1([X1(:,i)],option_data,'sol',option_mesh,option_BVP);
@@ -104,12 +90,11 @@ parfor i=1:200
 end
 endTime=datetime("now");      % computation time homePC: 02:22:08 
 time1 = endTime - startTime;  % computation time uni-PC: 04:55:45
-save DATA_case1.mat X1 Y1 X1_P Y1_P time1 time1_P
+save DATA_case1.mat X1 Y1 X1_P Y1_P X1_R Y1_R time1 time1_P
 
-%% Optimisation - case1 (paretosearch)
+%% Case1: paretosearch
 %
 load("DATA_case1.mat")
-% 
 startTime=datetime("now");
 A= [-1 1]; b= -0; Aeq=[]; beq=[]; lb = [30;30]; ub = [70;70];
 option_mesh = 1e4; option_BVP = 1e-6; option_data = 1;
@@ -125,25 +110,23 @@ parfor i=1:200
 end
 endTime=datetime("now");        % computation time homePC: 00:52:50
 time1_P = endTime - startTime;  %
-save DATA_case1.mat X1 Y1 X1_P Y1_P time1 time1_P
+save DATA_case1.mat X1 Y1 X1_P Y1_P X1_R Y1_R time1 time1_P
 
-%% Optimisation - case2 (epsilon constraint method)
+%% Case1: Max Revenue 
 %
-% Create Paretofront for SWRO+ERD 
+load("DATA_case1.mat")
+[a1, b1]=max(Y1(3,:));
+A= [-1 1]; b= -0; Aeq=[]; beq=[]; lb = [30;30]; ub = [70;70];
+option_mesh = 1e4; option_BVP = 1e-6; option_data = 1; 
+foptions = optimoptions('fmincon','Display','iter','Algorithm','interior-point', 'StepTolerance', 1e-12, 'OptimalityTolerance',1e-4, 'MaxFunEvals',100);
+rng default
+X1_R= fmincon(@(x)fun_1(x,option_data,'Rev',option_mesh,option_BVP),X1(:,b1),A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'default'),foptions);
+Y1_R=fun_1(X1_R,option_data,'sol',option_mesh,option_BVP);
+save DATA_case1.mat X1 Y1 X1_P Y1_P X1_R Y1_R time1 time1_P
+
+%% Case2: epsilon-constraint method
 %
 load("DATA_case2.mat")
-% 
-% load("DATA_case2.mat")
-% save DATA_case2.mat X2 Y2 X2_P Y2_P time2 time2_P
-% 
-% X2  -  set of operating conditions for epsilon constraint method (2x40)
-% Y2  -  system output using X2 (4x40)
-%
-% X2_P  -  set of operating conditions from paretosearch (2x200)
-% Y2_P  -  system output using X2_P (4x200)
-%
-% time2    - time for epsilon constraint method (40points)
-% time2_P  - time for paretosearch solver (200 points)
 % 
 startTime=datetime("now");
 A= [-1 1]; b= -0; Aeq=[]; beq=[]; lb = [30;30]; ub = [70;70];
@@ -163,7 +146,7 @@ parfor i=1:200
         [x0, minFW]     = fmincon(@(x)fun_1(x,option_data,'FW' ,option_mesh,option_BVP),x_neu,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'SEC',option_data,option_mesh,option_BVP,-minSEC),foptions);
         y_neu = fun_1(x_neu,option_data,'Pareto',option_mesh,option_BVP),
         y_0   = fun_1(x0,option_data,'Pareto',option_mesh,option_BVP),
-        epsilon = min(norm(x0-x_neu), norm(y_neu-y_0));
+        epsilon = max(norm(x0-x_neu), norm(y_neu-y_0));
     end
     X2(:,i)=x0; 
     Y2(:,i)=fun_1([X2(:,i)],option_data,'sol',option_mesh,option_BVP);
@@ -171,13 +154,9 @@ parfor i=1:200
 end
 endTime=datetime("now");
 time2 = endTime - startTime;
-save DATA_case2.mat X2 Y2 X2_P Y2_P time2 time2_P
-%%scatter
-scatter(Y2(1,:),Y2(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold on
-grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
-legend('Case2: Epsilon constraint method','Location', 'Northeast');ylabel('FW [m^3/h]','FontSize',16);xlabel('SEC_{net} [kWh/m^3]','FontSize',16);
+save DATA_case2.mat X2 Y2 X2_P Y2_P X2_R Y2_R time2 time2_P
 
-%% Optimisation - case2 (paretosearch)
+%% Case2: paretosearch
 %
 load("DATA_case2.mat")
 % 
@@ -196,12 +175,79 @@ parfor i=1:200
 end
 endTime=datetime("now");        % computation time homePC: 00:52:50
 time2_P = endTime - startTime;  %
-save DATA_case2.mat X2 Y2 X2_P Y2_P time2 time2_P
-%%scatter
-f=figure(1); f.Position = [1200 500 800 500];
-scatter(Y2_P(1,:),Y2_P(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','c'); hold on
-grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
-legend('Case2: Paretosearch','Location', 'Northeast');ylabel('FW [m^3/h]','FontSize',16);xlabel('SEC_{net} [kWh/m^3]','FontSize',16);
+save DATA_case2.mat X2 Y2 X2_P Y2_P X2_R Y2_R time2 time2_P
+
+%% Case2: Max Revenue 
+%
+load("DATA_case2.mat")
+[a2, b2]=max(Y2(3,:));
+A= [-1 1]; b= -0; Aeq=[]; beq=[]; lb = [30;30]; ub = [70;70];
+option_mesh = 1e4; option_BVP = 1e-6; option_data = 2; 
+foptions = optimoptions('fmincon','Display','iter','Algorithm','interior-point', 'StepTolerance', 1e-12, 'OptimalityTolerance',1e-4, 'MaxFunEvals',100);
+rng default
+X2_R=fmincon(@(x)fun_1(x,option_data,'Rev',option_mesh,option_BVP),X2(:,b2),A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'default'),foptions);
+Y2_R=fun_1(X2_R,option_data,'sol',option_mesh,option_BVP);
+save DATA_case2.mat X2 Y2 X2_P Y2_P X2_R Y2_R time2 time2_P
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%% hybrid system optimal length:
+A= [0 0 1 -1 0]; b= -.01; Aeq=[]; beq=[]; lb = [.5;30;10;10;1]; ub = [10;70;20;20;5];
+option_mesh = 1e4; option_BVP = 1e-6;option_data = .3;
+%foptions = optimoptions('fmincon','Display','final','Algorithm','interior-point', 'StepTolerance', 1e-12, 'OptimalityTolerance',1e-4, 'MaxFunEvals',5000);
+optsm = optimoptions("patternsearch",Algorithm="nups-mads",Display="iter",PlotFcn="psplotbestf", ConstraintTolerance=1e-4, MaxIterations=1000, StepTolerance=1e-12, UseParallel=true);
+rng default %{"classic"} | "nups" | "nups-gps" | "nups-mads"
+%
+%x0 = [ 1.3275   70.0000   11.9213   13.6448    2.0934];
+x0 = [2 69.9999 17.5 19.3 2.5];
+%
+%[x_opt, rev_opt] = fmincon(@(x)fun_1(x,option_data,'Rev',option_mesh,option_BVP),x0,A,b,Aeq,beq,lb(:,i),ub(:,i),@(x)nonlcon(x,'default'),foptions);
+X3_R = patternsearch(@(x)fun_1(x,option_data,'Rev',option_mesh,option_BVP),x0,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'default'),optsm);
+Y3_R=fun_1(X3_R,option_data,'sol',option_mesh,option_BVP);
+close all,
+display(X3_R)
+
+% best X with nups-gps:
+%  1.3275   70.0000   11.9263   13.6482    2.0934
+% output:
+% -2.6397    0.3579    0.7268   38.0479    1.3155
+
+
+%%
+clc
+fun_1([2 69.9999 17.5 19.3 2.5],option_data,'sol',option_mesh,option_BVP),
+close all
+
+
+
 
 
 

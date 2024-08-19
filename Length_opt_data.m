@@ -1,11 +1,11 @@
-function [H,Z,swro_Z,ro_water,ro_salt,Mw,Ms,Rw,T0,eta,sigma,p_r,rho_r,C_r,swro_L,swro_alpha,swro_R,swro_KK,swro_x_r,swro_b1,swro_b2,J_r,swro_gamma,swro_gamma2,swro_W_r,L,alpha,R,KK,x_r,b1,b2,Q_r,gamma,gamma2,W_r,cE,pE,rho_E,J_sf_0,J_wf_0,Pd_0,Pd_L,Pf_L,Q_sf_0,pd_0,pf_0,pd_L,pf_L,HP_eff,LP_eff,T_eff,V_m,ERD_eff,ERD_fric,A_ERD,eta_ERD,mix_density,pw,pe,swro_beta_fix,beta_fix,mixer_ERD,version,fig,swro_KF,swro_KD,KF,KD]= Sim_0a_data(input1, input2)
-%%  Sim_0a_data(input)
+function [H,Z,swro_Z,ro_water,ro_salt,Mw,Ms,Rw,T0,eta,sigma,p_r,rho_r,C_r,swro_L,swro_alpha,swro_R,swro_KK,swro_x_r,swro_b1,swro_b2,J_r,swro_gamma,swro_gamma2,swro_W_r,L,alpha,R,KK,x_r,b1,b2,Q_r,gamma,gamma2,W_r,cE,pE,rho_E,J_sf_0,J_wf_0,Pd_0,Pd_L,Pf_L,Q_sf_0,pd_0,pf_0,pd_L,pf_L,HP_eff,LP_eff,T_eff,V_m,ERD_eff,ERD_fric,A_ERD,eta_ERD,mix_density,pw,pe,swro_beta_fix,beta_fix,mixer_ERD,version,fig,swro_KF,swro_KD,KF,KD]= Length_opt_data(input1, input2)
+%%  Pareto_2_data(input)
 %
-%   Data for Simulation in chapter 3
+%   Data for Berechung der blauen Pareto front
 %
-%   SWRO-PRO hybrid system I (realistic ERD)
+%   SWRO+ERD
 %
-%   option_data = 0
+%   option_data = .3
 %
 %   Input:
 %       input1        -   x
@@ -19,7 +19,7 @@ version(3)=0;  % 0 = PRO beta fixed
 version(4)=1;  % 0 = ideal SWRO
 version(5)=1;  % 0 = ideal PRO
 % ERD
-version(6)=3;
+version(6)=4;
 % version(6) = 0 --> only SWRO (no ERD)
 % version(6) = 1 --> only SWRO (with ERD)
 % version(6) = 2 --> only PRO
@@ -59,10 +59,10 @@ swro_gamma2= J_r^2./(swro_x_r^2 * p_r * rho_r); % SWRO scaling factor - momentum
 swro_W_r=J_r*p_r/rho_r;                         % net work [W/m^2]
 sigma=0.999 ;                                   % Rejection coefficient
 swro_beta_fix=4.43e-4/J_r*swro_x_r;             % value for fixed SWRO beta [kg/sm^2]
- 
+
 %% PRO
 Z=1;                    % width of the PRO membrane [m]
-L=1.5;                  % length of the PRO membrane [m]      
+L=input1(1);                  % length of the PRO membrane [m]      
 alpha = 5.47e-9;        % water permeablity co-efficient [s/m]
 R =0.94;                % salt rejection rate [1]
 KK=7.13e2;              % mass transfer coefficient [sm^2/kg]
@@ -87,16 +87,16 @@ J_sf_0 = 0;              % salt flux in fresh side at 0
 J_wf_0 = 0;              % water flux in fresh side at L               
 Pf_L = pE;               % pressure fresh side at L
 
-Pd_0 =  66e5/p_r;        % pressure draw side at 0
-Pd_L =  60e5/p_r;        % pressure draw side at L (not need in the hybrid system)
+Pd_0 =  input1(2);       % pressure draw side at 0
+Pd_L =  0;               % not needed in the hybrid system !
 
 %% PRO operation conditions 
 Q_sf_0 = 0;              % salt flux in fresh side at 0
 pf_L = pE;               % pressure of fresh side at L
 
-pd_0 = 12e5/p_r;         % pressure draw side at 0
-pd_L = 14.6e5/p_r;       % pressure of fresh side at 0
-pf_0 = 1.3e5/p_r;        % pressure draw side at L 
+pd_0 = input1(3);         % pressure draw side at 0
+pd_L = input1(4);       % pressure of fresh side at 0
+pf_0 = input1(5);        % pressure draw side at L 
 
 %% ERD/Turbine/Pump parameters
 T_eff  = .95;               % turbine efficiency
@@ -113,7 +113,7 @@ pe=0.5;                     % electricity price [$/kWh]
 mixer_ERD=1;                % PRO Draw outlet mixer adjustment (only if 2nd ERDs) (mixer_ERD=1 --> all flow to ERD2 no turbine needed)    
 
 %% display figures
-fig=[1,1,1,0]; % f(i)=1 --> figure i will be displayed
+fig=[1,1,1,1]; % f(i)=1 --> figure i will be displayed
 %fig=[0,0,0,0]; % f(i)=1 --> figure i will be displayed
 
 %% model specific changes:
