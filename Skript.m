@@ -32,19 +32,19 @@ mean(T) %= 0.9600
 
 %% Overview of computation times:
 %
-%                               |  home PC   | uni PC   |
-%                               |  i12900k   | i135000k |
-%                               |  16 cores  | 14 cores |
-%                               |  3.2 GHz   | 2.5 GHz  |
-%                               |  64GB RAM  | 16GB RAM |                  
+%                               |  home PC   |  uni PC    |
+%                               |  i12900k   |  i135000k  |
+%                               |  16 cores  |  14 cores  |
+%                               |  3.2 GHz   |  2.5 GHz   |
+%                               |  64GB RAM  |  16GB RAM  |                  
 %
-% case 1 - epsilon constraint   |  02:22:08  | 04:55:45 |
-% case 1 - paretosearch         |  00:52:50  |    |
+% case 1 - epsilon constraint   |  02:22:08  |  04:55:45  |
+% case 1 - paretosearch         |  00:52:50! |  01:07:44  |
 %
-% case 2 - epsilon constraint   |  06:39:07  |    |
-% case 2 - paretosearch         |  00:17:24  |    |
+% case 2 - epsilon constraint   |  06:39:07  |  !  |
+% case 2 - paretosearch         |  00:17:24! |  00:46:28  |
 % 
-% case 3 - paretosearch         |    |    |
+% case 3 - paretosearch         |  !  |  !  |
 %
 
 %% plot of the Pareto fronts
@@ -85,14 +85,14 @@ parfor i=1:200
         [x0, minFW]     = fmincon(@(x)fun_1(x,option_data,'FW' ,option_mesh,option_BVP),x_neu,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'SEC',option_data,option_mesh,option_BVP,-minSEC),foptions);
         y_neu = fun_1(x_neu,option_data,'Pareto',option_mesh,option_BVP),
         y_0   = fun_1(x0,option_data,'Pareto',option_mesh,option_BVP),
-        epsilon = max(norm(x0-x_neu), norm(y_neu-y_0));
+        epsilon = min(norm(x0-x_neu), norm(y_neu-y_0));
     end
     X1(:,i)=x0;
     Y1(:,i)=fun_1([X1(:,i)],option_data,'sol',option_mesh,option_BVP);
     i,
 end
-endTime=datetime("now");      % computation time homePC: 02:22:08 
-time1 = endTime - startTime;  % computation time uni-PC: 04:55:45
+endTime=datetime("now");     
+time1 = endTime - startTime;
 save DATA_case1.mat X1 Y1 X1_P Y1_P X1_R Y1_R time1 time1_P
 
 %% Case1: Max Revenue 
@@ -123,8 +123,8 @@ parfor i=1:200
     X1_P(:,i)=X(i,:)
     Y1_P(:,i)=fun_1([X1_P(:,i)],option_data,'sol',option_mesh,option_BVP);
 end
-endTime=datetime("now");        % computation time homePC: 00:52:50
-time1_P = endTime - startTime;  %
+endTime=datetime("now");       
+time1_P = endTime - startTime;
 save DATA_case1.mat X1 Y1 X1_P Y1_P X1_R Y1_R time1 time1_P
 
 %% Case2: epsilon-constraint method
@@ -179,8 +179,8 @@ startTime=datetime("now");
 A= [-1 1]; b= -0; Aeq=[]; beq=[]; lb = [30;30]; ub = [70;70];
 option_mesh = 1e4; option_BVP = 1e-6; option_data = 2;
 rng default
-X_init=[X2(1,1:10:end); X2(2,1:10:end)];
-X0=repmat(X_init, 1, 10)';
+X_init=[X2(1,1:5:end); X2(2,1:5:end)];
+X0=repmat(X_init, 1, 5)';
 options = optimoptions('paretosearch','ParetoSetSize',200, 'InitialPoints',X0,'Display','iter', 'MaxFunctionEvaluations',10000, 'ParetoSetChangeTolerance',1e-6,'UseParallel', true);
 X = paretosearch(@(x)fun_1(x,option_data,'Pareto',option_mesh,option_BVP),2,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'default'),options); 
 %
@@ -188,8 +188,8 @@ parfor i=1:200
     X2_P(:,i)=X(i,:)
     Y2_P(:,i)=fun_1([X2_P(:,i)],option_data,'sol',option_mesh,option_BVP);
 end
-endTime=datetime("now");        % computation time homePC: 00:52:50
-time2_P = endTime - startTime;  %
+endTime=datetime("now");     
+time2_P = endTime - startTime; 
 save DATA_case2.mat X2 Y2 X2_P Y2_P X2_R Y2_R time2 time2_P
 
 %% Case3: Max Revenue 
@@ -197,7 +197,7 @@ save DATA_case2.mat X2 Y2 X2_P Y2_P X2_R Y2_R time2 time2_P
 %load("DATA_case3.mat")
 A= [0 0 1 -1 0]; b= -.01; Aeq=[]; beq=[]; lb = [.5;30;10;10;1]; ub = [10;70;20;20;5];
 option_mesh = 1e4; option_BVP = 1e-6;option_data = .3;
-%foptions = optimoptions('fmincon','Display','final','Algorithm','interior-point', 'StepTolerance', 1e-12, 'OptimalityTolerance',1e-4, 'MaxFunEvals',5000);
+%foptions = optimoptions('fmincon','Display','iter','Algorithm','interior-point', 'StepTolerance', 1e-12, 'OptimalityTolerance',1e-4, 'MaxFunEvals',5000);
 optsm = optimoptions("patternsearch",Algorithm="nups" ,Display="iter",PlotFcn="psplotbestf", ConstraintTolerance=1e-4, MaxIterations=1000, StepTolerance=1e-12, UseParallel=true);
 rng default % ,Algorithm = {"classic"} | "nups" | "nups-gps" | "nups-mads"
 %
@@ -205,7 +205,7 @@ rng default % ,Algorithm = {"classic"} | "nups" | "nups-gps" | "nups-mads"
 x0 = [1.869313646668921 69.999179474445380 13.661473058241283 16.206591230548390 2.718807588032991]; %for nups-gps
 
 %
-%[x_opt, rev_opt] = fmincon(@(x)fun_1(x,option_data,'Rev',option_mesh,option_BVP),x0,A,b,Aeq,beq,lb(:,i),ub(:,i),@(x)nonlcon(x,'default'),foptions);
+%X3_R = fmincon(@(x)fun_1(x,option_data,'Rev',option_mesh,option_BVP),x0,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'default'),foptions);
 X3_R = patternsearch(@(x)fun_1(x,option_data,'Rev',option_mesh,option_BVP),x0,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'default'),optsm);
 Y3_R=fun_1(X3_R,option_data,'sol',option_mesh,option_BVP);
 display(X3_R)
@@ -221,23 +221,25 @@ display(Y3_R)
 % output:
 % -2.3508    0.3368    0.4461   42.5031    4.2593
 
-
-
 %save DATA_case3 X3_R Y3_R
 
+%% test locally around best point so far
 
+%
+% test if point is locally optimal
+%
+% test 'nups'
+%
 
-
-
-
-
-
-
-
-
-
-
-
+%
+% Fix the PRO length for hybrid system
+%
+% calculate pareto front 
+%
+% compare old with new pareto front
+%
+% compare new vs. old best SEC/FW/Rev
+%
 
 
 
@@ -273,17 +275,6 @@ display(X3_R)
 %  1.3275   70.0000   11.9263   13.6482    2.0934
 % output:
 % -2.6397    0.3579    0.7268   38.0479    1.3155
-
-
-%%
-clc
-fun_1([2 69.9999 17.5 19.3 2.5],option_data,'sol',option_mesh,option_BVP),
-close all
-
-
-
-
-
 
 
 
