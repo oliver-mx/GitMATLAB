@@ -50,16 +50,19 @@ mean(T) %= 0.9600
 %% plot of the Pareto fronts
 close all;
 load("DATA_case1.mat")
-load("DATA_case2.mat")
 f=figure(1); f.Position = [1200 500 800 500];
 scatter(Y1(1,:),Y1(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
 scatter(Y1_P(1,:),Y1_P(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','m'); hold on
 scatter(Y1_R(1),Y1_R(2),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','y'); hold on
+load("DATA_case2.mat")
 scatter(Y2(1,:),Y2(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold on
 scatter(Y2_P(1,:),Y2_P(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','c'); hold on
+scatter(Y2_R(1),Y2_R(2),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','y'); hold on
+load("DATA_case3.mat")
+scatter(Y3_R(1),Y3_R(2),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','y'); hold on
 
 grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
-legend('Case1: \epsilon-constraint method', 'Case1: paretosearch','','Case2: \epsilon-constraint method', 'Case2: paretosearch','Location', 'Northeast');
+legend('Case1: \epsilon-constraint method', 'Case1: paretosearch','','Case2: \epsilon-constraint method', 'Case2: paretosearch','', '','Location', 'Northeast');
 ylabel('FW [m^3/h]','FontSize',16);xlabel('SEC_{net} [kWh/m^3]','FontSize',16);
 
 %% Case1: epsilon-constraint method
@@ -92,6 +95,18 @@ endTime=datetime("now");      % computation time homePC: 02:22:08
 time1 = endTime - startTime;  % computation time uni-PC: 04:55:45
 save DATA_case1.mat X1 Y1 X1_P Y1_P X1_R Y1_R time1 time1_P
 
+%% Case1: Max Revenue 
+%
+load("DATA_case1.mat")
+[a1, b1]=max(Y1(3,:));
+A= [-1 1]; b= -0; Aeq=[]; beq=[]; lb = [30;30]; ub = [70;70];
+option_mesh = 1e4; option_BVP = 1e-6; option_data = 1; 
+foptions = optimoptions('fmincon','Display','iter','Algorithm','interior-point', 'StepTolerance', 1e-12, 'OptimalityTolerance',1e-4, 'MaxFunEvals',100);
+rng default
+X1_R= fmincon(@(x)fun_1(x,option_data,'Rev',option_mesh,option_BVP),X1(:,b1),A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'default'),foptions);
+Y1_R=fun_1(X1_R,option_data,'sol',option_mesh,option_BVP);
+save DATA_case1.mat X1 Y1 X1_P Y1_P X1_R Y1_R time1 time1_P
+
 %% Case1: paretosearch
 %
 load("DATA_case1.mat")
@@ -110,18 +125,6 @@ parfor i=1:200
 end
 endTime=datetime("now");        % computation time homePC: 00:52:50
 time1_P = endTime - startTime;  %
-save DATA_case1.mat X1 Y1 X1_P Y1_P X1_R Y1_R time1 time1_P
-
-%% Case1: Max Revenue 
-%
-load("DATA_case1.mat")
-[a1, b1]=max(Y1(3,:));
-A= [-1 1]; b= -0; Aeq=[]; beq=[]; lb = [30;30]; ub = [70;70];
-option_mesh = 1e4; option_BVP = 1e-6; option_data = 1; 
-foptions = optimoptions('fmincon','Display','iter','Algorithm','interior-point', 'StepTolerance', 1e-12, 'OptimalityTolerance',1e-4, 'MaxFunEvals',100);
-rng default
-X1_R= fmincon(@(x)fun_1(x,option_data,'Rev',option_mesh,option_BVP),X1(:,b1),A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'default'),foptions);
-Y1_R=fun_1(X1_R,option_data,'sol',option_mesh,option_BVP);
 save DATA_case1.mat X1 Y1 X1_P Y1_P X1_R Y1_R time1 time1_P
 
 %% Case2: epsilon-constraint method
@@ -156,6 +159,18 @@ endTime=datetime("now");
 time2 = endTime - startTime;
 save DATA_case2.mat X2 Y2 X2_P Y2_P X2_R Y2_R time2 time2_P
 
+%% Case2: Max Revenue 
+%
+load("DATA_case2.mat")
+[a2, b2]=max(Y2(3,:));
+A= [-1 1]; b= -0; Aeq=[]; beq=[]; lb = [30;30]; ub = [70;70];
+option_mesh = 1e4; option_BVP = 1e-6; option_data = 2; 
+foptions = optimoptions('fmincon','Display','iter','Algorithm','interior-point', 'StepTolerance', 1e-12, 'OptimalityTolerance',1e-4, 'MaxFunEvals',100);
+rng default
+X2_R=fmincon(@(x)fun_1(x,option_data,'Rev',option_mesh,option_BVP),X2(:,b2),A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'default'),foptions);
+Y2_R=fun_1(X2_R,option_data,'sol',option_mesh,option_BVP);
+save DATA_case2.mat X2 Y2 X2_P Y2_P X2_R Y2_R time2 time2_P
+
 %% Case2: paretosearch
 %
 load("DATA_case2.mat")
@@ -177,19 +192,38 @@ endTime=datetime("now");        % computation time homePC: 00:52:50
 time2_P = endTime - startTime;  %
 save DATA_case2.mat X2 Y2 X2_P Y2_P X2_R Y2_R time2 time2_P
 
-%% Case2: Max Revenue 
+%% Case3: Max Revenue 
 %
-load("DATA_case2.mat")
-[a2, b2]=max(Y2(3,:));
-A= [-1 1]; b= -0; Aeq=[]; beq=[]; lb = [30;30]; ub = [70;70];
-option_mesh = 1e4; option_BVP = 1e-6; option_data = 2; 
-foptions = optimoptions('fmincon','Display','iter','Algorithm','interior-point', 'StepTolerance', 1e-12, 'OptimalityTolerance',1e-4, 'MaxFunEvals',100);
-rng default
-X2_R=fmincon(@(x)fun_1(x,option_data,'Rev',option_mesh,option_BVP),X2(:,b2),A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'default'),foptions);
-Y2_R=fun_1(X2_R,option_data,'sol',option_mesh,option_BVP);
-save DATA_case2.mat X2 Y2 X2_P Y2_P X2_R Y2_R time2 time2_P
+%load("DATA_case3.mat")
+A= [0 0 1 -1 0]; b= -.01; Aeq=[]; beq=[]; lb = [.5;30;10;10;1]; ub = [10;70;20;20;5];
+option_mesh = 1e4; option_BVP = 1e-6;option_data = .3;
+%foptions = optimoptions('fmincon','Display','final','Algorithm','interior-point', 'StepTolerance', 1e-12, 'OptimalityTolerance',1e-4, 'MaxFunEvals',5000);
+optsm = optimoptions("patternsearch",Algorithm="nups" ,Display="iter",PlotFcn="psplotbestf", ConstraintTolerance=1e-4, MaxIterations=1000, StepTolerance=1e-12, UseParallel=true);
+rng default % ,Algorithm = {"classic"} | "nups" | "nups-gps" | "nups-mads"
+%
+%x0 = [ 1.3275   70.0000   11.9213   13.6448    2.0934]; %for nups-mads
+x0 = [1.869313646668921 69.999179474445380 13.661473058241283 16.206591230548390 2.718807588032991]; %for nups-gps
+
+%
+%[x_opt, rev_opt] = fmincon(@(x)fun_1(x,option_data,'Rev',option_mesh,option_BVP),x0,A,b,Aeq,beq,lb(:,i),ub(:,i),@(x)nonlcon(x,'default'),foptions);
+X3_R = patternsearch(@(x)fun_1(x,option_data,'Rev',option_mesh,option_BVP),x0,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'default'),optsm);
+Y3_R=fun_1(X3_R,option_data,'sol',option_mesh,option_BVP);
+display(X3_R)
+display(Y3_R)
+
+% best X with nup-mads:
+%  1.8693   69.9992   12.1019   14.7601    2.7188
+% output:
+% -2.4087    0.3406    0.4413   41.9332    4.4192
+
+% best X with nup-mads:
+% 1.8693   69.9992   13.6615   16.2066    2.7188
+% output:
+% -2.3508    0.3368    0.4461   42.5031    4.2593
 
 
+
+%save DATA_case3 X3_R Y3_R
 
 
 
