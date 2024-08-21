@@ -38,28 +38,8 @@ if option_data == 0.3; DATA = @(x)Length_opt_data(input); end
 %
 if option_data == 1; DATA = @(x)Pareto_1_data(input); end
 if option_data == 2; DATA = @(x)Pareto_2_data(input); end
+if option_data == 3; DATA = @(x)Pareto_3_data(input); end
 %
-
-% Simulations
-if option_data == 0.11; DATA = @(x)Sim_11_data(input); end
-if option_data == 0.12; DATA = @(x)Sim_12_data(input); end
-if option_data == 0.13; DATA = @(x)Sim_13_data(input); end
-if option_data == 0.21; DATA = @(x)Sim_21_data(input); end
-if option_data == 0.22; DATA = @(x)Sim_22_data(input); end
-if option_data == 0.23; DATA = @(x)Sim_23_data(input); end
-if option_data == 0.24; DATA = @(x)Sim_24_data(input); end
-if option_data == 0.31; DATA = @(x)Sim_31_data(input); end
-if option_data == 0.32; DATA = @(x)Sim_32_data(input); end
-% PRO Membrane Comparison
-if option_data == 0.51; DATA = @(x)Sim_PRO_01_data(input); end
-if option_data == 0.52; DATA = @(x)Sim_PRO_02_data(input); end
-if option_data == 0.53; DATA = @(x)Sim_PRO_03_data(input); end
-% Rough vs. Detailled
-if option_data == 0.91; DATA = @(x)Sim_rough_approx_data(input); end
-% Optimizations
-if option_data==3; DATA = @(x)Opt_3_data(input); end
-if option_data==4; DATA = @(x)Opt_4_data(input); end
-if option_data==5; DATA = @(x)Opt_L_data(input); end
 
 [H,Z,swro_Z,ro_water,ro_salt,Mw,Ms,Rw,T0,eta,sigma,p_r,rho_r,C_r,swro_L,swro_alpha,swro_R,swro_KK,swro_x_r,swro_b1,swro_b2,J_r,swro_gamma,swro_gamma2,swro_W_r,L,alpha,R,KK,x_r,b1,b2,Q_r,gamma,gamma2,W_r,cE,pE,rho_E,J_sf_0,J_wf_0,Pd_0,Pd_L,Pf_L,Q_sf_0,pd_0,pf_0,pd_L,pf_L,HP_eff,LP_eff,T_eff,V_m,ERD_eff,ERD_fric,A_ERD,eta_ERD,mix_density,pw,pe,swro_beta_fix,beta_fix,mixer_ERD,version,fig,swro_KF,swro_KD, KF, KD] ...
     = DATA(1);

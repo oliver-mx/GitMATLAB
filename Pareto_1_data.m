@@ -8,7 +8,7 @@ function [H,Z,swro_Z,ro_water,ro_salt,Mw,Ms,Rw,T0,eta,sigma,p_r,rho_r,C_r,swro_L
 %   option_data = 1
 %
 %   Input:
-%       input1        -   x
+%       input1        -   [Pd_0, Pd_L]
 %       input2        -   x
 
 %% model versions

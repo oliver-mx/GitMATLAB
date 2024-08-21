@@ -361,7 +361,8 @@ startTime=datetime("now");
 A= [0 1 -1 0]; b= -.01; Aeq=[]; beq=[]; lb = [30;10;10;1]; ub = [70;20;20;5];
 option_mesh = 1e4; option_BVP = 1e-6; option_data = 3;
 rng default
-X0=repmat(X_good, 1, 25)'; 
+%X_init=[X2(1,1:5:end); X2(2,1:5:end)];
+%X0=repmat(X_init, 1, 5)'; %shoul
 options = optimoptions('paretosearch','ParetoSetSize',200, 'InitialPoints',X0,'Display','iter', 'MaxFunctionEvaluations',10000, 'ParetoSetChangeTolerance',1e-6,'UseParallel', true);
 X = paretosearch(@(x)fun_1(x,option_data,'Pareto',option_mesh,option_BVP),2,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'default'),options); 
 %
