@@ -59,7 +59,10 @@ scatter(Y2(1,:),Y2(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold o
 scatter(Y2_P(1,:),Y2_P(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','c'); hold on
 scatter(Y2_R(1),Y2_R(2),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','y'); hold on
 load("DATA_case3.mat")
-scatter(Y3_R(1),Y3_R(2),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','y'); hold on
+%scatter(Y3_R(1),Y3_R(2),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','y'); hold on
+scatter(-2.2348,0.3440,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','y'); hold on %/bei ~ 10/3 Längenverhältnis
+
+
 
 grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
 legend('Case1: \epsilon-constraint method', 'Case1: paretosearch','','Case2: \epsilon-constraint method', 'Case2: paretosearch','', '','Location', 'Northeast');
@@ -225,21 +228,90 @@ display(Y3_R)
 
 %% test locally around best point so far
 
+a1=      1.1.*ones(1,2000) + .2.*rand(1,2000);
+a2=       70.*ones(1,2000);
+a4=       20*ones(1,2000);
+a3= a4 - 1.1.*ones(1,2000) -  .3.*rand(1,2000);
+a5=     1.0001.*ones(1,2000) + .02.*rand(1,2000);
+
+X_test=[a1; a2; a3; a4; a5];
+
+parfor i=1:2000
+i,
+Y_test(:,i)=fun_1(X_test(:,i), .3 ,'sol', 1e4 , 1e-6);
+end
+
+%%
+
+scatter(Y_test(1,:),Y_test(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','g'); hold on
+
+R=Y_test(3,:)
+R = R(~isnan(R))';
+R = R(~isinf(R))';
+[a,b]=max(R)
+c=find(Y_test(3,:)== a)
+
+
+Y_test(:,c)'
+beep,
+X_test(:,c)
+
 %
-% test if point is locally optimal
-%
-% test 'nups'
+% testing with 2000 random pertubations
+% 1.701334230850316 70 17.303900763215214 19.518212394164596 2.515543290319345
+% -2.3210  0.3430  0.4594  41.8200  2.6930
 %
 
 %
-% Fix the PRO length for hybrid system
+% 2nd test
+% 1.645379340650449 70 17.918231682265990 19.890375014904670 2.018569892899560
+% -2.2546    0.3390    0.4654   42.4818    3.2361
 %
-% calculate pareto front 
+
+
 %
-% compare old with new pareto front
+% 3rd test
+% 1.515502010177877 70 18.144811408171233 19.888390283989512 1.214990800883215
+% -2.2550    0.3431    0.4709   41.9577    9.4891
 %
-% compare new vs. old best SEC/FW/Rev
+
 %
+% 4th test
+% 1.581025550521746 70 18.086408450978364 20 1.109362628068349
+% -2.2325    0.3427    0.4742   42.2457   40.7659
+%
+
+%
+% 5th
+% 1.414591373229294 70 18.465466683045230 20 1.051796875666936
+% -2.2352    0.3437    0.4751   42.0992   47.1326
+%
+
+%
+% 6th
+% 1.217202844329564 70 18.869106506608680 20 1.019759965650840
+% -2.2348    0.3440    0.4756   42.0134   51.5381
+%
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
