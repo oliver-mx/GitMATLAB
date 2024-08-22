@@ -5,7 +5,7 @@
 % - reproduce all figures.png (converted to .eps using LibreOfficeDraw)
 % - test average computation time
 %
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Numerical Simulations
 %
 % Create figures form chapter: Numerical simulations
@@ -28,8 +28,8 @@ for i=1:length(T)
 T(i)=time;
 end
 mean(T) %= 0.9600
-%
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Overview of computation times:
 %
 %                               |  home PC   |  uni PC    |
@@ -44,7 +44,7 @@ mean(T) %= 0.9600
 % case 2 - epsilon constraint   |  06:39:07  |  18:29:29  |
 % case 2 - paretosearch         |  00:17:24! |  00:46:28  |
 % 
-% case 3 - paretosearch         |  !  |  !  |
+% case 3 - paretosearch         |  !  |  03:59:42!  |
 %
 
 %% plot of the Pareto fronts
@@ -59,14 +59,14 @@ scatter(Y2(1,:),Y2(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold o
 scatter(Y2_P(1,:),Y2_P(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','c'); hold on
 scatter(Y2_R(1),Y2_R(2),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','y'); hold on
 load("DATA_case3.mat")
+scatter(Y3_P(1,:),Y3_P(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',[0.9290 0.6940 0.1250]); hold on
 scatter(Y3_R(1),Y3_R(2),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','y'); hold on
 
-
-
 grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
-legend('Case1: \epsilon-constraint method', 'Case1: paretosearch','','Case2: \epsilon-constraint method', 'Case2: paretosearch','', '','Location', 'Northeast');
+legend('Case1: \epsilon-constraint method', 'Case1: paretosearch','','Case2: \epsilon-constraint method', 'Case2: paretosearch','','Case3: paretosearch', '','Location', 'Northeast');
 ylabel('FW [m^3/h]','FontSize',16);xlabel('SEC_{net} [kWh/m^3]','FontSize',16);
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Case1: epsilon-constraint method
 %
 load("DATA_case1.mat")
@@ -129,6 +129,7 @@ endTime=datetime("now");
 time1_P = endTime - startTime;
 save DATA_case1.mat X1 Y1 X1_P Y1_P X1_R Y1_R time1 time1_P
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Case2: epsilon-constraint method
 %
 load("DATA_case2.mat")
@@ -159,7 +160,7 @@ parfor i=1:200
 end
 endTime=datetime("now");
 time2 = endTime - startTime;
-save DATA_case2.mat X2 Y2 X2_P Y2_P X2_R Y2_R time2 time2_P
+%save DATA_case2.mat X2 Y2 X2_P Y2_P X2_R Y2_R time2 time2_P
 
 %% Case2: Max Revenue 
 %
@@ -194,6 +195,7 @@ endTime=datetime("now");
 time2_P = endTime - startTime; 
 save DATA_case2.mat X2 Y2 X2_P Y2_P X2_R Y2_R time2 time2_P
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Case3: Max Revenue 
 %
 load("DATA_case3.mat")
@@ -208,7 +210,7 @@ X3_R = fmincon(@(x)fun_1(x,option_data,'Rev',option_mesh,option_BVP),x0,A,b,Aeq,
 Y3_R=fun_1(X3_R,option_data,'sol',option_mesh,option_BVP);
 display(X3_R)
 display(Y3_R)
-save DATA_case3 X3_R Y3_R
+save DATA_case3 X3_R Y3_R X3_P Y3_P time3_P
 
 %% test locally around best point so far
 %
@@ -303,56 +305,6 @@ scatter(Y3_R(1),Y3_R(2),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','y'); hold o
 view(2);
 grid on
 
-
-
-%%
-%X_good = [X_good,...]
-%    
-%Y_good =  [Y_good,...]
-%
-
-
-save Good_data X_good Y_good
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-%% hybrid system optimal length:
-A= [0 0 1 -1 0]; b= -.01; Aeq=[]; beq=[]; lb = [.5;30;10;10;1]; ub = [10;70;20;20;5];
-option_mesh = 1e4; option_BVP = 1e-6;option_data = .3;
-%foptions = optimoptions('fmincon','Display','final','Algorithm','interior-point', 'StepTolerance', 1e-12, 'OptimalityTolerance',1e-4, 'MaxFunEvals',5000);
-optsm = optimoptions("patternsearch",Algorithm="nups-mads",Display="iter",PlotFcn="psplotbestf", ConstraintTolerance=1e-4, MaxIterations=1000, StepTolerance=1e-12, UseParallel=true);
-rng default %{"classic"} | "nups" | "nups-gps" | "nups-mads"
-%
-%x0 = [ 1.3275   70.0000   11.9213   13.6448    2.0934];
-x0 = [2 69.9999 17.5 19.3 2.5];
-%
-%[x_opt, rev_opt] = fmincon(@(x)fun_1(x,option_data,'Rev',option_mesh,option_BVP),x0,A,b,Aeq,beq,lb(:,i),ub(:,i),@(x)nonlcon(x,'default'),foptions);
-X3_R = patternsearch(@(x)fun_1(x,option_data,'Rev',option_mesh,option_BVP),x0,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'default'),optsm);
-Y3_R=fun_1(X3_R,option_data,'sol',option_mesh,option_BVP);
-close all,
-display(X3_R)
-
-
 %% Case3: paretosearch
 %
 load("DATA_case3.mat")
@@ -361,16 +313,16 @@ startTime=datetime("now");
 A= [0 1 -1 0]; b= -.01; Aeq=[]; beq=[]; lb = [30;10;10;1]; ub = [70;20;20;5];
 option_mesh = 1e4; option_BVP = 1e-6; option_data = 3;
 rng default
-X0=repmat(X_good, 1, 25)'; 
+X0=X3_P';
 options = optimoptions('paretosearch','ParetoSetSize',200, 'InitialPoints',X0,'Display','iter', 'MaxFunctionEvaluations',10000, 'ParetoSetChangeTolerance',1e-6,'UseParallel', true);
-X = paretosearch(@(x)fun_1(x,option_data,'Pareto',option_mesh,option_BVP),2,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'default'),options); 
+X = paretosearch(@(x)fun_1(x,option_data,'Pareto',option_mesh,option_BVP),4,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'default'),options); 
 %
 parfor i=1:200
     X3_P(:,i)=X(i,:)
     Y3_P(:,i)=fun_1([X3_P(:,i)],option_data,'sol',option_mesh,option_BVP);
 end
 endTime=datetime("now");     
-time3_P = endTime - startTime; 
+time3_P = endTime - startTime;
 save DATA_case3.mat X3_P Y3_P X3_R Y3_R time3_P
 
 
@@ -387,32 +339,93 @@ save DATA_case3.mat X3_P Y3_P X3_R Y3_R time3_P
 
 
 
-%% hybrid paretosearch - old
-close all; clear all; clc
-rng default % For reproducibility
-A= []; b= []; Aeq=[]; beq=[]; lb = [30;10;10;1.05;1.5]; ub = [70;20;20;2;1.5];
-% initial points:
-load('DATA_Approx.mat');
-X0 = X_approx'; %size(X0)= (93,5)
-%remove infeasible poitns
-z=length(X_approx(1,:));
-for i=1:z
-    k=0;
-    for j=1:4
-    if X_approx(j,z+1-i) > ub(j); k=1;end
-    if X_approx(j,z+1-i) < lb(j); k=1;end
-    end
-    if k==1;X0(z+1-i,:)=[]; end
-end
-%After removing points:
-%size(X0)= (61,5)
-%
-options = optimoptions('paretosearch','ParetoSetSize',200, 'InitialPoints',X0,'Display','iter', 'MaxFunctionEvaluations',5000);
-% x = paretosearch(fun,nvars,A,b,Aeq,beq,lb,ub,nonlcon,options)
-[X_paretosearch_3, Y_paretosearch_3] = paretosearch(@(x)fun_1(x,3,'Pareto',1e4,1e-4),5,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'default'),options); 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 %%
 load DATA_Pareto.mat
 scatter(SEC_Pareto_1,FW_Pareto_1);hold on
-scatter(SEC_Pareto_2,FW_Pareto_2)
+scatter(SEC_Pareto_2,FW_Pareto_2);hold on
+load DATA_Approx.mat
+scatter(SEC_approx, FW_approx);hold on
+
+
+%%
+%% Case2: paretosearch
+%
+load("DATA_case2.mat")
+% 
+parfor i=1:200
+    [~,Y_work(:,i)]=fun_1([X2_P(:,i)],2,'sol',option_mesh,option_BVP);
+end
+
+%%
+close all
+Y1_n=zeros(5,1);Y2_n=Y1_n;
+for i=1:200
+    if Y_work(4,i) >0
+        Y1_n=[Y1_n, Y2(:,i)];
+    else
+        Y2_n=[Y2_n, Y2(:,i)];
+    end
+end
+scatter(Y1_n(1,:),Y1_n(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
+scatter(Y2_n(1,:),Y2_n(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold on
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

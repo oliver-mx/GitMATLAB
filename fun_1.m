@@ -180,8 +180,8 @@ W_p4 = 1/LP_eff * (p_f(1)-pE)*(Q_f(1)*Z)./local_ro_f(1); W_p4 = W_p4*W_r;
         f_ERD= ERD_fric*(ERD_eff*f_2 - f_1)/100;
         pERD = rho_ERD*(ERD_eff*( P_d(end)*J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end) - p_exit*Q_exit*swro_Z/rho_exit ) +  pE*J_E*swro_Z/rho_E -f_ERD )/J_ERD/swro_Z;
         pMax = rho_ERD*(ERD_eff*( P_d(end)*J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end) - p_exit*Q_exit*swro_Z/rho_exit ) +  pE*J_E*swro_Z/rho_E )/J_ERD/swro_Z;
-        if pERD > pMax; pERD=pMax; end
-        if pERD < 0; pERD=pMax; end  
+        pERD=min(pERD,pMax);
+        pERD=max(1,pERD); 
         W_p3 = 1/HP_eff * (P_d(1)-pERD)*(J_ERD*swro_Z)/rho_ERD; W_p3=W_p3*swro_W_r; W_p4=0; W_t=0;
     end
     %% Version(6)=2 --> only PRO
