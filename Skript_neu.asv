@@ -1,0 +1,232 @@
+%% Neues Skript nur für optimale PRO Längenverhältnis
+%
+% Ansatz:
+% für jedes L^{PRO} eine Pareto front berechnen
+%
+% Punkt mit maximalem Revenue entlang jeder Kurve festhalten
+%
+% --> vergleiche die maximalen Rev
+%
+% in der nähe vom besten Punkt simulieren
+%
+% dann fmincon --> finale Länge L^{PRO}
+%
+
+%
+
+%% Teste of initial data for paretosearch
+i2=i2+1; close all;clc;
+L= .5:.1:5;
+option_mesh = 1e4; option_BVP = 1e-6; option_data = .3;    
+% initial guess
+% rng default
+I1 = L(i2).*ones(1,70);
+I1(1)
+I2 = 52.*ones(1,70)+18.*rand(1,70);
+I4 = 18.*ones(1,70)+2.*rand(1,70);
+I3 = I4-.9.*rand(1,70)- .4.*ones(1,70);
+I5 = 3.*ones(1,70)+ 2*rand(1,70);
+%
+X_init=[I1;I2;I3;I4;I5];
+Y_init=zeros(5,70);
+% test simulation
+parfor i=1:70
+    Y_init(:,i)=fun_1(X_init(:,i),option_data,'sol',option_mesh,option_BVP);
+end
+%% plots zum vergleich
+load("DATA_case1.mat")
+load("DATA_case2.mat")
+f=figure(1); f.Position = [1282.3 0746.3 1277.3 0614.7];
+scatter(Y1(1,:),Y1(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
+scatter(Y2(1,:),Y2(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold on
+scatter3(Y_init(1,:),Y_init(2,:),1:1:70,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','g'); hold on
+%
+grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
+legend('Case1: \epsilon-constraint method', 'Case2: paretosearch',['Now using L^{PRO} = '  ,num2str(L(i2))],'Location', 'Northeast');
+ylabel('FW [m^3/h]','FontSize',16);xlabel('SEC_{net} [kWh/m^3]','FontSize',16);
+beep 
+
+%% extract some data
+load('DATA_Initial.mat')
+I=[59 25 24 22 61 62 13 63 40 9];
+Z=[];
+for i=1:10
+Z=[Z X_init(:,i)];
+end
+XL_25=Z';
+save DATA_Initial.mat XL_05 XL_06 XL_07 XL_08 XL_09 XL_10 XL_11 XL_12 XL_13 XL_14 ...
+                      XL_15 XL_16 XL_17 XL_18 XL_19 XL_20 XL_21 XL_22 XL_23 XL_24 XL_25
+clc,
+
+%% calculate all Pareto fronts:
+%
+close all;clc;
+L=linspace(.5,2.5,21);
+for j=1:1
+    A= [0 0 1 -1 0]; b= -.01; Aeq=[]; beq=[]; lb = [L(j);30;1.01;1.01;1]; ub = [L(j);70;20;20;5];
+    option_mesh = 1e4; option_BVP = 1e-6; option_data = .3;
+    rng default
+        if j==1; X_init=XL_05; end
+        if j==2; X_init=XL_06; end
+        if j==3; X_init=XL_07; end
+        if j==4; X_init=XL_08; end
+        if j==5; X_init=XL_09; end
+        if j==6; X_init=XL_10; end
+        if j==7; X_init=XL_11; end
+        if j==8; X_init=XL_12; end
+        if j==9; X_init=XL_13; end
+        if j==10; X_init=XL_14; end
+        if j==11; X_init=XL_15; end
+        if j==12; X_init=XL_16; end
+        if j==13; X_init=XL_17; end
+        if j==14; X_init=XL_18; end
+        if j==15; X_init=XL_19; end
+        if j==16; X_init=XL_20; end
+        if j==17; X_init=XL_21; end
+        if j==18; X_init=XL_22; end
+        if j==19; X_init=XL_23; end
+        if j==20; X_init=XL_24; end
+        if j==21; X_init=XL_25; end
+    X_init=repmat(X_init, 10, 1); %100 x 5 double
+    options = optimoptions('paretosearch','ParetoSetSize',100, 'InitialPoints',X_init,'Display','iter', 'MaxFunctionEvaluations',10000, 'ParetoSetChangeTolerance',1e-5,'UseParallel', true);
+    X = paretosearch(@(x)fun_1(x,option_data,'Pareto',option_mesh,option_BVP),5,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'default'),options); 
+    %
+        if j==1; parfor i=1:200
+                    X_05(:,i)=X(i,:)
+                    Y_05(:,i)=fun_1(X_05(:,i),option_data,'sol',option_mesh,option_BVP);
+        end;     end;
+
+
+
+
+
+
+
+
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%% Now compute all Pareto Fronts
+%
+% wichtig iter display off
+% clc and i, after paretosearch
+%
+% external for schleife
+% internal paretosearch with parallel on
+%
+% save all X and Y in extra DATA_set
+% always save all DATA
+%
+
+%%
+for j=1:20
+    A= [0 1 -1 0]; b= -.01; Aeq=[]; beq=[]; lb = [30;1.01;1.01;1]; ub = [70;20;20;5]; %now with wider pressure range in PRO unit
+    option_mesh = 1e4; option_BVP = 1e-6; option_data = 3;
+    rng default
+    %X0=?????????????????????;
+    options = optimoptions('paretosearch','ParetoSetSize',100, 'InitialPoints',X0,'Display','iter', 'MaxFunctionEvaluations',10000, 'ParetoSetChangeTolerance',1e-4,'UseParallel', true);
+    X = paretosearch(@(x)fun_1(x,option_data,'Pareto',option_mesh,option_BVP),4,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'default'),options); 
+    %
+
+
+
+
+
+parfor i=1:200
+    X3_P(:,i)=X(i,:)
+    Y3_P(:,i)=fun_1([X3_P(:,i)],option_data,'sol',option_mesh,option_BVP);
+end
+end
+
+
+
+
+
+
+load("DATA_test.mat")
+startTime=datetime("now");
+option_mesh = 1e4; option_BVP = 1e-6;option_data = .3;
+rng default
+%X3_R=zeros(5,46);
+%Y3_R=zeros(5,46);
+%
+parfor i=1:46
+    A= [0 0 1 -1 0]; b= -.0001; Aeq=[]; beq=[]; lb = [L(i);30;10;10;1]; ub = [L(i);70;20;20;5];
+    foptions = optimoptions('fmincon','Display','off','Algorithm','interior-point', 'StepTolerance', 1e-16, 'OptimalityTolerance',1e-4, 'MaxFunEvals',5000);
+    %
+    x0 = [L(i) 69.99 15 16 1.1]; % <-- maybe come up with good intial guess for all lengths first
+    %
+    X3_R(:,i) = fmincon(@(x)fun_1(x,option_data,'Rev',option_mesh,option_BVP),x0,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'default'),foptions);
+    Y3_R(:,i)=fun_1(X3_R(:,i),option_data,'sol',option_mesh,option_BVP);
+    %
+    i,
+end
+%
+endTime=datetime("now");     
+time_R = endTime - startTime; 
+%
+save DATA_test.mat time_R X3_R Y3_R
+%
+
+%% anschließend interactive plot
+%
+% einmal alles auf einmal plotten
+%
+% dann mit schieberegler zum auswählen
+%
+
+
+
+
+
+
+
+
+
+
+
+
+
+%% optimales revenue
+%
+% bester Revenue von den paretofronten ist ....
+% ... mit L=
+%
+% annahme stetigkeit: anschließend optimierung innerhalb I=[ . , . ]
+%
+% hopefully optimal L
+%
+% Dann Pareto front von finaler Länge bestimmen
+%
+% nochmal bestes revenue mit neuer Pareto front vergleichen
+%
+% Dann in anderes Skript Überarbeiten
+%
+% __> PAPER FERTIG MACHEN !!!!!!!!!!!!!!!!!!!!!!!!!!

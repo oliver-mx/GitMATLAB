@@ -33,7 +33,7 @@ mean(T) %= 0.9600
 %% Overview of computation times:
 %
 %                               |  home PC   |  uni PC    |
-%                               |  i12900k   |  i13500k   |
+%                               |  i12900k   |  i135000k  |
 %                               |  16 cores  |  14 cores  |
 %                               |  3.2 GHz   |  2.5 GHz   |
 %                               |  64GB RAM  |  16GB RAM  |                  
@@ -217,29 +217,25 @@ display(Y3_R)
 L= linspace(.5,5,46);
 %
 load("DATA_test.mat")
-startTime=datetime("now");
 option_mesh = 1e4; option_BVP = 1e-6;option_data = .3;
 rng default
-%X3_R=zeros(5,46);
-%Y3_R=zeros(5,46);
-%
+X3_R(:,i)=zeros(5,46);
+Y3_R=zeros(5,46);
+
 parfor i=1:46
     A= [0 0 1 -1 0]; b= -.0001; Aeq=[]; beq=[]; lb = [L(i);30;10;10;1]; ub = [L(i);70;20;20;5];
-    foptions = optimoptions('fmincon','Display','off','Algorithm','interior-point', 'StepTolerance', 1e-16, 'OptimalityTolerance',1e-4, 'MaxFunEvals',5000);
+    foptions = optimoptions('fmincon','Display','iter','Algorithm','interior-point', 'StepTolerance', 1e-16, 'OptimalityTolerance',1e-4, 'MaxFunEvals',5000);
     %
-    x0 = [L(i) 69.99 15 16 1.1]; % <-- maybe come up with good intial guess for all lengths first
+    x0 = [L(i) 69.99 15 16 1.1];
     %
     X3_R(:,i) = fmincon(@(x)fun_1(x,option_data,'Rev',option_mesh,option_BVP),x0,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'default'),foptions);
     Y3_R(:,i)=fun_1(X3_R(:,i),option_data,'sol',option_mesh,option_BVP);
-    %
-    i,
+    5
 end
 %
-endTime=datetime("now");     
-time_R = endTime - startTime; 
-%
-save DATA_test.mat time_R X3_R Y3_R
-%
+
+
+
 
 
 

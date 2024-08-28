@@ -145,14 +145,14 @@ PRO_Recovery = (1- Q_f(end)./Q_f(1))*100;  % PRO recovery rate [%]
         fprintf(2,' \nERROR: Waring: Freshwater production is negative! \n');
     end
     if SWRO_Recovery > 100 && strcmp(obj,'sol')==1
-        fprintf(2,' \nERROR: Waring: SWRO recovery is greater then 100 %% \n');
+        fprintf(2,' \nERROR: Waring: SWRO recovery is greater than 100 %% \n');
     end
     if SWRO_Recovery < 0 && strcmp(obj,'sol')==1
         fprintf(2,' \nERROR: Waring: SWRO recovery is negative! \n');
     end
     if version(6)>1
         if PRO_Recovery > 100 && strcmp(obj,'sol')==1 
-            fprintf(2,' \nERROR: Waring: PRO recovery is greater then 100 %% \n');
+            fprintf(2,' \nERROR: Waring: PRO recovery is greater than 100 %% \n');
         end
         if PRO_Recovery < 0 && strcmp(obj,'sol')==1
             fprintf(2,' \nERROR: Waring: PRO recovery is negative! \n');
