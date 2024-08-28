@@ -44,7 +44,7 @@ mean(T) %= 0.9600
 % case 2 - epsilon constraint   |  06:39:07  |  18:29:29  |
 % case 2 - paretosearch         |  00:17:24! |  00:46:28  |
 % 
-% case 3 - paretosearch         |  !  |  03:59:42!  |
+% case 3 - paretosearch         |  !  |  02:11:35  |
 %
 
 %% plot of the Pareto fronts
@@ -95,7 +95,7 @@ parfor i=1:200
 end
 endTime=datetime("now");     
 time1 = endTime - startTime;
-save DATA_case1.mat X1 Y1 X1_P Y1_P X1_R Y1_R time1 time1_P
+%save DATA_case1.mat X1 Y1 X1_P Y1_P X1_R Y1_R time1 time1_P
 
 %% Case1: Max Revenue 
 %
@@ -107,7 +107,7 @@ foptions = optimoptions('fmincon','Display','iter','Algorithm','interior-point',
 rng default
 X1_R= fmincon(@(x)fun_1(x,option_data,'Rev',option_mesh,option_BVP),X1(:,b1),A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'default'),foptions);
 Y1_R=fun_1(X1_R,option_data,'sol',option_mesh,option_BVP);
-save DATA_case1.mat X1 Y1 X1_P Y1_P X1_R Y1_R time1 time1_P
+%save DATA_case1.mat X1 Y1 X1_P Y1_P X1_R Y1_R time1 time1_P
 
 %% Case1: paretosearch
 %
@@ -127,7 +127,7 @@ parfor i=1:200
 end
 endTime=datetime("now");       
 time1_P = endTime - startTime;
-save DATA_case1.mat X1 Y1 X1_P Y1_P X1_R Y1_R time1 time1_P
+%save DATA_case1.mat X1 Y1 X1_P Y1_P X1_R Y1_R time1 time1_P
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Case2: epsilon-constraint method
@@ -172,7 +172,7 @@ foptions = optimoptions('fmincon','Display','iter','Algorithm','interior-point',
 rng default
 X2_R=fmincon(@(x)fun_1(x,option_data,'Rev',option_mesh,option_BVP),X2(:,b2),A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'default'),foptions);
 Y2_R=fun_1(X2_R,option_data,'sol',option_mesh,option_BVP);
-save DATA_case2.mat X2 Y2 X2_P Y2_P X2_R Y2_R time2 time2_P
+%save DATA_case2.mat X2 Y2 X2_P Y2_P X2_R Y2_R time2 time2_P
 
 %% Case2: paretosearch
 %
@@ -193,7 +193,7 @@ parfor i=1:200
 end
 endTime=datetime("now");     
 time2_P = endTime - startTime; 
-save DATA_case2.mat X2 Y2 X2_P Y2_P X2_R Y2_R time2 time2_P
+%save DATA_case2.mat X2 Y2 X2_P Y2_P X2_R Y2_R time2 time2_P
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Case3: Max Revenue 
@@ -210,7 +210,7 @@ X3_R = fmincon(@(x)fun_1(x,option_data,'Rev',option_mesh,option_BVP),x0,A,b,Aeq,
 Y3_R=fun_1(X3_R,option_data,'sol',option_mesh,option_BVP);
 display(X3_R)
 display(Y3_R)
-save DATA_case3 X3_R Y3_R X3_P Y3_P time3_P
+%save DATA_case3 X3_R Y3_R X3_P Y3_P time3_P
 
 %% test locally around best point so far
 %
@@ -310,7 +310,7 @@ grid on
 load("DATA_case3.mat")
 % 
 startTime=datetime("now");
-A= [0 1 -1 0]; b= -.01; Aeq=[]; beq=[]; lb = [30;10;10;1]; ub = [70;20;20;5];
+A= [0 1 -1 0]; b= -.01; Aeq=[]; beq=[]; lb = [30;1.01;1.01;1]; ub = [70;20;20;5]; %now with wider pressure range in PRO unit
 option_mesh = 1e4; option_BVP = 1e-6; option_data = 3;
 rng default
 X0=X3_P';
@@ -323,12 +323,35 @@ parfor i=1:200
 end
 endTime=datetime("now");     
 time3_P = endTime - startTime;
-save DATA_case3.mat X3_P Y3_P X3_R Y3_R time3_P
+%save DATA_case3.mat X3_P Y3_P X3_R Y3_R time3_P
+
+scatter(Y3_P(1,:),Y3_P(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',[0.8 0.5 0.1]); hold on
+
+%%
+%
+% idea shoot around points in the bottom part
+% --> is the curve optimal there???
+%
+% otherwise check feasibility of blue curve
+% --> sanity checks ....
+%
+% look at bottom solutions of hybrid system
+% --> is there anything wrong??
+%
+
+grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
+legend('Case1: \epsilon-constraint method', 'Case1: paretosearch','','Case2: \epsilon-constraint method', 'Case2: paretosearch','','Case3: paretosearch', '','Location', 'Northeast');
+ylabel('FW [m^3/h]','FontSize',16);xlabel('SEC_{net} [kWh/m^3]','FontSize',16);
 
 
+%i=3; % 1 2 3 4 5 6
+%scatter(Y2_P(1,i),Y2_P(2,i),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
+%fun_1([X2_P(:,i)],2,'sol',1e4,1e-6);
 
 
-
+i=18; % 18 3 7
+scatter(Y3_P(1,i),Y3_P(2,i),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
+fun_1([X3_P(:,i)],3,'sol',1e4,1e-6);
 
 
 

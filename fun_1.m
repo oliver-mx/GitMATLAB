@@ -406,7 +406,7 @@ end
 %% figure 2
 if fig(2) == 1
 f=figure(2); %
-f.Position = [278.3333 193.6667 1.0987e+03 639.3333];
+f.Position = [1.2977e+03 635.6667 1.0987e+03 639.3333];
 % Permeate flows 
 subplot(2,2,1); lc='k';rc='#b81414'; J_cross2=J_cross(2:end);J_sin2=J_sin(2:end);
 plot(x2*swro_L, J_cross2*J_r/swro_x_r, 'Color', lc, 'LineWidth',lw);xlabel('x [m]','Fontsize',10);  ylabel('[kg/sm^2]','Fontsize',10);ay=gca; ay.YAxis.Exponent = 0;ylim([min( J_cross2*J_r/swro_x_r) 1.1*max( J_cross2*J_r/swro_x_r)]); hold on
@@ -418,12 +418,12 @@ plot(x*swro_L, (P_d-P_f)*p_r,'Color', lc,'LineWidth',lw);xlabel('x [m]','Fontsiz
 yyaxis right; 
 plot(x2*swro_L, osm_diff*p_r,'Color', rc,'LineWidth',lw); ylabel('[Pa]','Fontsize',10); legend('\Delta P^{RO}(x)','\Delta \pi^{RO}(x)','Location','best');xlim([0 swro_L]);ylim([a b]);ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc;
 % Permeate flows 
-subplot(2,2,2); lc='k';rc='#b81414'; Q_cross2=Q_cross(2:end);Q_sin2=Q_sin(2:end);
-plot(x2*L, -Q_cross2*Q_r/x_r, 'Color', lc, 'LineWidth',lw);xlabel('x [m]','Fontsize',10);  ylabel('[kg/sm^2]','Fontsize',10);ay=gca; ay.YAxis.Exponent = 0; hold on
+subplot(2,2,2); lc='k';rc='#b81414'; Q_cross2=Q_cross(2:end-2);Q_sin2=abs(Q_sin(2:end-2));x3=x(2:end-2);
+plot(x3*L, -Q_cross2*Q_r/x_r, 'Color', lc, 'LineWidth',lw);xlabel('x [m]','Fontsize',10);  ylabel('[kg/sm^2]','Fontsize',10);ay=gca; ay.YAxis.Exponent = 0; hold on
 yyaxis right
-plot(x2*L, Q_sin2*Q_r/x_r, 'Color', rc, 'LineWidth',lw); ylabel('[kg/sm^2]','Fontsize',10); legend('J_{w,in}^{PRO}(x)','J_{s,in}^{PRO}(x)','Location','best');xlim([0 L]);ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc;
+plot(x3*L, Q_sin2*Q_r/x_r, 'Color', rc, 'LineWidth',lw); ylabel('[kg/sm^2]','Fontsize',10); legend('J_{w,in}^{PRO}(x)','J_{s,in}^{PRO}(x)','Location','best');xlim([0 L]);ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc;
 % Osmotic/ Hydraulic pressure difference
-subplot(2,2,4);lc='k';rc='#b81414';osm_diff=p_osm_d(2:end)-p_osm_f(2:end); %a=min([min(osm_diff*p_r) min((p_d-p_f)*p_r)]); b=max( [max(osm_diff*p_r), max((p_d-p_f)*p_r)]);
+subplot(2,2,4);lc='k';rc='#b81414';osm_diff=p_osm_d(2:end)-p_osm_f(2:end);
 plot(x*L, (p_d-p_f)*p_r,'Color', lc,'LineWidth',lw);xlabel('x [m]','Fontsize',10); ylabel('[Pa]','Fontsize',10); ay=gca;ay.YAxis.Exponent = 6; hold on; %ylim([a b]); 
 yyaxis right; 
 plot(x2*L, osm_diff*p_r,'Color', rc,'LineWidth',lw); ylabel('[Pa]','Fontsize',10); legend('\Delta P^{PRO}(x)','\Delta \pi^{PRO}(x)','Location','best');xlim([0 L]); ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc; %ylim([a b]);
@@ -431,7 +431,7 @@ end
 %% figure 3
 if fig(3) == 1
 f=figure(3);  % ERD quantities
-f.Position = [1.3783e+03 774.3333 900.0000 500]; tiledlayout(1,4); 
+f.Position = [637.6667 161.6667 900.0000 396]; tiledlayout(1,4); 
 rot=0; rx=0; %rotation and shift of texts
 vals1 = [pE*p_r; pERD*p_r; 0; P_d(end)*p_r; p_d(end)*p_r];
 vals2 = 100*[cE; C_ERD; 0; C_d(end); c_d(1)];
@@ -443,24 +443,24 @@ if version(6)==4; vals1(1)= pERD2*p_r; vals2(1)=100*C_ERD2; end
 nexttile
 b = bar(1,vals1, 'FaceColor', 'b'); b(4).FaceColor = "#77AC30"; b(5).FaceColor = [.2 .6 .5]; b(1).FaceColor = '#0072bD';
 xticklabels({'[kg/ms^2]'}); ylim([0 1.1*max(vals1)]);ay=gca;ay.YAxis(1).Exponent=5;
-t=text(b(1).XEndPoints,b(1).YEndPoints,"P_{s}^{in}",'HorizontalAlignment','center','VerticalAlignment','bottom');
-t=text(b(2).XEndPoints+rx ,b(2).YEndPoints,"P_{s}^{out}",'HorizontalAlignment','center','VerticalAlignment','bottom'); 
-t=text(b(4).XEndPoints,b(4).YEndPoints,"P_{b}^{in}",'HorizontalAlignment','center','VerticalAlignment','bottom'); 
-t=text(b(5).XEndPoints,b(5).YEndPoints,"P_{b}^{out}",'HorizontalAlignment','center','VerticalAlignment','bottom'); 
+t=text(b(1).XEndPoints,b(1).YEndPoints,"P_{s}^{1,in}",'HorizontalAlignment','center','VerticalAlignment','bottom');
+t=text(b(2).XEndPoints+rx ,b(2).YEndPoints,"P_{s}^{1,out}",'HorizontalAlignment','center','VerticalAlignment','bottom'); 
+t=text(b(4).XEndPoints,b(4).YEndPoints,"P_{b}^{1,in}",'HorizontalAlignment','center','VerticalAlignment','bottom'); 
+t=text(b(5).XEndPoints,b(5).YEndPoints,"  P_{b}^{1,out}",'HorizontalAlignment','center','VerticalAlignment','bottom'); 
 nexttile
 b = bar(1,vals2, 'FaceColor', 'b'); b(4).FaceColor = "#77AC30"; b(5).FaceColor = [.2 .6 .5]; b(1).FaceColor = '#0072bD';
 xticklabels({'[%]'}); ylim([0 1.12*max(vals2)]);ay=gca;ay.YAxis(1).Exponent=0;
-t= text(b(1).XEndPoints,b(1).YEndPoints,"C_{s}^{in}",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
-t=text(b(2).XEndPoints+rx ,b(2).YEndPoints,"C_{s}^{out}",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
-t=text(b(4).XEndPoints,b(4).YEndPoints,"C_b^{in}",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
-t=text(b(5).XEndPoints,b(5).YEndPoints,"C_{b}^{out}",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
+t= text(b(1).XEndPoints,b(1).YEndPoints,"C_{s}^{1,in}  ",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
+t=text(b(2).XEndPoints+rx ,b(2).YEndPoints,"  C_{s}^{1,out}",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
+t=text(b(4).XEndPoints,b(4).YEndPoints,"C_b^{1,in} ",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
+t=text(b(5).XEndPoints,b(5).YEndPoints," C_{b}^{1,out}",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
 nexttile
 b = bar(1,vals3, 'FaceColor', 'b'); b(4).FaceColor = "#77AC30"; b(5).FaceColor = [.2 .6 .5]; b(1).FaceColor = '#0072bD';
 xticklabels({'[kg/ms]'}); ylim([0 1.1*max(vals3)]);ay=gca;ay.YAxis(1).Exponent=0;
-t=text(b(1).XEndPoints,b(1).YEndPoints,"J_{s}^{in}",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
-t=text(b(2).XEndPoints+rx ,b(2).YEndPoints,"J_{s}^{out}",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
-t=text(b(4).XEndPoints ,b(4).YEndPoints,"J_{b}^{in}",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
-t=text(b(5).XEndPoints,b(5).YEndPoints,"J_{b}^{out}",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot ;
+t=text(b(1).XEndPoints,b(1).YEndPoints,"J_{s}^{1,in} ",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
+t=text(b(2).XEndPoints+rx ,b(2).YEndPoints," J_{s}^{1,out}",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
+t=text(b(4).XEndPoints ,b(4).YEndPoints,"J_{b}^{1,in} ",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
+t=text(b(5).XEndPoints,b(5).YEndPoints," J_{b}^{1,out}",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot ;
 nexttile
 if version(6)>3
 lgd = legend([b(1) b(2) b(5) b(4)],'LP ERD 1 Seawater Inlet','HP ERD 1 Seawater Outlet','HP SWRO Brine Outlet','LP PRO Brine Inlet' , 'Location', 'EastOutside');
@@ -472,7 +472,7 @@ end
 %% figure 4
 if fig(3) == 1 && version(6) ==4
 f=figure(4);  % ERD quantities
-f.Position = [1.3763e+03 195 900.0000 500]; tiledlayout(1,4); 
+f.Position = [1497 161.6667 900 396]; tiledlayout(1,4); 
 rot=0; rx=0; %rotation and shift of texts
 vals1 = [pE*p_r; pERD2*p_r; 0; p_d(end)*p_r; p_exit*p_r];
 vals2 = 100*[cE; C_ERD2; 0; c_d(end); c_exit];
@@ -483,23 +483,23 @@ nexttile
 b = bar(1,vals1, 'FaceColor', 'b'); b(4).FaceColor = "#77AC30"; b(5).FaceColor = [.2 .6 .5]; b(1).FaceColor = '#0072bD';
 xticklabels({'[kg/ms^2]'}); ylim([0 1.1*max(vals1)]);ay=gca;ay.YAxis(1).Exponent=5;
 t=text(b(1).XEndPoints,b(1).YEndPoints,"P_E",'HorizontalAlignment','center','VerticalAlignment','bottom');
-t=text(b(2).XEndPoints+rx ,b(2).YEndPoints,"P_{s}^{out,2}",'HorizontalAlignment','center','VerticalAlignment','bottom'); 
-t=text(b(4).XEndPoints,b(4).YEndPoints,"P_b^{in,2}",'HorizontalAlignment','center','VerticalAlignment','bottom');
+t=text(b(2).XEndPoints+rx ,b(2).YEndPoints,"P_{s}^{2,out}",'HorizontalAlignment','center','VerticalAlignment','bottom'); 
+t=text(b(4).XEndPoints,b(4).YEndPoints,"P_b^{2,in}",'HorizontalAlignment','center','VerticalAlignment','bottom');
 t=text(b(5).XEndPoints,b(5).YEndPoints,"P_E",'HorizontalAlignment','center','VerticalAlignment','bottom'); 
 nexttile
 b = bar(1,vals2, 'FaceColor', 'b'); b(4).FaceColor = "#77AC30"; b(5).FaceColor = [.2 .6 .5]; b(1).FaceColor = '#0072bD';
 xticklabels({'[%]'}); ylim([0 1.12*max(vals2)]);ay=gca;ay.YAxis(1).Exponent=0;
 t= text(b(1).XEndPoints,b(1).YEndPoints,"C_E",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
-t=text(b(2).XEndPoints+rx ,b(2).YEndPoints," C_{s}^{out,2}",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
-t=text(b(4).XEndPoints,b(4).YEndPoints,"C_{b}^{in,2}",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot; 
-t=text(b(5).XEndPoints,b(5).YEndPoints,"C_{exit}",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot; 
+t=text(b(2).XEndPoints+rx ,b(2).YEndPoints," C_{s}^{2,out}",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
+t=text(b(4).XEndPoints,b(4).YEndPoints,"C_{b}^{2,in}",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot; 
+t=text(b(5).XEndPoints,b(5).YEndPoints," C_{exit}",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot; 
 nexttile
 b = bar(1,vals3, 'FaceColor', 'b'); b(4).FaceColor = "#77AC30"; b(5).FaceColor = [.2 .6 .5]; b(1).FaceColor = '#0072bD';
 xticklabels({'[kg/ms]'}); ylim([0 1.1*max(vals3)]);ay=gca;ay.YAxis(1).Exponent=0;
-t=text(b(1).XEndPoints,b(1).YEndPoints,"J_{s}^{in,2}",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
-t=text(b(2).XEndPoints+rx ,b(2).YEndPoints,"J_s^{out,2}",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
-t=text(b(4).XEndPoints,b(4).YEndPoints,"J_b^{in,2}",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
-t=text(b(5).XEndPoints,b(5).YEndPoints,"J_b^{out,2}",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
+t=text(b(1).XEndPoints,b(1).YEndPoints,"J_{s}^{2,in} ",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
+t=text(b(2).XEndPoints+rx ,b(2).YEndPoints," J_s^{2,out}",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
+t=text(b(4).XEndPoints,b(4).YEndPoints,"J_b^{2,in} ",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
+t=text(b(5).XEndPoints,b(5).YEndPoints," J_b^{2,out}",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
 nexttile
 lgd = legend([b(1) b(2) b(3) b(4)],'LP ERD 2 Seawater Inlet','HP ERD 2 Seawater Outlet','HP ERD 2 Brine Inlet','LP ERD 2 Brine Outlet' , 'Location', 'EastOutside');
 lgd.Layout.Tile = 4; axis off ; 

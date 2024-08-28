@@ -19,7 +19,7 @@ version(3)=0;  % 0 = PRO beta fixed
 version(4)=1;  % 0 = ideal SWRO
 version(5)=1;  % 0 = ideal PRO
 % ERD
-version(6)=3;
+version(6)=4;
 % version(6) = 0 --> only SWRO (no ERD)
 % version(6) = 1 --> only SWRO (with ERD)
 % version(6) = 2 --> only PRO
@@ -61,8 +61,9 @@ sigma=0.999 ;                                   % Rejection coefficient
 swro_beta_fix=4.43e-4/J_r*swro_x_r;             % value for fixed SWRO beta [kg/sm^2]
  
 %% PRO
+
 Z=1;                    % width of the PRO membrane [m]
-L=1.5;                  % length of the PRO membrane [m]      
+L=1.217202844329564;    % length of the PRO membrane [m]      
 alpha = 5.47e-9;        % water permeablity co-efficient [s/m]
 R =0.94;                % salt rejection rate [1]
 KK=7.13e2;              % mass transfer coefficient [sm^2/kg]
@@ -87,16 +88,16 @@ J_sf_0 = 0;              % salt flux in fresh side at 0
 J_wf_0 = 0;              % water flux in fresh side at L               
 Pf_L = pE;               % pressure fresh side at L
 
-Pd_0 =  66e5/p_r;        % pressure draw side at 0
+Pd_0 =  69.9999;        % pressure draw side at 0
 Pd_L =  60e5/p_r;        % pressure draw side at L (not need in the hybrid system)
 
 %% PRO operation conditions 
 Q_sf_0 = 0;              % salt flux in fresh side at 0
 pf_L = pE;               % pressure of fresh side at L
 
-pd_0 = 12e5/p_r;         % pressure draw side at 0
-pd_L = 14.6e5/p_r;       % pressure of fresh side at 0
-pf_0 = 1.3e5/p_r;        % pressure draw side at L 
+pd_0 = 18.869106506608680;         % pressure draw side at 0
+pd_L = 19.9999;       % pressure of fresh side at 0
+pf_0 = 1.019759965650840;        % pressure draw side at L 
 
 %% ERD/Turbine/Pump parameters
 T_eff  = .95;               % turbine efficiency
