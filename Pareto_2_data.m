@@ -61,21 +61,21 @@ sigma=0.999 ;                                   % Rejection coefficient
 swro_beta_fix=4.43e-4/J_r*swro_x_r;             % value for fixed SWRO beta [kg/sm^2]
 
 %% PRO
-Z=1;                    % width of the PRO membrane [m]
-L=1.5;                  % length of the PRO membrane [m]      
-alpha = 5.47e-9;        % water permeablity co-efficient [s/m]
-R =0.94;                % salt rejection rate [1]
-KK=7.13e2;              % mass transfer coefficient [sm^2/kg]
-KD=1/KK;                % PRO ECP draw side mass transfer coefficient [sm^2/kg]
-KF=1/KK;                % PRO ECP fresh side mass transfer coefficient [sm^2/kg]
-x_r=L^2;                % x_r=L^2 since x = linspace(0,1,n) (if x = linspace(0,L,n) then x_r=L;)              
-b1 = H/x_r;             % H/L ratio
-b2 = Z/x_r;                           % Z/L ratio
-Q_r = sqrt(H^3/x_r*p_r*rho_r);        % flux [kg/s^2]
-gamma= x_r * p_r * alpha /Q_r ;       % PRO scaling factor - mass balance
-gamma2= Q_r^2./(x_r^2 * p_r * rho_r); % PRO scaling factor - momentum balance
-W_r=Q_r*p_r/rho_r;                    % net work [W/m^2]
-beta_fix =1.71e-4/Q_r*x_r;            % value for fixed PRO beta [kg/sm^2]
+Z = 1;              % width of the PRO membrane [m]
+L = 1.5;            % length of the PRO membrane [m]      
+alpha = 5.47e-9;    % water permeablity co-efficient [s/m]
+R = 0.94;           % salt rejection rate [1]
+KK = 7.13e2;        % mass transfer coefficient [sm^2/kg]
+KD = 7.13e-2;       % PRO ECP draw side mass transfer coefficient [sm^2/kg]
+KF = 7.13e-2;       % PRO ECP fresh side mass transfer coefficient [sm^2/kg]
+x_r = L^2;          % x_r=L^2 since x = linspace(0,1,n) (if x = linspace(0,L,n) then x_r=L;)              
+b1 = H/x_r;         % H/L ratio
+b2 = Z/x_r;                            % Z/L ratio
+Q_r = sqrt(H^3/x_r*p_r*rho_r);         % flux [kg/s^2]
+gamma = x_r * p_r * alpha /Q_r ;       % PRO scaling factor - mass balance
+gamma2 = Q_r^2./(x_r^2 * p_r * rho_r); % PRO scaling factor - momentum balance
+W_r = Q_r*p_r/rho_r;                   % net work [W/m^2]
+beta_fix = 1.71e-4/Q_r*x_r;            % value for fixed PRO beta [kg/sm^2]
 
 %% Sea Water
 cE= 35/983/C_r;                            % salt concentration in seawater

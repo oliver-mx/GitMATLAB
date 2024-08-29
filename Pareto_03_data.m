@@ -46,36 +46,36 @@ swro_Z=1;               % width of SWRO membrane [m]
 swro_L=4;               % length of SWRO membrane [m]
 if version(6)== 2; swro_L=1; end
 swro_alpha = 5.0815e-9; % SWRO water permeablity co-efficient [s/m]
-swro_R =0.96;           % SWRO salt rejection rate 
+swro_R = 0.96;          % SWRO salt rejection rate 
 swro_KK = 1e-2;         % SWRO ICP mass transfer coefficient
 swro_KD = 1/swro_KK;    % SWRO ECP draw side mass transfer coefficient
 swro_KF = 1/swro_KK;    % SWRO ECP fresh side mass transfer coefficient
-swro_x_r=swro_L^2;      % x_r=swro_L^2 since x = linspace(0,1,n) (if x = linspace(0,swro_L,n) then x_r=swro_L;)     
-swro_b1 = H/swro_x_r;                           % H/swro_L ratio
-swro_b2 = swro_Z/swro_x_r;                      % Z/swro_L ratio
-J_r = sqrt(H^3/swro_x_r*p_r*rho_r);             % flux [kg/s^2]
-swro_gamma= swro_x_r * p_r *  swro_alpha /J_r;  % SWRO scaling factor - mass balance
-swro_gamma2= J_r^2./(swro_x_r^2 * p_r * rho_r); % SWRO scaling factor - momentum balance
-swro_W_r=J_r*p_r/rho_r;                         % net work [W/m^2]
-sigma=0.999 ;                                   % Rejection coefficient
-swro_beta_fix=4.43e-4/J_r*swro_x_r;             % value for fixed SWRO beta [kg/sm^2]
+swro_x_r= swro_L^2;     % x_r=swro_L^2 since x = linspace(0,1,n) (if x = linspace(0,swro_L,n) then x_r=swro_L;)     
+swro_b1 = H/swro_x_r;                            % H/swro_L ratio
+swro_b2 = swro_Z/swro_x_r;                       % Z/swro_L ratio
+J_r = sqrt(H^3/swro_x_r*p_r*rho_r);              % flux [kg/s^2]
+swro_gamma = swro_x_r * p_r *  swro_alpha /J_r;  % SWRO scaling factor - mass balance
+swro_gamma2 = J_r^2./(swro_x_r^2 * p_r * rho_r); % SWRO scaling factor - momentum balance
+swro_W_r = J_r*p_r/rho_r;                        % net work [W/m^2]
+sigma = 0.999 ;                                  % Rejection coefficient
+swro_beta_fix = 4.43e-4/J_r*swro_x_r;            % value for fixed SWRO beta [kg/sm^2]
 
 %% PRO
-Z=1;                    % width of the PRO membrane [m]
-L=input1(1);                  % length of the PRO membrane [m]      
-alpha = 5.47e-9;        % water permeablity co-efficient [s/m]
-R =0.94;                % salt rejection rate [1]
-KK=7.13e2;              % mass transfer coefficient [sm^2/kg]
-KD=1/KK;                % PRO ECP draw side mass transfer coefficient [sm^2/kg]
-KF=1/KK;                % PRO ECP fresh side mass transfer coefficient [sm^2/kg]
-x_r=L^2;                % x_r=L^2 since x = linspace(0,1,n) (if x = linspace(0,L,n) then x_r=L;)              
-b1 = H/x_r;             % H/L ratio
-b2 = Z/x_r;                           % Z/L ratio
-Q_r = sqrt(H^3/x_r*p_r*rho_r);        % flux [kg/s^2]
-gamma= x_r * p_r * alpha /Q_r ;       % PRO scaling factor - mass balance
-gamma2= Q_r^2./(x_r^2 * p_r * rho_r); % PRO scaling factor - momentum balance
-W_r=Q_r*p_r/rho_r;                    % net work [W/m^2]
-beta_fix =1.71e-4/Q_r*x_r;            % value for fixed PRO beta [kg/sm^2]
+Z = 1;              % width of the PRO membrane [m]
+L = input1(1);      % length of the PRO membrane [m]      
+alpha = 5.47e-9;    % water permeablity co-efficient [s/m]
+R = 0.94;           % salt rejection rate [1]
+KK = 7.13e2;        % mass transfer coefficient [sm^2/kg]
+KD = 7.13e-2;       % PRO ECP draw side mass transfer coefficient [sm^2/kg]
+KF = 7.13e-2;       % PRO ECP fresh side mass transfer coefficient [sm^2/kg]
+x_r = L^2;          % x_r=L^2 since x = linspace(0,1,n) (if x = linspace(0,L,n) then x_r=L;)              
+b1 = H/x_r;         % H/L ratio
+b2 = Z/x_r;                            % Z/L ratio
+Q_r = sqrt(H^3/x_r*p_r*rho_r);         % flux [kg/s^2]
+gamma = x_r * p_r * alpha /Q_r ;       % PRO scaling factor - mass balance
+gamma2 = Q_r^2./(x_r^2 * p_r * rho_r); % PRO scaling factor - momentum balance
+W_r = Q_r*p_r/rho_r;                   % net work [W/m^2]
+beta_fix = 1.71e-4/Q_r*x_r;            % value for fixed PRO beta [kg/sm^2]
 
 %% Sea Water
 cE= 35/983/C_r;                            % salt concentration in seawater
@@ -102,15 +102,15 @@ pf_0 = input1(5);        % pressure draw side at L
 T_eff  = .95;               % turbine efficiency
 HP_eff = .9;            	% high pressure pump efficiency
 LP_eff = .95;               % low pressure pump efficiency
-V_m=0.052;                  % Volumetric mixing
-ERD_eff=.96;                % ERD unit pressure efficiency
-ERD_fric=5e-04;             % ERD friction coefficient
-A_ERD=H*swro_Z;             % cross sectional area of ERD inflows/outflows
-eta_ERD=0.01;               % leak of high pressure brine
-mix_density=997/rho_r;  	% density of mixture in ERD
-pw=2.5;                     % water price [$/m^3]
-pe=0.5;                     % electricity price [$/kWh]
-mixer_ERD=1;                % PRO Draw outlet mixer adjustment (only if 2nd ERDs) (mixer_ERD=1 --> all flow to ERD2 no turbine needed)    
+V_m = 0.052;                % Volumetric mixing
+ERD_eff = .96;              % ERD unit pressure efficiency
+ERD_fric = 5e-04;           % ERD friction coefficient
+A_ERD = H*swro_Z;           % cross sectional area of ERD inflows/outflows
+eta_ERD = 0.01;             % leak of high pressure brine
+mix_density = 997/rho_r;  	% density of mixture in ERD
+pw = 2.5;                   % water price [$/m^3]
+pe = 0.5;                   % electricity price [$/kWh]
+mixer_ERD = 1;              % PRO Draw outlet mixer adjustment (only if 2nd ERDs) (mixer_ERD=1 --> all flow to ERD2 no turbine needed)    
 
 %% display figures
 %fig=[1,1,1,1]; % f(i)=1 --> figure i will be displayed
