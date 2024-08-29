@@ -34,10 +34,9 @@ end
 if option_data == 0; DATA = @(x)Sim_0a_data(input); end
 if option_data == 0.1; DATA = @(x)Sim_0b_data(input); end
 %
-if option_data == 0.3; DATA = @(x)Length_opt_data(input); end
-%
 if option_data == 1; DATA = @(x)Pareto_1_data(input); end
 if option_data == 2; DATA = @(x)Pareto_2_data(input); end
+if option_data == 0.3; DATA = @(x)Pareto_03_data(input); end % PRO Length can be adjusted here
 if option_data == 3; DATA = @(x)Pareto_3_data(input); end
 %
 
