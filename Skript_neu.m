@@ -70,7 +70,7 @@ clc,
 close all;clc;
 load DATA_Initial.mat
 L=linspace(.5,2.5,21);
-for j=1:21
+for j=11:21
     A= [0 0 1 -1 0]; b= -.01; Aeq=[]; beq=[]; lb = [L(j);30;1.01;1.01;1]; ub = [L(j);70;20;20;5];
     option_mesh = 1e3; option_BVP = 1e-4; option_data = .3;
     rng default
@@ -96,7 +96,7 @@ for j=1:21
         if j==20; X_init=XL_24; end
         if j==21; X_init=XL_25; end
     X_init=repmat(X_init, 20, 1); %200 x 5 double
-    options = optimoptions('paretosearch','ParetoSetSize',200, 'InitialPoints',X_init,'Display','iter', 'MaxFunctionEvaluations',10000, 'ParetoSetChangeTolerance',1e-8,'UseParallel', true);
+    options = optimoptions('paretosearch','ParetoSetSize',200, 'InitialPoints',X_init,'Display','iter', 'MaxFunctionEvaluations',10000, 'ParetoSetChangeTolerance',1e-7,'UseParallel', true);
     X = paretosearch(@(x)fun_1(x,option_data,'Pareto',option_mesh,option_BVP),5,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'default'),options); 
     %
         if j==1
@@ -250,10 +250,18 @@ for j=1:21
         display('finished with:')
         j,
 end
+%%
+clc
+system('start cmd');
+system('git status');
+system('git add .');
+system('git commit -m "testing git commands in matlab code"');
+system('git push https://github.com/oliver-mx/GitMATLAB.git');
 
 %% interactive scatter plot
 close all;
 scatter_switcher()
+
 %%
 %
 % simulate some data near critical points
