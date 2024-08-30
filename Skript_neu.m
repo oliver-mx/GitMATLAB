@@ -250,12 +250,12 @@ for j=11:21
         display('finished with:')
         j,
 end
-%%
+
 clc
 system('start cmd');
 system('git status');
 system('git add .');
-system('git commit -m "testing git commands in matlab code"');
+system('git commit -m "Second calculation of 21 Pareto fronts (and first automated remote git push)"');
 system('git push https://github.com/oliver-mx/GitMATLAB.git');
 
 %% interactive scatter plot
