@@ -70,7 +70,7 @@ clc,
 close all;clc;
 load DATA_Initial.mat
 L=linspace(.5,2.5,21);
-for j=11:21
+for j=1:21  
     A= [0 0 1 -1 0]; b= -.01; Aeq=[]; beq=[]; lb = [L(j);30;1.01;1.01;1]; ub = [L(j);70;20;20;5];
     option_mesh = 1e3; option_BVP = 1e-4; option_data = .3;
     rng default
@@ -94,9 +94,8 @@ for j=11:21
         if j==18; X_init=XL_22; end
         if j==19; X_init=XL_23; end
         if j==20; X_init=XL_24; end
-        if j==21; X_init=XL_25; end
-    X_init=repmat(X_init, 20, 1); %200 x 5 double
-    options = optimoptions('paretosearch','ParetoSetSize',200, 'InitialPoints',X_init,'Display','iter', 'MaxFunctionEvaluations',10000, 'ParetoSetChangeTolerance',1e-7,'UseParallel', true);
+        if j==21; X_init=XL_25; end 
+    options = optimoptions('paretosearch','ParetoSetSize',200, 'InitialPoints',X_init','Display','iter', 'MaxFunctionEvaluations',10000, 'ParetoSetChangeTolerance',1e-7,'UseParallel', true);
     X = paretosearch(@(x)fun_1(x,option_data,'Pareto',option_mesh,option_BVP),5,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'default'),options); 
     %
         if j==1
@@ -252,10 +251,9 @@ for j=11:21
 end
 
 clc
-system('start cmd');
 system('git status');
 system('git add .');
-system('git commit -m "Second calculation of 21 Pareto fronts (and first automated remote git push)"');
+system('git commit -m "Third calculation of 21 Pareto fronts"');
 system('git push https://github.com/oliver-mx/GitMATLAB.git');
 
 %% interactive scatter plot
@@ -271,26 +269,30 @@ scatter_switcher()
 % close all
 % determine critical point:
 load DATA_25.mat X_25 Y_25 % <---- WICHTIG
-j=21;             % <---- WICHTIG
-Test=[17  194 22 10 97];  % <---- WICHTIG
+A=X_25;   % <---- WICHTIG
+B=Y_25;   % <---- WICHTIG
+j=25;    
+%Test=[38 52 11 1];  % <---- WICHTIG
 clc
-for t=1:length(Test)
-A=X_25(:,Test(t))'; % <---- WICHTIG
-disp(['% ',num2str(A)]),
-end
-B=Y_25;       % <---- WICHTIG
+%for t=1:length(Test)
+%displayA=A(:,Test(t))';
+%disp(['% ',num2str(displayA)]),
+%end
 %
 
-%%
+%
 %rng default % bei Initialisierung
 option_mesh = 1e3; option_BVP = 1e-4; option_data = .3;  
-k=14*14;
+k=14*70;
 % initial guess
 I1 = A(1).*ones(1,k);                       
-I2 =       (58).*ones(1,k) + 6.*rand(1,k);     % <---- WICHTIG
-I4 =       (17).*ones(1,k) + 3.*rand(1,k); % <---- WICHTIG
-I3 = I4 -   (.05).*ones(1,k) - 2.5.*rand(1,k);  % <---- WICHTIG
-I5 =        (1.5).*ones(1,k)+ 2*rand(1,k);   % <---- WICHTIG
+I2 =       (58).*ones(1,k) + 11.*rand(1,k);     % <---- WICHTIG
+I2(1:400)= 70*ones(1,400);
+I4 =       (15).*ones(1,k) + 5.*rand(1,k); % <---- WICHTIG
+I4(1:200)= 20*ones(1,200);
+I3 = I4 -   (.05).*ones(1,k) - 5.*rand(1,k);  % <---- WICHTIG
+I5 =        (1.01).*ones(1,k)+ 3.5*rand(1,k);   % <---- WICHTIG
+
 
 X_init=[I1;I2;I3;I4;I5];
 Y_init=zeros(5,k);
@@ -311,27 +313,24 @@ scatter3(Y_init(1,:),Y_init(2,:),1:1:k,'MarkerEdgeColor',[0 0 0],'MarkerFaceColo
 %
 grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
 ylabel('FW [m^3/h]','FontSize',16);xlabel('SEC_{net} [kWh/m^3]','FontSize',16);
-
+beep
 
 
 %% save new initial Data
-load('DATA_Initial.mat')
-I=[94 168 34 105 73 194 74 40]; % <---- WICHTIG
-Z=[]
+I=[74 69 86 176 152 167 137 386 83 88 103 274]; % <---- WICHTIG
+Z=[];% keep it empty :)
 for i=1:length(I)
-Z=[Z X_init(:,i)];
+    Z=[Z X_init(:,i)];
 end
 clc
-XL_25=Z', % <---- WICHTIG
-save DATA_Initial.mat XL_05 XL_06 XL_07 XL_08 XL_09 XL_10 XL_11 XL_12 XL_13 XL_14 ...
-                      XL_15 XL_16 XL_17 XL_18 XL_19 XL_20 XL_21 XL_22 XL_23 XL_24 XL_25
-
+X_temp=Z',
 
 %%
 load('DATA_Initial.mat')
-Init=X_25'; % <---- WICHTIG
-Init(100:100+length(I)-1,:)=[];
-Init=[Init; XL_25]; % <---- WICHTIG
+Init=A;
+Init(:,100:100+length(I)-1)=[];
+Init=[Init X_temp'];
+%
 XL_25=Init; % <---- WICHTIG
 save DATA_Initial.mat XL_05 XL_06 XL_07 XL_08 XL_09 XL_10 XL_11 XL_12 XL_13 XL_14 ...
                       XL_15 XL_16 XL_17 XL_18 XL_19 XL_20 XL_21 XL_22 XL_23 XL_24 XL_25
