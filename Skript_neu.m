@@ -70,7 +70,7 @@ clc,
 close all;clc;
 load DATA_Initial.mat
 L=linspace(.5,2.5,21);
-for j=1:21  
+for j=1:11 % only up to 11 start tomorrow from 15
     A= [0 0 1 -1 0]; b= -.01; Aeq=[]; beq=[]; lb = [L(j);30;1.01;1.01;1]; ub = [L(j);70;20;20;5];
     option_mesh = 1e3; option_BVP = 1e-4; option_data = .3;
     rng default
@@ -268,12 +268,12 @@ scatter_switcher()
 
 % close all
 % determine critical point:
-load DATA_25.mat X_25 Y_25 % <---- WICHTIG
-A=X_25;   % <---- WICHTIG
-B=Y_25;   % <---- WICHTIG
+load DATA_13.mat X_13 Y_13 % <---- WICHTIG
+A=X_13;   % <---- WICHTIG
+B=Y_13;   % <---- WICHTIG
 j=25;    
-%Test=[38 52 11 1];  % <---- WICHTIG
-clc
+%Test=[];  % <---- WICHTIG
+%clc
 %for t=1:length(Test)
 %displayA=A(:,Test(t))';
 %disp(['% ',num2str(displayA)]),
@@ -283,15 +283,13 @@ clc
 %
 %rng default % bei Initialisierung
 option_mesh = 1e3; option_BVP = 1e-4; option_data = .3;  
-k=14*70;
+k=16*80;
 % initial guess
 I1 = A(1).*ones(1,k);                       
-I2 =       (58).*ones(1,k) + 11.*rand(1,k);     % <---- WICHTIG
-I2(1:400)= 70*ones(1,400);
-I4 =       (15).*ones(1,k) + 5.*rand(1,k); % <---- WICHTIG
-I4(1:200)= 20*ones(1,200);
-I3 = I4 -   (.05).*ones(1,k) - 5.*rand(1,k);  % <---- WICHTIG
-I5 =        (1.01).*ones(1,k)+ 3.5*rand(1,k);   % <---- WICHTIG
+I2 =       (58).*ones(1,k) + 12.*rand(1,k);     % <---- WICHTIG
+I4 =       (13).*ones(1,k) + 7.*rand(1,k); % <---- WICHTIG
+I3 = I4 -   (.01).*ones(1,k) - .5.*rand(1,k);  % <---- WICHTIG
+I5 =        (1.01).*ones(1,k)+ 1*rand(1,k);   % <---- WICHTIG
 
 
 X_init=[I1;I2;I3;I4;I5];
@@ -317,7 +315,7 @@ beep
 
 
 %% save new initial Data
-I=[74 69 86 176 152 167 137 386 83 88 103 274]; % <---- WICHTIG
+I=[1198 54 1155 1277 297 1238]; % <---- WICHTIG
 Z=[];% keep it empty :)
 for i=1:length(I)
     Z=[Z X_init(:,i)];
@@ -328,10 +326,10 @@ X_temp=Z',
 %%
 load('DATA_Initial.mat')
 Init=A;
-Init(:,100:100+length(I)-1)=[];
+Init(:,90:90+length(I)-1)=[];
 Init=[Init X_temp'];
 %
-XL_25=Init; % <---- WICHTIG
+XL_12=Init; % <---- WICHTIG
 save DATA_Initial.mat XL_05 XL_06 XL_07 XL_08 XL_09 XL_10 XL_11 XL_12 XL_13 XL_14 ...
                       XL_15 XL_16 XL_17 XL_18 XL_19 XL_20 XL_21 XL_22 XL_23 XL_24 XL_25
 
@@ -504,7 +502,7 @@ function updatePlot(ax, plotType)
         scatter(Y1(1,:),Y1(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
         scatter(Y2(1,:),Y2(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold on
         load DATA_05.mat X_05 Y_05
-        scatter3(Y_05(1,:),Y_05(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(1,:)); hold on
+        scatter3(Y_05(1,:),Y_05(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(4,:)); hold on
         grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
         legend('Case1: \epsilon-constraint method', 'Case2: \epsilon-constraint method', ['L^{PRO} = ',num2str(X_05(1,1)), 'm'],'Location', 'Northeast');
         title(ax, ['SWRO vs PRO length ratio:    1 : ',num2str(X_05(1,1)/4)]);
@@ -515,7 +513,7 @@ function updatePlot(ax, plotType)
         scatter(Y1(1,:),Y1(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
         scatter(Y2(1,:),Y2(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold on
         load DATA_06.mat X_06 Y_06
-        scatter3(Y_06(1,:),Y_06(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(2,:)); hold on
+        scatter3(Y_06(1,:),Y_06(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(5,:)); hold on
         grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
         legend('Case1: \epsilon-constraint method', 'Case2: \epsilon-constraint method', ['L^{PRO} = ',num2str(X_06(1,1)), 'm'],'Location', 'Northeast');
         title(ax, ['SWRO vs PRO length ratio:    1 : ',num2str(X_06(1,1)/4)]);
@@ -526,7 +524,7 @@ function updatePlot(ax, plotType)
         scatter(Y1(1,:),Y1(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
         scatter(Y2(1,:),Y2(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold on
         load DATA_07.mat X_07 Y_07
-        scatter3(Y_07(1,:),Y_07(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(3,:)); hold on
+        scatter3(Y_07(1,:),Y_07(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(6,:)); hold on
         grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
         legend('Case1: \epsilon-constraint method', 'Case2: \epsilon-constraint method', ['L^{PRO} = ',num2str(X_07(1,1)), 'm'],'Location', 'Northeast');
         title(ax, ['SWRO vs PRO length ratio:    1 : ',num2str(X_07(1,1)/4)]);
@@ -537,7 +535,7 @@ function updatePlot(ax, plotType)
         scatter(Y1(1,:),Y1(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
         scatter(Y2(1,:),Y2(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold on
         load DATA_08.mat X_08 Y_08
-        scatter3(Y_08(1,:),Y_08(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(4,:)); hold on
+        scatter3(Y_08(1,:),Y_08(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(7,:)); hold on
         grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
         legend('Case1: \epsilon-constraint method', 'Case2: \epsilon-constraint method', ['L^{PRO} = ',num2str(X_08(1,1)), 'm'],'Location', 'Northeast');
         title(ax, ['SWRO vs PRO length ratio:    1 : ',num2str(X_08(1,1)/4)]);
@@ -548,7 +546,7 @@ function updatePlot(ax, plotType)
         scatter(Y1(1,:),Y1(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
         scatter(Y2(1,:),Y2(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold on
         load DATA_09.mat X_09 Y_09
-        scatter3(Y_09(1,:),Y_09(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(5,:)); hold on
+        scatter3(Y_09(1,:),Y_09(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(8,:)); hold on
         grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
         legend('Case1: \epsilon-constraint method', 'Case2: \epsilon-constraint method', ['L^{PRO} = ',num2str(X_09(1,1)), 'm'],'Location', 'Northeast');
         title(ax, ['SWRO vs PRO length ratio:    1 : ',num2str(X_09(1,1)/4)]);
@@ -559,7 +557,7 @@ function updatePlot(ax, plotType)
         scatter(Y1(1,:),Y1(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
         scatter(Y2(1,:),Y2(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold on
         load DATA_10.mat X_10 Y_10
-        scatter3(Y_10(1,:),Y_10(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(6,:)); hold on
+        scatter3(Y_10(1,:),Y_10(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(9,:)); hold on
         grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
         legend('Case1: \epsilon-constraint method', 'Case2: \epsilon-constraint method', ['L^{PRO} = ',num2str(X_10(1,1)), 'm'],'Location', 'Northeast');
         title(ax, ['SWRO vs PRO length ratio:    1 : ',num2str(X_10(1,1)/4)]);
@@ -570,7 +568,7 @@ function updatePlot(ax, plotType)
         scatter(Y1(1,:),Y1(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
         scatter(Y2(1,:),Y2(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold on
         load DATA_11.mat X_11 Y_11
-        scatter3(Y_11(1,:),Y_11(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(7,:)); hold on
+        scatter3(Y_11(1,:),Y_11(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(10,:)); hold on
         grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
         legend('Case1: \epsilon-constraint method', 'Case2: \epsilon-constraint method', ['L^{PRO} = ',num2str(X_11(1,1)), 'm'],'Location', 'Northeast');
         title(ax, ['SWRO vs PRO length ratio:    1 : ',num2str(X_11(1,1)/4)]);
@@ -581,7 +579,7 @@ function updatePlot(ax, plotType)
         scatter(Y1(1,:),Y1(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
         scatter(Y2(1,:),Y2(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold on
         load DATA_12.mat X_12 Y_12
-        scatter3(Y_12(1,:),Y_12(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(8,:)); hold on
+        scatter3(Y_12(1,:),Y_12(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(11,:)); hold on
         grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
         legend('Case1: \epsilon-constraint method', 'Case2: \epsilon-constraint method', ['L^{PRO} = ',num2str(X_12(1,1)), 'm'],'Location', 'Northeast');
         title(ax, ['SWRO vs PRO length ratio:    1 : ',num2str(X_12(1,1)/4)]);
@@ -592,7 +590,7 @@ function updatePlot(ax, plotType)
         scatter(Y1(1,:),Y1(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
         scatter(Y2(1,:),Y2(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold on
         load DATA_13.mat X_13 Y_13
-        scatter3(Y_13(1,:),Y_13(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(9,:)); hold on
+        scatter3(Y_13(1,:),Y_13(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(12,:)); hold on
         grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
         legend('Case1: \epsilon-constraint method', 'Case2: \epsilon-constraint method', ['L^{PRO} = ',num2str(X_13(1,1)), 'm'],'Location', 'Northeast');
         title(ax, ['SWRO vs PRO length ratio:    1 : ',num2str(X_13(1,1)/4)]);
@@ -603,7 +601,7 @@ function updatePlot(ax, plotType)
         scatter(Y1(1,:),Y1(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
         scatter(Y2(1,:),Y2(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold on
         load DATA_14.mat X_14 Y_14
-        scatter3(Y_14(1,:),Y_14(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(10,:)); hold on
+        scatter3(Y_14(1,:),Y_14(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(13,:)); hold on
         grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
         legend('Case1: \epsilon-constraint method', 'Case2: \epsilon-constraint method', ['L^{PRO} = ',num2str(X_14(1,1)), 'm'],'Location', 'Northeast');
         title(ax, ['SWRO vs PRO length ratio:    1 : ',num2str(X_14(1,1)/4)]);
@@ -614,7 +612,7 @@ function updatePlot(ax, plotType)
         scatter(Y1(1,:),Y1(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
         scatter(Y2(1,:),Y2(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold on
         load DATA_15.mat X_15 Y_15
-        scatter3(Y_15(1,:),Y_15(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(11,:)); hold on
+        scatter3(Y_15(1,:),Y_15(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(14,:)); hold on
         grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
         legend('Case1: \epsilon-constraint method', 'Case2: \epsilon-constraint method', ['L^{PRO} = ',num2str(X_15(1,1)), 'm'],'Location', 'Northeast');
         title(ax, ['SWRO vs PRO length ratio:    1 : ',num2str(X_15(1,1)/4)]);
@@ -625,7 +623,7 @@ function updatePlot(ax, plotType)
         scatter(Y1(1,:),Y1(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
         scatter(Y2(1,:),Y2(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold on
         load DATA_16.mat X_16 Y_16
-        scatter3(Y_16(1,:),Y_16(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(12,:)); hold on
+        scatter3(Y_16(1,:),Y_16(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(15,:)); hold on
         grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
         legend('Case1: \epsilon-constraint method', 'Case2: \epsilon-constraint method', ['L^{PRO} = ',num2str(X_16(1,1)), 'm'],'Location', 'Northeast');
         title(ax, ['SWRO vs PRO length ratio:    1 : ',num2str(X_16(1,1)/4)]);
@@ -636,7 +634,7 @@ function updatePlot(ax, plotType)
         scatter(Y1(1,:),Y1(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
         scatter(Y2(1,:),Y2(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold on
         load DATA_17.mat X_17 Y_17
-        scatter3(Y_17(1,:),Y_17(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(13,:)); hold on
+        scatter3(Y_17(1,:),Y_17(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(16,:)); hold on
         grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
         legend('Case1: \epsilon-constraint method', 'Case2: \epsilon-constraint method', ['L^{PRO} = ',num2str(X_17(1,1)), 'm'],'Location', 'Northeast');
         title(ax, ['SWRO vs PRO length ratio:    1 : ',num2str(X_17(1,1)/4)]);
@@ -647,7 +645,7 @@ function updatePlot(ax, plotType)
         scatter(Y1(1,:),Y1(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
         scatter(Y2(1,:),Y2(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold on
         load DATA_18.mat X_18 Y_18
-        scatter3(Y_18(1,:),Y_18(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(14,:)); hold on
+        scatter3(Y_18(1,:),Y_18(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(17,:)); hold on
         grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
         legend('Case1: \epsilon-constraint method', 'Case2: \epsilon-constraint method', ['L^{PRO} = ',num2str(X_18(1,1)), 'm'],'Location', 'Northeast');
         title(ax, ['SWRO vs PRO length ratio:    1 : ',num2str(X_18(1,1)/4)]);
@@ -658,7 +656,7 @@ function updatePlot(ax, plotType)
         scatter(Y1(1,:),Y1(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
         scatter(Y2(1,:),Y2(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold on
         load DATA_19.mat X_19 Y_19
-        scatter3(Y_19(1,:),Y_19(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(15,:)); hold on
+        scatter3(Y_19(1,:),Y_19(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(18,:)); hold on
         grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
         legend('Case1: \epsilon-constraint method', 'Case2: \epsilon-constraint method', ['L^{PRO} = ',num2str(X_19(1,1)), 'm'],'Location', 'Northeast');
         title(ax, ['SWRO vs PRO length ratio:    1 : ',num2str(X_19(1,1)/4)]);
@@ -669,7 +667,7 @@ function updatePlot(ax, plotType)
         scatter(Y1(1,:),Y1(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
         scatter(Y2(1,:),Y2(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold on
         load DATA_20.mat X_20 Y_20
-        scatter3(Y_20(1,:),Y_20(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(16,:)); hold on
+        scatter3(Y_20(1,:),Y_20(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(19,:)); hold on
         grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
         legend('Case1: \epsilon-constraint method', 'Case2: \epsilon-constraint method', ['L^{PRO} = ',num2str(X_20(1,1)), 'm'],'Location', 'Northeast');
         title(ax, ['SWRO vs PRO length ratio:    1 : ',num2str(X_20(1,1)/4)]);
@@ -680,7 +678,7 @@ function updatePlot(ax, plotType)
         scatter(Y1(1,:),Y1(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
         scatter(Y2(1,:),Y2(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold on
         load DATA_21.mat X_21 Y_21
-        scatter3(Y_21(1,:),Y_21(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(17,:)); hold on
+        scatter3(Y_21(1,:),Y_21(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(20,:)); hold on
         grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
         legend('Case1: \epsilon-constraint method', 'Case2: \epsilon-constraint method', ['L^{PRO} = ',num2str(X_21(1,1)), 'm'],'Location', 'Northeast');
         title(ax, ['SWRO vs PRO length ratio:    1 : ',num2str(X_21(1,1)/4)]);
@@ -691,7 +689,7 @@ function updatePlot(ax, plotType)
         scatter(Y1(1,:),Y1(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
         scatter(Y2(1,:),Y2(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold on
         load DATA_22.mat X_22 Y_22
-        scatter3(Y_22(1,:),Y_22(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(18,:)); hold on
+        scatter3(Y_22(1,:),Y_22(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(21,:)); hold on
         grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
         legend('Case1: \epsilon-constraint method', 'Case2: \epsilon-constraint method', ['L^{PRO} = ',num2str(X_22(1,1)), 'm'],'Location', 'Northeast');
         title(ax, ['SWRO vs PRO length ratio:    1 : ',num2str(X_22(1,1)/4)]);
@@ -702,7 +700,7 @@ function updatePlot(ax, plotType)
         scatter(Y1(1,:),Y1(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
         scatter(Y2(1,:),Y2(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold on
         load DATA_23.mat X_23 Y_23
-        scatter3(Y_23(1,:),Y_23(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(19,:)); hold on
+        scatter3(Y_23(1,:),Y_23(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(22,:)); hold on
         grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
         legend('Case1: \epsilon-constraint method', 'Case2: \epsilon-constraint method', ['L^{PRO} = ',num2str(X_23(1,1)), 'm'],'Location', 'Northeast');
         title(ax, ['SWRO vs PRO length ratio:    1 : ',num2str(X_23(1,1)/4)]);
@@ -713,7 +711,7 @@ function updatePlot(ax, plotType)
         scatter(Y1(1,:),Y1(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
         scatter(Y2(1,:),Y2(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold on
         load DATA_24.mat X_24 Y_24
-        scatter3(Y_24(1,:),Y_24(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(20,:)); hold on
+        scatter3(Y_24(1,:),Y_24(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(23,:)); hold on
         grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
         legend('Case1: \epsilon-constraint method', 'Case2: \epsilon-constraint method', ['L^{PRO} = ',num2str(X_24(1,1)), 'm'],'Location', 'Northeast');
         title(ax, ['SWRO vs PRO length ratio:    1 : ',num2str(X_24(1,1)/4)]);
@@ -724,7 +722,7 @@ function updatePlot(ax, plotType)
         scatter(Y1(1,:),Y1(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
         scatter(Y2(1,:),Y2(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold on
         load DATA_25.mat X_25 Y_25
-        scatter3(Y_25(1,:),Y_25(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(21,:)); hold on
+        scatter3(Y_25(1,:),Y_25(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(24,:)); hold on
         grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
         legend('Case1: \epsilon-constraint method', 'Case2: \epsilon-constraint method', ['L^{PRO} = ',num2str(X_25(1,1)), 'm'],'Location', 'Northeast');
         title(ax, ['SWRO vs PRO length ratio:    1 : ',num2str(X_25(1,1)/4)]);
