@@ -70,7 +70,7 @@ clc,
 close all;clc;
 load DATA_Initial.mat
 L=linspace(.5,2.5,21);
-for j=1:8 % then start from 10 i.e. L=1.4
+for j=9:21
     A= [0 0 1 -1 0]; b= -.01; Aeq=[]; beq=[]; lb = [L(j);30;1.01;1.01;1]; ub = [L(j);70;20;20;5];
     option_mesh = 1e3; option_BVP = 1e-4; option_data = .3;
     rng default
@@ -253,12 +253,17 @@ end
 clc
 system('git status');
 system('git add .');
-system('git commit -m "Fourth calculation - bis 1.3m"');
+system('git commit -m "Fourth calculation - 1.3 bis 2.5m"');
 system('git push https://github.com/oliver-mx/GitMATLAB.git');
+system('shutdown /s /t 30');
 
-%% interactive scatter plot
+%% interactive Pareto front plot
 close all;
-scatter_switcher()
+scatter_pareto()
+
+%% interactive revenue plot
+close all;
+scatter_revenue()
 
 %%
 %
@@ -268,11 +273,11 @@ scatter_switcher()
 
 % close all
 % determine critical point:
-load DATA_13.mat X_13 Y_13 % <---- WICHTIG
-A=X_13;   % <---- WICHTIG
-B=Y_13;   % <---- WICHTIG
+load DATA_25.mat X_25 Y_25 % <---- WICHTIG
+A=X_25;   % <---- WICHTIG
+B=Y_25;   % <---- WICHTIG
 j=25;    
-Test=[144 64 57 106];  % <---- WICHTIG
+Test=[34 1 168 9 38 104 154 74 144 67 56];  % <---- WICHTIG
 clc
 for t=1:length(Test)
 displayA=A(:,Test(t))';
@@ -283,13 +288,15 @@ end
 %%
 %rng default % bei Initialisierung
 option_mesh = 1e3; option_BVP = 1e-4; option_data = .3;  
-k=16*80;
+k=16*200;
 % initial guess
 I1 = A(1).*ones(1,k);                       
-I2 =       (69).*ones(1,k) + 1.*rand(1,k);     % <---- WICHTIG
+I2 =       (57).*ones(1,k) + 13.*rand(1,k);     % <---- WICHTIG
+I2(1:400)=70.*ones(1,400);
 I4 =       (19).*ones(1,k) + 1.*rand(1,k); % <---- WICHTIG
-I3 = I4 -   (.05).*ones(1,k) - 2.*rand(1,k);  % <---- WICHTIG
-I5 =        (1.01).*ones(1,k)+ .6*rand(1,k);   % <---- WICHTIG
+I4(200:600)=20.*ones(1,401);
+I3 = I4 -   (.01).*ones(1,k) - 8.*rand(1,k);  % <---- WICHTIG
+I5 =        (1.01).*ones(1,k)+ 4.8*rand(1,k);   % <---- WICHTIG
 
 
 X_init=[I1;I2;I3;I4;I5];
@@ -315,7 +322,7 @@ beep
 
 
 %% save new initial Data
-I=[  ]; % <---- WICHTIG
+I=[295 374 111 162 272 145 29 264 67 36 1458 2669 130 1628 1306 2406 2926 2888 2913 2157]; % <---- WICHTIG
 Z=[];% keep it empty :)
 for i=1:length(I)
     Z=[Z X_init(:,i)];
@@ -329,7 +336,7 @@ Init=A;
 Init(:,90:90+length(I)-1)=[];
 Init=[Init X_temp'];
 %
-XL_13=Init; % <---- WICHTIG
+XL_25=Init; % <---- WICHTIG
 save DATA_Initial.mat XL_05 XL_06 XL_07 XL_08 XL_09 XL_10 XL_11 XL_12 XL_13 XL_14 ...
                       XL_15 XL_16 XL_17 XL_18 XL_19 XL_20 XL_21 XL_22 XL_23 XL_24 XL_25
 
@@ -399,8 +406,6 @@ scatter(Y_Pareto(1,1:40),Y_Pareto(2,1:40),'MarkerEdgeColor',[0 0 0],'MarkerFaceC
 %
 %
 
-
-
 %sum(isnan(Y_Pareto(1,:)))
 
 
@@ -410,30 +415,10 @@ scatter(Y_Pareto(1,1:40),Y_Pareto(2,1:40),'MarkerEdgeColor',[0 0 0],'MarkerFaceC
 
 
 %% plot of best Pareto front
-
 load DATA_case1.mat Y1
 load DATA_case2.mat Y2
 scatter(Y1(1,:),Y1(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
 scatter(Y2(1,:),Y2(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold on
-
-
-%
-% change the fun_1 such that i can reproduce the old pareto front
-%
-% find data X and Y data from old front
-%
-% calculate Y_new using fun_1
-%
-% check that Y_new == Y
-%
-% then run skript for one areto front again (L=1.5m)
-%
-% then run skript for all the others again
-%
-%
-%
-
-
 
 %% optimales revenue
 %
@@ -452,30 +437,166 @@ scatter(Y2(1,:),Y2(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold o
 %
 % __> PAPER FERTIG MACHEN !!!!!!!!!!!!!!!!!!!!!!!!!!
 
-%%
-%%
 
+%% all functions of the script:
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-close all;
-scatter_switcher()
- function scatter_switcher()   
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ function scatter_revenue()   
     % Create a figure and axis
-    fig = figure('Name', 'Scatter Plot Switcher', 'NumberTitle', 'off');
+    fig = figure('Name', 'Interactive revenue plot', 'NumberTitle', 'off');
+    fig.Position=[1200 500 800 500];
+    ax = axes('Parent', fig);
+    set(ax, 'Position', [0.1, 0.25, 0.8, 0.6]);
+    grid on; xlim([0 3]); ylim([-.1 1.5]);view(2);
+    xlabel('please move the slider')
+    hLabel = uicontrol('Style', 'text', ...
+                   'Position', [10, 45, 110, 20], ... % [left, bottom, width, height]
+                   'String', 'Water price:', ...
+                   'FontSize', 10, ...
+                   'FontWeight', 'bold', ...
+                   'BackgroundColor', get(0, 'defaultuicontrolbackgroundcolor'));
+    h2Label = uicontrol('Style', 'text', ...
+                   'Position', [10, 8, 110, 20], ... % [left, bottom, width, height]
+                   'String', 'Electricity price:', ...
+                   'FontSize', 10, ...
+                   'FontWeight', 'bold', ...
+                   'BackgroundColor', get(0, 'defaultuicontrolbackgroundcolor'));
+    % Create a slider
+    slider1 = uicontrol('Style', 'slider', ...
+                       'Min', 0, 'Max', 2.5, 'Value', 2, ...
+                       'Units', 'normalized', ...
+                       'Position', [0.15, 0.08, 0.7, 0.05]);
+    slider2 = uicontrol('Style', 'slider', ...
+                       'Min', 0, 'Max', 1, 'Value', .5, ...
+                       'Units', 'normalized', ...
+                       'Position', [0.15, 0.01, 0.7, 0.05]);
+    % Add a listener to the slider
+    addlistener(slider1, 'Value', 'PreSet', @(src, event) updatePlot2(ax, round((get(slider1, 'Value')-.01)*10)/10, round(get(slider2, 'Value')*10)/10));
+    addlistener(slider2, 'Value', 'PreSet', @(src, event) updatePlot2(ax, round((get(slider1, 'Value')-.01)*10)/10, round(get(slider2, 'Value')*10)/10));  
+    % Initial plot
+    updatePlot2(ax, round((get(slider1, 'Value')-.01)*10)/10, round(get(slider2, 'Value')*10)/10);
+end
+function updatePlot2(ax, s1, s2)
+    % Plot based on slider value
+    Color=summer(30);
+    Color=flipud(Color());
+    cla(ax);
+    a=zeros(1,21);
+    %
+    load DATA_05.mat X_05 Y_05
+    load DATA_06.mat X_06 Y_06
+    load DATA_07.mat X_07 Y_07
+    load DATA_08.mat X_08 Y_08
+    load DATA_09.mat X_09 Y_09
+    load DATA_10.mat X_10 Y_10
+    load DATA_11.mat X_11 Y_11
+    load DATA_12.mat X_12 Y_12
+    load DATA_13.mat X_13 Y_13
+    load DATA_14.mat X_14 Y_14
+    load DATA_15.mat X_15 Y_15
+    load DATA_16.mat X_16 Y_16
+    load DATA_17.mat X_17 Y_17
+    load DATA_18.mat X_18 Y_18
+    load DATA_19.mat X_19 Y_19
+    load DATA_20.mat X_20 Y_20
+    load DATA_21.mat X_21 Y_21
+    load DATA_22.mat X_22 Y_22
+    load DATA_23.mat X_23 Y_23
+    load DATA_24.mat X_24 Y_24
+    load DATA_25.mat X_25 Y_25
+    %
+    a(1)=max(s1.*Y_05(2,:) + s2.*Y_05(2,:).*Y_05(1,:));
+    scatter(X_05(1,1),a(1),'MarkerEdgeColor','none','MarkerFaceColor',Color(5,:));hold on
+    %
+    a(2)=max(s1.*Y_06(2,:) + s2.*Y_06(2,:).*Y_06(1,:));
+    scatter(X_06(1,1),a(2),'MarkerEdgeColor','none','MarkerFaceColor',Color(6,:));hold on
+    %    
+    a(3)=max(s1.*Y_07(2,:) + s2.*Y_07(2,:).*Y_07(1,:));
+    scatter(X_07(1,1),a(3),'MarkerEdgeColor','none','MarkerFaceColor',Color(7,:));hold on
+    %   
+    a(4)=max(s1.*Y_08(2,:) + s2.*Y_08(2,:).*Y_08(1,:));
+    scatter(X_08(1,1),a(4),'MarkerEdgeColor','none','MarkerFaceColor',Color(8,:));hold on
+    %
+    a(5)=max(s1.*Y_09(2,:) + s2.*Y_09(2,:).*Y_09(1,:));
+    scatter(X_09(1,1),a(5),'MarkerEdgeColor','none','MarkerFaceColor',Color(9,:));hold on
+    % 
+    a(6)=max(s1.*Y_10(2,:) + s2.*Y_10(2,:).*Y_10(1,:));
+    scatter(X_10(1,1),a(6),'MarkerEdgeColor','none','MarkerFaceColor',Color(10,:));hold on
+    %
+    a(7)=max(s1.*Y_11(2,:) + s2.*Y_11(2,:).*Y_11(1,:));
+    scatter(X_11(1,1),a(7),'MarkerEdgeColor','none','MarkerFaceColor',Color(11,:));hold on
+    %
+    a(8)=max(s1.*Y_12(2,:) + s2.*Y_12(2,:).*Y_12(1,:));
+    scatter(X_12(1,1),a(8),'MarkerEdgeColor','none','MarkerFaceColor',Color(12,:));hold on
+    %
+    a(9)=max(s1.*Y_13(2,:) + s2.*Y_13(2,:).*Y_13(1,:));
+    scatter(X_13(1,1),a(9),'MarkerEdgeColor','none','MarkerFaceColor',Color(13,:));hold on
+    %
+    a(10)=max(s1.*Y_14(2,:) + s2.*Y_14(2,:).*Y_14(1,:));
+    scatter(X_14(1,1),a(10),'MarkerEdgeColor','none','MarkerFaceColor',Color(14,:));hold on
+    %
+    a(11)=max(s1.*Y_15(2,:) + s2.*Y_15(2,:).*Y_15(1,:));
+    scatter(X_15(1,1),a(11),'MarkerEdgeColor','none','MarkerFaceColor',Color(15,:));hold on
+    %
+    a(12)=max(s1.*Y_16(2,:) + s2.*Y_16(2,:).*Y_16(1,:));
+    scatter(X_16(1,1),a(12),'MarkerEdgeColor','none','MarkerFaceColor',Color(16,:));hold on
+    %
+    a(13)=max(s1.*Y_17(2,:) + s2.*Y_17(2,:).*Y_17(1,:));
+    scatter(X_17(1,1),a(13),'MarkerEdgeColor','none','MarkerFaceColor',Color(17,:));hold on
+    %
+    a(14)=max(s1.*Y_18(2,:) + s2.*Y_18(2,:).*Y_18(1,:));
+    scatter(X_18(1,1),a(14),'MarkerEdgeColor','none','MarkerFaceColor',Color(18,:));hold on
+    %
+    a(15)=max(s1.*Y_19(2,:) + s2.*Y_19(2,:).*Y_19(1,:));
+    scatter(X_19(1,1),a(15),'MarkerEdgeColor','none','MarkerFaceColor',Color(19,:));hold on
+    %
+    a(16)=max(s1.*Y_20(2,:) + s2.*Y_20(2,:).*Y_20(1,:));
+    scatter(X_20(1,1),a(16),'MarkerEdgeColor','none','MarkerFaceColor',Color(20,:));hold on
+    %
+    a(17)=max(s1.*Y_21(2,:) + s2.*Y_21(2,:).*Y_21(1,:));
+    scatter(X_21(1,1),a(17),'MarkerEdgeColor','none','MarkerFaceColor',Color(21,:));hold on
+    %
+    a(18)=max(s1.*Y_22(2,:)+ s2.*Y_22(2,:).*Y_22(1,:));
+    scatter(X_22(1,1),a(18),'MarkerEdgeColor','none','MarkerFaceColor',Color(22,:));hold on
+    %
+    a(19)=max(s1.*Y_23(2,:) + s2.*Y_23(2,:).*Y_23(1,:));
+    scatter(X_23(1,1),a(19),'MarkerEdgeColor','none','MarkerFaceColor',Color(23,:));hold on
+    %
+    a(20)=max(s1.*Y_24(2,:) + s2.*Y_24(2,:).*Y_24(1,:));
+    scatter(X_24(1,1),a(20),'MarkerEdgeColor','none','MarkerFaceColor',Color(24,:));hold on
+    %
+    a(21)=max(s1.*Y_25(2,:) + s2.*Y_25(2,:).*Y_25(1,:));
+    scatter(X_25(1,1),a(21),'MarkerEdgeColor','none','MarkerFaceColor',Color(25,:));hold on
+    % 
+    [b,c]=max(a);
+    c=0.4+c*.1;
+    grid on; xlim([0 3]); ylim([-.1 1.5]);view(2);
+    ylabel('Revenue [$/h]')
+    xlabel('L^{PRO} [m]')
+    legend(['Max revenue = ',num2str(b),' $/h'], ['Highest revenue with L^{PRO} = ',num2str(c),' m'])
+   % title(['water price = ',num2str(s1),' $/m^3,              electricity price = ', num2str(s2), ' $/kwh']);
+    title({'Revenue comparison (L^{RO} = 4m):', ['with  p_w = ',num2str(s1),' $/m^3,   p_e = ', num2str(s2), ' $/kwh']});
+    h3Label = uicontrol('Style', 'text', ...
+                   'Position', [680, 45, 50, 20], ... % [left, bottom, width, height]
+                   'String', num2str(s1), ...
+                   'FontSize', 10, ...
+                   'FontWeight', 'bold', ...
+                   'BackgroundColor', get(0, 'defaultuicontrolbackgroundcolor'));
+   h4Label = uicontrol('Style', 'text', ...
+                   'Position', [680, 8, 50, 20], ... % [left, bottom, width, height]
+                   'String', num2str(s2), ...
+                   'FontSize', 10, ...
+                   'FontWeight', 'bold', ...
+                   'BackgroundColor', get(0, 'defaultuicontrolbackgroundcolor'));
+end
+
+
+
+ %%
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ function scatter_pareto()   
+    % Create a figure and axis
+    fig = figure('Name', 'Interactive Pareto fronts plot', 'NumberTitle', 'off');
     fig.Position=[1200 500 800 500];
     grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
     ax = axes('Parent', fig);
@@ -489,7 +610,7 @@ scatter_switcher()
     % Initial plot
     updatePlot(ax, round(get(slider,'Value')));
 end
-
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function updatePlot(ax, plotType)
     %Color=colorcube(21);
     Color=summer(30);
@@ -726,5 +847,17 @@ function updatePlot(ax, plotType)
         grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
         legend('Case1: \epsilon-constraint method', 'Case2: \epsilon-constraint method', ['L^{PRO} = ',num2str(X_25(1,1)), 'm'],'Location', 'Northeast');
         title(ax, ['SWRO vs PRO length ratio:    1 : ',num2str(X_25(1,1)/4)]);
-    end  
+    end 
+    hLabel = uicontrol('Style', 'text', ...
+                   'Position', [10, 8, 110, 20], ... % [left, bottom, width, height]
+                   'String', '       L^{PRO}:', ...
+                   'FontSize', 10, ...
+                   'FontWeight', 'bold', ...
+                   'BackgroundColor', get(0, 'defaultuicontrolbackgroundcolor'));
+    h2Label = uicontrol('Style', 'text', ...
+                   'Position', [680, 8, 50, 20], ... % [left, bottom, width, height]
+                   'String', num2str(0.4+plotType*.1), ...
+                   'FontSize', 10, ...
+                   'FontWeight', 'bold', ...
+                   'BackgroundColor', get(0, 'defaultuicontrolbackgroundcolor'));
 end
