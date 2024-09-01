@@ -70,7 +70,7 @@ clc,
 close all;clc;
 load DATA_Initial.mat
 L=linspace(.5,2.5,21);
-for j=1:11 % only up to 11 start tomorrow from 15
+for j=1:8 % then start from 10 i.e. L=1.4
     A= [0 0 1 -1 0]; b= -.01; Aeq=[]; beq=[]; lb = [L(j);30;1.01;1.01;1]; ub = [L(j);70;20;20;5];
     option_mesh = 1e3; option_BVP = 1e-4; option_data = .3;
     rng default
@@ -253,7 +253,7 @@ end
 clc
 system('git status');
 system('git add .');
-system('git commit -m "Third calculation of 21 Pareto fronts"');
+system('git commit -m "Fourth calculation - bis 1.3m"');
 system('git push https://github.com/oliver-mx/GitMATLAB.git');
 
 %% interactive scatter plot
@@ -272,24 +272,24 @@ load DATA_13.mat X_13 Y_13 % <---- WICHTIG
 A=X_13;   % <---- WICHTIG
 B=Y_13;   % <---- WICHTIG
 j=25;    
-%Test=[];  % <---- WICHTIG
-%clc
-%for t=1:length(Test)
-%displayA=A(:,Test(t))';
-%disp(['% ',num2str(displayA)]),
-%end
+Test=[144 64 57 106];  % <---- WICHTIG
+clc
+for t=1:length(Test)
+displayA=A(:,Test(t))';
+disp(['% ',num2str(displayA)]),
+end
 %
 
-%
+%%
 %rng default % bei Initialisierung
 option_mesh = 1e3; option_BVP = 1e-4; option_data = .3;  
 k=16*80;
 % initial guess
 I1 = A(1).*ones(1,k);                       
-I2 =       (58).*ones(1,k) + 12.*rand(1,k);     % <---- WICHTIG
-I4 =       (13).*ones(1,k) + 7.*rand(1,k); % <---- WICHTIG
-I3 = I4 -   (.01).*ones(1,k) - .5.*rand(1,k);  % <---- WICHTIG
-I5 =        (1.01).*ones(1,k)+ 1*rand(1,k);   % <---- WICHTIG
+I2 =       (69).*ones(1,k) + 1.*rand(1,k);     % <---- WICHTIG
+I4 =       (19).*ones(1,k) + 1.*rand(1,k); % <---- WICHTIG
+I3 = I4 -   (.05).*ones(1,k) - 2.*rand(1,k);  % <---- WICHTIG
+I5 =        (1.01).*ones(1,k)+ .6*rand(1,k);   % <---- WICHTIG
 
 
 X_init=[I1;I2;I3;I4;I5];
@@ -315,7 +315,7 @@ beep
 
 
 %% save new initial Data
-I=[1198 54 1155 1277 297 1238]; % <---- WICHTIG
+I=[  ]; % <---- WICHTIG
 Z=[];% keep it empty :)
 for i=1:length(I)
     Z=[Z X_init(:,i)];
@@ -329,7 +329,7 @@ Init=A;
 Init(:,90:90+length(I)-1)=[];
 Init=[Init X_temp'];
 %
-XL_12=Init; % <---- WICHTIG
+XL_13=Init; % <---- WICHTIG
 save DATA_Initial.mat XL_05 XL_06 XL_07 XL_08 XL_09 XL_10 XL_11 XL_12 XL_13 XL_14 ...
                       XL_15 XL_16 XL_17 XL_18 XL_19 XL_20 XL_21 XL_22 XL_23 XL_24 XL_25
 
