@@ -102,18 +102,18 @@ pf_0 = 1.3e5/p_r;        % pressure draw side at L
 T_eff  = .95;               % turbine efficiency
 HP_eff = .9;            	% high pressure pump efficiency
 LP_eff = .95;               % low pressure pump efficiency
-V_m=0.052;                  % Volumetric mixing
-ERD_eff=.96;                % ERD unit pressure efficiency
-ERD_fric=5e-04;             % ERD friction coefficient
-A_ERD=H*swro_Z;             % cross sectional area of ERD inflows/outflows
-eta_ERD=0.01;               % leak of high pressure brine
-mix_density=997/rho_r;  	% density of mixture in ERD
-pw=2.5;                     % water price [$/m^3]
-pe=0.5;                     % electricity price [$/kWh]
-mixer_ERD=1;                % PRO Draw outlet mixer adjustment (only if 2nd ERDs) (mixer_ERD=1 --> all flow to ERD2 no turbine needed)    
+V_m = 0.052;                % Volumetric mixing
+ERD_eff = .96;              % ERD unit pressure efficiency
+ERD_fric = 5e-04;           % ERD friction coefficient
+A_ERD = H*swro_Z;           % cross sectional area of ERD inflows/outflows
+eta_ERD = 0.01;             % leak of high pressure brine
+mix_density = 997/rho_r;  	% density of mixture in ERD
+pw = 2.0;                   % water price [$/m^3]
+pe = 0.3;                   % electricity price [$/kWh]
+mixer_ERD = 1;              % PRO Draw outlet mixer adjustment (only if 2nd ERDs) (mixer_ERD=1 --> all flow to ERD2 no turbine needed)    
 
 %% display figures
-%fig=[1,1,1,0]; % f(i)=1 --> figure i will be displayed
+%fig=[1,1,1,1]; % f(i)=1 --> figure i will be displayed
 fig=[0,0,0,0]; % f(i)=1 --> figure i will be displayed
 
 %% model specific changes:

@@ -92,7 +92,16 @@ clc,
 close all;clc;
 load DATA_Initial.mat
 L=linspace(.5,2.5,21);
-for j=1:21
+for j2=1:2
+    %
+    if j2==1
+        j=12;
+    end
+    if j2==2
+        j=21;
+    end
+    j,
+    %
     A= []; b=[]; Aeq=[]; beq=[]; lb = [L(j);30;1.01;1.01;1]; ub = [L(j);70;20;20;5];
     option_mesh = 1e3; option_BVP = 1e-4; option_data = .3;
     rng default
@@ -271,11 +280,11 @@ for j=1:21
         display('finished with:')
         j,
 end
-
+%
 clc
 system('git status');
 system('git add .');
-system('git commit -m "Fifth calculation"');
+system('git commit -m "refinement of L={22,23,25,16}"');
 system('git push https://github.com/oliver-mx/GitMATLAB.git');
 %system('shutdown /s /t 30');
 
@@ -295,11 +304,11 @@ scatter_revenue()
 
 % close all
 % determine critical point:
-load DATA_22.mat X_22 Y_22 % <---- WICHTIG
-A=X_22;   % <---- WICHTIG
-B=Y_22;   % <---- WICHTIG
+load DATA_05.mat X_05 Y_05 % <---- WICHTIG
+A=X_05;   % <---- WICHTIG
+B=Y_05;   % <---- WICHTIG
 j=25;    
-Test=[];  % <---- WICHTIG
+Test=[1 120 117 200];  % <---- WICHTIG
 clc
 for t=1:length(Test)
 displayA=A(:,Test(t))';
@@ -310,21 +319,18 @@ end
 %%
 %rng default % bei Initialisierung
 option_mesh = 1e3; option_BVP = 1e-4; option_data = .3;  
-k=1*200;
+k=14*20;
 % initial guess
 I1 = A(1).*ones(1,k);                       
-%I2 =       (57).*ones(1,k) + 13.*rand(1,k);     % <---- WICHTIG
+I2 =       (47).*ones(1,k) + 12.*rand(1,k);     % <---- WICHTIG
 %I2(1:400)=70.*ones(1,400);
-%I4 =       (19).*ones(1,k) + 1.*rand(1,k); % <---- WICHTIG
-%I4(200:600)=20.*ones(1,401);
-%I3 = I4 -   (.01).*ones(1,k) - 8.*rand(1,k);  % <---- WICHTIG
-%I5 =        (1.01).*ones(1,k)+ 4.8*rand(1,k);   % <---- WICHTIG
-
-
-%X_init=[I1;I2;I3;I4;I5];
-load Data_neu.mat
-X_init=[I1;X_neu(:,1:4)'];
-
+I4 =       (15).*ones(1,k) + 4.*rand(1,k); % <---- WICHTIG
+I4(1:40)=20.*ones(1,40);
+I3 = I4 -   (.01).*ones(1,k) - 3.*rand(1,k);  % <---- WICHTIG
+I5 =        (1.01).*ones(1,k)+ 2*rand(1,k);   % <---- WICHTIG
+%
+X_init=[I1;I2;I3;I4;I5];
+%
 Y_init=zeros(5,k);
 % test simulation
 parfor i=1:k
@@ -347,7 +353,7 @@ beep
 
 
 %% save new initial Data
-I=[14 11 35 77 24 26 92 17 185 16 16 36 31 78 117 27 23 97 200 186 28 37 126 29 119 39 120 82 51 72 115 94 21 52 20 180 130 9 105]; % <---- WICHTIG
+I=[]; % <---- WICHTIG
 Z=[];% keep it empty :)
 for i=1:length(I)
     Z=[Z X_init(:,i)];
@@ -361,7 +367,7 @@ Init=A;
 Init(:,90:90+length(I)-1)=[];
 Init=[Init X_temp'];
 %
-%XL_15=Init; % <---- WICHTIG
+XL_05=Init; % <---- WICHTIG
 save DATA_Initial.mat XL_05 XL_06 XL_07 XL_08 XL_09 XL_10 XL_11 XL_12 XL_13 XL_14 ...
                       XL_15 XL_16 XL_17 XL_18 XL_19 XL_20 XL_21 XL_22 XL_23 XL_24 XL_25
 
@@ -498,7 +504,7 @@ scatter_pareto()
                        'Units', 'normalized', ...
                        'Position', [0.15, 0.08, 0.7, 0.05]);
     slider2 = uicontrol('Style', 'slider', ...
-                       'Min', 0, 'Max', 1, 'Value', .5, ...
+                       'Min', 0, 'Max', 1, 'Value', .3, ...
                        'Units', 'normalized', ...
                        'Position', [0.15, 0.01, 0.7, 0.05]);
     % Add a listener to the slider
