@@ -92,7 +92,7 @@ clc,
 close all;clc;
 load DATA_Initial.mat
 L=linspace(.5,2.5,21);
-for j=21:21   
+for j=22:22   
     %
     A= []; b=[]; Aeq=[]; beq=[]; lb = [L(j);30;1.01;1.01;1]; ub = [L(j);70;20;20;5];
     option_mesh = 1e3; option_BVP = 1e-4; option_data = .3;
@@ -274,11 +274,11 @@ for j=21:21
 end
 %
 clc
-system('git status');
-system('git add .');
-system('git commit -m "6th commit+push via cmd :)"');
-system('git push https://github.com/oliver-mx/GitMATLAB.git');
-system('shutdown /s /t 30');
+%system('git status');
+%system('git add .');
+%system('git commit -m "6th commit+push via cmd :)"');
+%system('git push https://github.com/oliver-mx/GitMATLAB.git');
+%system('shutdown /s /t 30');
 
 %% interactive Pareto front plot
 close all;
@@ -294,32 +294,38 @@ surf_pareto() % evtl mark optimal revenue point
 
 %% plto only selected curves
 close all;
-scatter_select([.6 1.4 2.1])
+scatter_select([.6 1.4 2.1 2.5])
 
 %%
+clc,
+Z=[159 108 86 92];
+for i=1:length(Z)
+disp(X_25(:,Z(i))')
+end
+%%
+k=1200;
+option_mesh = 1e3; option_BVP = 1e-4; option_data = .3;
+I1=2.5.*ones(1,k);
+I2=70.*ones(1,k); 
+I3=10.*ones(1,k)+5.*rand(1,k);
+I4=20.*ones(1,k); 
+I5=4..*ones(1,k)+rand(1,k); 
+X_init=[I1;I2;I3;I4;I5];
+parfor i=1:k
+Y_sol(:,i)=fun_1(X_init(:,i),option_data,'sol',option_mesh,option_BVP);
+end
+%%
+scatter3(Y_sol(1,:),Y_sol(2,:),1:1:k,'r')
+%
 
+%
+%%
+clc,
+X_25(:,1:8);
+equal_to_first=all(X_25 == X_25(:,1), 1),
+find(equal_to_first)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+%% replace 
 
 
 
@@ -408,11 +414,46 @@ scatter3(-Y_neu(:,1), -Y_neu(:,2),1:1:200, 'c')
 % __> PAPER FERTIG MACHEN !!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 %% all functions of the script:
 close all
-%surf_pareto()
-scatter_select([.6 1.4 2.1])
- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+surf_pareto()
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  function scatter_revenue()   
     % Create a figure and axis
     fig = figure('Name', 'Interactive revenue plot', 'NumberTitle', 'off');
@@ -548,6 +589,10 @@ function updatePlot2(ax, s1, s2)
     % highlight max revenue: 
     plot([c,c], [0,b*.96], 'r');
     scatter(c, b, 'r');
+    %
+    [~,bb]=max(s1.*Y_21(2,:) + s2.*Y_21(2,:).*Y_21(1,:));
+    bb,
+    disp(X_21(:,bb)),
     %
     grid on; xlim([0 3]); ylim([-.1 1.5]);view(2);
     ylabel('Revenue [$/h]')
@@ -937,6 +982,7 @@ function scatter_select(I)
     if length(I)==1;legend('Case1: L^{RO}= 4m', 'Case2: L^{RO}= 4m', ['Hybrid: L^{RO}= 4m, L^{PRO}= ',num2str(I(1)),'m'],'Location', 'Northeast');end
     if length(I)==2;legend('Case1: L^{RO}= 4m', 'Case2: L^{RO}= 4m', ['Hybrid: L^{RO}= 4m, L^{PRO}= ',num2str(I(1)),'m'],['Hybrid: L^{RO}= 4m, L^{PRO}= ',num2str(I(2)),'m'],'Location', 'SouthWest');end
     if length(I)==3;legend('Case1: L^{RO}= 4m', 'Case2: L^{RO}= 4m', ['Hybrid: L^{RO}= 4m, L^{PRO}= ',num2str(I(1)),'m'],['Hybrid: L^{RO}= 4m, L^{PRO}= ',num2str(I(2)),'m'],['Hybrid: L^{RO}= 4m, L^{PRO}= ',num2str(I(3)),'m'],'Location', 'SouthWest');end
-    if length(I)>3;legend('Case1: L^{RO}= 4m', 'Case2: L^{RO}= 4m', ['Hybrid: L^{RO}= 4m, L^{PRO}= ',num2str(I(1)),'m'],['Hybrid: L^{RO}= 4m, L^{PRO}= ',num2str(I(2)),'m'],['Hybrid: L^{RO}= 4m, L^{PRO}= ',num2str(I(3)),'m'],['Hybrid: L^{RO}= 4m, L^{PRO}= ',num2str(I(4)),'m'],['Hybrid: L^{RO}= 4m, L^{PRO}= ',num2str(I(5)),'m'],'Location', 'SouthWest');end
+    if length(I)==4;legend('Case1: L^{RO}= 4m', 'Case2: L^{RO}= 4m', ['Hybrid: L^{RO}= 4m, L^{PRO}= ',num2str(I(1)),'m'],['Hybrid: L^{RO}= 4m, L^{PRO}= ',num2str(I(2)),'m'],['Hybrid: L^{RO}= 4m, L^{PRO}= ',num2str(I(3)),'m'],['Hybrid: L^{RO}= 4m, L^{PRO}= ',num2str(I(4)),'m'],'Location', 'SouthWest');end
+    if length(I)>4;legend('Case1: L^{RO}= 4m', 'Case2: L^{RO}= 4m', ['Hybrid: L^{RO}= 4m, L^{PRO}= ',num2str(I(1)),'m'],['Hybrid: L^{RO}= 4m, L^{PRO}= ',num2str(I(2)),'m'],['Hybrid: L^{RO}= 4m, L^{PRO}= ',num2str(I(3)),'m'],['Hybrid: L^{RO}= 4m, L^{PRO}= ',num2str(I(4)),'m'],['Hybrid: L^{RO}= 4m, L^{PRO}= ',num2str(I(5)),'m'],'Location', 'SouthWest');end
     title('Pareto fronts');
 end

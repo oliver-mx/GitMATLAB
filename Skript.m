@@ -199,18 +199,19 @@ time2_P = endTime - startTime;
 %% Case3: Max Revenue 
 %
 load("DATA_case3.mat")
-A= [0 0 1 -1 0]; b= -.01; Aeq=[]; beq=[]; lb = [.5;30;10;10;1]; ub = [10;70;20;20;5];
+A= []; b=[]; Aeq=[]; beq=[]; lb = [2;30;10;10;1]; ub = [2.2;70;20;20;5];
 option_mesh = 1e4; option_BVP = 1e-6;option_data = .3;
-foptions = optimoptions('fmincon','Display','iter','Algorithm','interior-point', 'StepTolerance', 1e-12, 'OptimalityTolerance',1e-4, 'MaxFunEvals',5000);
+foptions = optimoptions('fmincon','Display','iter','Algorithm','interior-point', 'StepTolerance', 1e-16, 'OptimalityTolerance',1e-4, 'MaxFunEvals',15000);
 rng default
 %
-x0 = [1.217202844329564 69.9999 18.869106506608680 19.9999 1.019759965650840];
+load DATA_21.mat
+x0 = X_21(:,149);
 %
 X3_R = fmincon(@(x)fun_1(x,option_data,'Rev',option_mesh,option_BVP),x0,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'default'),foptions);
-Y3_R=fun_1(X3_R,option_data,'sol',option_mesh,option_BVP);
+Y3_R = fun_1(X3_R,option_data,'sol',option_mesh,option_BVP);
 display(X3_R)
 display(Y3_R)
-%save DATA_case3 X3_R Y3_R X3_P Y3_P time3_P
+save DATA_case3 X3_R Y3_R X3_P Y3_P time3_P
 
 %% Calculate optimal revenue for hybrid system for different lengths
 %
