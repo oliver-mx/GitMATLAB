@@ -199,19 +199,38 @@ time2_P = endTime - startTime;
 %% Case3: Max Revenue 
 %
 load("DATA_case3.mat")
+startTime=datetime("now");
 A= []; b=[]; Aeq=[]; beq=[]; lb = [2;30;10;10;1]; ub = [2.2;70;20;20;5];
-option_mesh = 1e4; option_BVP = 1e-6;option_data = .3;
-foptions = optimoptions('fmincon','Display','iter','Algorithm','interior-point', 'StepTolerance', 1e-16, 'OptimalityTolerance',1e-4, 'MaxFunEvals',15000);
+option_mesh = 1e4; option_BVP = 1e-6; option_data = .3;
+%foptions = optimoptions('fmincon','Display','iter','Algorithm','interior-point', 'StepTolerance', 1e-16, 'OptimalityTolerance',1e-4, 'MaxFunEvals',15000);
+foptions = optimoptions('fmincon','Display','iter','Algorithm','sqp', 'StepTolerance', 1e-16, 'OptimalityTolerance',1e-4, 'MaxFunEvals',15000);
 rng default
 %
 load DATA_21.mat
 x0 = X_21(:,149);
 %
-X3_R = fmincon(@(x)fun_1(x,option_data,'Rev',option_mesh,option_BVP),x0,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'default'),foptions);
-Y3_R = fun_1(X3_R,option_data,'sol',option_mesh,option_BVP);
-display(X3_R)
-display(Y3_R)
-save DATA_case3 X3_R Y3_R X3_P Y3_P time3_P
+X3_sqp = fmincon(@(x)fun_1(x,option_data,'Rev',option_mesh,option_BVP),x0,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'default'),foptions);
+Y3_sqp = fun_1(X3_sqp,option_data,'sol',option_mesh,option_BVP);
+display(X3_sqp)
+display(Y3_sqp)
+%
+endTime=datetime("now");     
+time3_sqp = endTime - startTime; 
+save DATA_case3 X3_sqp Y3_sqp X3_P Y3_P time3_sqp time3_P
+
+% int-point-alg 
+% 3      27   -4.649866e-01    0.000e+00    2.445e-02    7.494e-02
+% 4      39   -4.661399e-01    0.000e+00    1.500e-02    4.261e-02
+%
+% sqp
+% 0           6   -4.835230e-01     0.000e+00     1.000e+00     0.000e+00     1.418e-02
+% 1          16   -4.835535e-01     0.000e+00     2.401e-01     2.849e-03     1.543e+07
+%
+
+system('git status');
+system('git add .');
+system('git commit -m "fmincon sqp"');
+system('git push https://github.com/oliver-mx/GitMATLAB.git');
 
 %% Calculate optimal revenue for hybrid system for different lengths
 %

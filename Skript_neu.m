@@ -274,9 +274,11 @@ for j=22:22
 end
 %
 clc
+
+%
 %system('git status');
 %system('git add .');
-%system('git commit -m "6th commit+push via cmd :)"');
+%system('git commit -m "fmincon sqp"');
 %system('git push https://github.com/oliver-mx/GitMATLAB.git');
 %system('shutdown /s /t 30');
 

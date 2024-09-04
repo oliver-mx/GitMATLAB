@@ -33,7 +33,7 @@ mean(T) %= 0.9600
 %% Overview of computation times:
 %
 %                               |  home PC   |  uni PC    |
-%                               |  i12900k   |  i135000k  |
+%                               |  i12900k   |  i13500k   |
 %                               |  16 cores  |  14 cores  |
 %                               |  3.2 GHz   |  2.5 GHz   |
 %                               |  64GB RAM  |  16GB RAM  |                  
@@ -199,43 +199,66 @@ time2_P = endTime - startTime;
 %% Case3: Max Revenue 
 %
 load("DATA_case3.mat")
-A= [0 0 1 -1 0]; b= -.01; Aeq=[]; beq=[]; lb = [.5;30;10;10;1]; ub = [10;70;20;20;5];
-option_mesh = 1e4; option_BVP = 1e-6;option_data = .3;
-foptions = optimoptions('fmincon','Display','iter','Algorithm','interior-point', 'StepTolerance', 1e-12, 'OptimalityTolerance',1e-4, 'MaxFunEvals',5000);
+A= []; b=[]; Aeq=[]; beq=[]; lb = [2;30;10;10;1]; ub = [2.2;70;20;20;5];
+option_mesh = 1e4; option_BVP = 1e-6; option_data = .3;
+%foptions = optimoptions('fmincon','Display','iter','Algorithm','interior-point', 'StepTolerance', 1e-16, 'OptimalityTolerance',1e-4, 'MaxFunEvals',15000);
+foptions = optimoptions('fmincon','Display','iter','Algorithm','sqp', 'StepTolerance', 1e-16, 'OptimalityTolerance',1e-4, 'MaxFunEvals',15000);
 rng default
 %
-x0 = [1.217202844329564 69.9999 18.869106506608680 19.9999 1.019759965650840];
+load DATA_21.mat
+x0 = X_21(:,149);
 %
-X3_R = fmincon(@(x)fun_1(x,option_data,'Rev',option_mesh,option_BVP),x0,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'default'),foptions);
-Y3_R=fun_1(X3_R,option_data,'sol',option_mesh,option_BVP);
-display(X3_R)
-display(Y3_R)
-%save DATA_case3 X3_R Y3_R X3_P Y3_P time3_P
+X3_sqp = fmincon(@(x)fun_1(x,option_data,'Rev',option_mesh,option_BVP),x0,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'default'),foptions);
+Y3_sqp = fun_1(X3_sqp,option_data,'sol',option_mesh,option_BVP);
+display(X3_sqp)
+display(Y3_sqp)
+save DATA_case3 X3_sqp Y3_sqp X3_P Y3_P time3_P
+
+
+
+% int-point-alg 
+% 3      27   -4.649866e-01    0.000e+00    2.445e-02    7.494e-02
+% 4      39   -4.661399e-01    0.000e+00    1.500e-02    4.261e-02
+%
+% sqp
+% 0           6   -4.835230e-01     0.000e+00     1.000e+00     0.000e+00     1.418e-02
+% 1          16   -4.835535e-01     0.000e+00     2.401e-01     2.849e-03     1.543e+07
+%
+
+
+%system('git status');
+%system('git add .');
+%system('git commit -m "fmincon sqp"');
+%system('git push https://github.com/oliver-mx/GitMATLAB.git');
 
 %% Calculate optimal revenue for hybrid system for different lengths
 %
 L= linspace(.5,5,46);
 %
 load("DATA_test.mat")
+startTime=datetime("now");
 option_mesh = 1e4; option_BVP = 1e-6;option_data = .3;
 rng default
-X3_R(:,i)=zeros(5,46);
-Y3_R=zeros(5,46);
-
+%X3_R=zeros(5,46);
+%Y3_R=zeros(5,46);
+%
 parfor i=1:46
     A= [0 0 1 -1 0]; b= -.0001; Aeq=[]; beq=[]; lb = [L(i);30;10;10;1]; ub = [L(i);70;20;20;5];
-    foptions = optimoptions('fmincon','Display','iter','Algorithm','interior-point', 'StepTolerance', 1e-16, 'OptimalityTolerance',1e-4, 'MaxFunEvals',5000);
+    foptions = optimoptions('fmincon','Display','off','Algorithm','interior-point', 'StepTolerance', 1e-16, 'OptimalityTolerance',1e-4, 'MaxFunEvals',5000);
     %
-    x0 = [L(i) 69.99 15 16 1.1];
+    x0 = [L(i) 69.99 15 16 1.1]; % <-- maybe come up with good intial guess for all lengths first
     %
     X3_R(:,i) = fmincon(@(x)fun_1(x,option_data,'Rev',option_mesh,option_BVP),x0,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'default'),foptions);
     Y3_R(:,i)=fun_1(X3_R(:,i),option_data,'sol',option_mesh,option_BVP);
-    5
+    %
+    i,
 end
 %
-
-
-
+endTime=datetime("now");     
+time_R = endTime - startTime; 
+%
+save DATA_test.mat time_R X3_R Y3_R
+%
 
 
 
