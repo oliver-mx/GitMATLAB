@@ -92,7 +92,10 @@ clc,
 close all;clc;
 load DATA_Initial.mat
 L=linspace(.5,2.5,21);
-for j=21:21   
+for j2=1:21
+    %
+    J=[1 2 3 4 5 7 8 9 10 12 13 14 15 16 17 18 19 20 21]; %out: X_10 X_15
+    j=J(j2);                   % (j) 6    11 
     %
     A= []; b=[]; Aeq=[]; beq=[]; lb = [L(j);30;1.01;1.01;1]; ub = [L(j);70;20;20;5];
     option_mesh = 1e3; option_BVP = 1e-4; option_data = .3;
