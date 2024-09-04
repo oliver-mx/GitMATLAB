@@ -92,15 +92,10 @@ clc,
 close all;clc;
 load DATA_Initial.mat
 L=linspace(.5,2.5,21);
-for j2=1:2
+for j2=1:19
     %
-    if j2==1
-        j=12;
-    end
-    if j2==2
-        j=21;
-    end
-    j,
+    J=[1 2 3 4 5 7 8 9 10 12 13 14 15 16 17 18 19 20 21]; %out: X_10 X_15
+    j=J(j2);                   % (j) 6    11 
     %
     A= []; b=[]; Aeq=[]; beq=[]; lb = [L(j);30;1.01;1.01;1]; ub = [L(j);70;20;20;5];
     option_mesh = 1e3; option_BVP = 1e-4; option_data = .3;
@@ -284,9 +279,9 @@ end
 clc
 system('git status');
 system('git add .');
-system('git commit -m "refinement of L={22,23,25,16}"');
+system('git commit -m "6th commit+push via cmd :)"');
 system('git push https://github.com/oliver-mx/GitMATLAB.git');
-%system('shutdown /s /t 30');
+system('shutdown /s /t 30');
 
 %% interactive Pareto front plot
 close all;
@@ -296,91 +291,9 @@ scatter_pareto()
 close all;
 scatter_revenue()
 
-%%
-%
-% simulate some data near critical points
-% the save new initial 
-% 
-
-% close all
-% determine critical point:
-load DATA_05.mat X_05 Y_05 % <---- WICHTIG
-A=X_05;   % <---- WICHTIG
-B=Y_05;   % <---- WICHTIG
-j=25;    
-Test=[1 120 117 200];  % <---- WICHTIG
-clc
-for t=1:length(Test)
-displayA=A(:,Test(t))';
-disp(['% ',num2str(displayA)]),
-end
-%
-
-%%
-%rng default % bei Initialisierung
-option_mesh = 1e3; option_BVP = 1e-4; option_data = .3;  
-k=14*20;
-% initial guess
-I1 = A(1).*ones(1,k);                       
-I2 =       (47).*ones(1,k) + 12.*rand(1,k);     % <---- WICHTIG
-%I2(1:400)=70.*ones(1,400);
-I4 =       (15).*ones(1,k) + 4.*rand(1,k); % <---- WICHTIG
-I4(1:40)=20.*ones(1,40);
-I3 = I4 -   (.01).*ones(1,k) - 3.*rand(1,k);  % <---- WICHTIG
-I5 =        (1.01).*ones(1,k)+ 2*rand(1,k);   % <---- WICHTIG
-%
-X_init=[I1;I2;I3;I4;I5];
-%
-Y_init=zeros(5,k);
-% test simulation
-parfor i=1:k
-    Y_init(:,i)=fun_1(X_init(:,i),option_data,'sol',option_mesh,option_BVP);
-end
-% plots zum vergleich
-load("DATA_case1.mat")
-load("DATA_case2.mat")
-f=figure(1); f.Position = [1282.3 0746.3 1277.3 0614.7];
-scatter(Y1(1,:),Y1(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
-scatter(Y2(1,:),Y2(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold on
-    Color=summer(30);
-    Color=flipud(Color());
-scatter3(B(1,:),B(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(j,:)); hold on
-scatter3(Y_init(1,:),Y_init(2,:),1:1:k,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
-%
-grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
-ylabel('FW [m^3/h]','FontSize',16);xlabel('SEC_{net} [kWh/m^3]','FontSize',16);
-beep
-
-
-%% save new initial Data
-I=[]; % <---- WICHTIG
-Z=[];% keep it empty :)
-for i=1:length(I)
-    Z=[Z X_init(:,i)];
-end
-clc
-X_temp=Z',
-
-%%
-load('DATA_Initial.mat')
-Init=A;
-Init(:,90:90+length(I)-1)=[];
-Init=[Init X_temp'];
-%
-XL_05=Init; % <---- WICHTIG
-save DATA_Initial.mat XL_05 XL_06 XL_07 XL_08 XL_09 XL_10 XL_11 XL_12 XL_13 XL_14 ...
-                      XL_15 XL_16 XL_17 XL_18 XL_19 XL_20 XL_21 XL_22 XL_23 XL_24 XL_25
-
-
-
-
-
-
-
-
-
-
-
+%% try 3d surf plot ???
+close all;
+surf_pareto() % evtl mark optimal revenue point
 
 %% old plot
 % from .. > Matlab > Hybrid Pareto front > Paretosearch Skipt
@@ -439,12 +352,6 @@ scatter(Y_Pareto(1,1:40),Y_Pareto(2,1:40),'MarkerEdgeColor',[0 0 0],'MarkerFaceC
 
 %sum(isnan(Y_Pareto(1,:)))
 
-
-
-
-
-
-
 %% plot of best Pareto front
 load DATA_case1.mat Y1
 load DATA_case2.mat Y2
@@ -475,7 +382,7 @@ scatter3(-Y_neu(:,1), -Y_neu(:,2),1:1:200, 'c')
 
 %% all functions of the script:
 close all
-scatter_pareto() 
+surf_pareto()
 
  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  function scatter_revenue()   
@@ -542,8 +449,8 @@ function updatePlot2(ax, s1, s2)
     load DATA_24.mat X_24 Y_24
     load DATA_25.mat X_25 Y_25
     %
-    load Data_neu.mat Y_neu 
-    Y_15=-Y_neu';
+    %load Data_neu.mat Y_neu 
+    %Y_15=-Y_neu';
     %
     a(1)=max(s1.*Y_05(2,:) + s2.*Y_05(2,:).*Y_05(1,:));
     scatter(X_05(1,1),a(1),'MarkerEdgeColor','none','MarkerFaceColor',Color(5,:));hold on
@@ -633,10 +540,6 @@ function updatePlot2(ax, s1, s2)
                    'FontWeight', 'bold', ...
                    'BackgroundColor', get(0, 'defaultuicontrolbackgroundcolor'));
 end
-
-
-
- %%
  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  function scatter_pareto()   
     % Create a figure and axis
@@ -776,9 +679,9 @@ function updatePlot(ax, plotType)
         load DATA_case2.mat Y2
         scatter(Y1(1,:),Y1(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
         scatter(Y2(1,:),Y2(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold on
-        load Data_neu.mat Y_neu 
+        %load Data_neu.mat Y_neu 
         load DATA_15.mat X_15 Y_15
-        Y_15=-Y_neu'; %scatter3(-Y_neu(:,1), -Y_neu(:,2),1:1:200, 'c')
+        %Y_15=-Y_neu'; %scatter3(-Y_neu(:,1), -Y_neu(:,2),1:1:200, 'c')
         scatter3(Y_15(1,:),Y_15(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor',Color(14,:)); hold on
         grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
         legend('Case1: \epsilon-constraint method', 'Case2: \epsilon-constraint method', ['L^{PRO} = ',num2str(X_15(1,1)), 'm'],'Location', 'Northeast');
@@ -907,3 +810,45 @@ function updatePlot(ax, plotType)
                    'FontWeight', 'bold', ...
                    'BackgroundColor', get(0, 'defaultuicontrolbackgroundcolor'));
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function surf_pareto()
+    % Create a figure and axis
+    fig = figure('Name', 'Interactive revenue plot', 'NumberTitle', 'off');
+    fig.Position=[1200 500 800 500];
+    L = 0.5:0.1:2.5;
+    A=repmat(L,200,1);
+    load DATA_05.mat X_05 Y_05
+    load DATA_06.mat X_06 Y_06
+    load DATA_07.mat X_07 Y_07
+    load DATA_08.mat X_08 Y_08
+    load DATA_09.mat X_09 Y_09
+    load DATA_10.mat X_10 Y_10
+    load DATA_11.mat X_11 Y_11
+    load DATA_12.mat X_12 Y_12
+    load DATA_13.mat X_13 Y_13
+    load DATA_14.mat X_14 Y_14
+    load DATA_15.mat X_15 Y_15
+    load DATA_16.mat X_16 Y_16
+    load DATA_17.mat X_17 Y_17
+    load DATA_18.mat X_18 Y_18
+    load DATA_19.mat X_19 Y_19
+    load DATA_20.mat X_20 Y_20
+    load DATA_21.mat X_21 Y_21
+    load DATA_22.mat X_22 Y_22
+    load DATA_23.mat X_23 Y_23
+    load DATA_24.mat X_24 Y_24
+    load DATA_25.mat X_25 Y_25
+    B = [Y_05(1,:); Y_06(1,:); Y_07(1,:); Y_08(1,:); Y_09(1,:); Y_10(1,:); Y_11(1,:); Y_12(1,:); Y_13(1,:); Y_14(1,:); Y_15(1,:); Y_16(1,:); Y_17(1,:); Y_18(1,:); Y_19(1,:); Y_20(1,:); Y_21(1,:); Y_22(1,:); Y_23(1,:); Y_24(1,:); Y_25(1,:)];
+    C = [Y_05(2,:); Y_06(2,:); Y_07(2,:); Y_08(2,:); Y_09(2,:); Y_10(2,:); Y_11(2,:); Y_12(2,:); Y_13(2,:); Y_14(2,:); Y_15(2,:); Y_16(2,:); Y_17(2,:); Y_18(2,:); Y_19(2,:); Y_20(2,:); Y_21(2,:); Y_22(2,:); Y_23(2,:); Y_24(2,:); Y_25(2,:)];    
+    h1 = surf(A,-B',C'); hold on;
+    C1 = C'; 
+    set(h1, 'CData', C1, 'FaceColor', 'interp');
+    colormap(parula); 
+    %
+    load DATA_case1.mat Y1
+    load DATA_case2.mat Y2
+    %
+    surf(A,-repmat(Y1(1,:),21,1)',repmat(Y1(2,:),21,1)','FaceColor', 'red'); hold on;
+    surf(A,-repmat(Y2(1,:),21,1)',repmat(Y2(2,:),21,1)','FaceColor', 'blue'); hold on;
+end
+
