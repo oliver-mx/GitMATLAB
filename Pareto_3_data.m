@@ -8,7 +8,7 @@ function [H,Z,swro_Z,ro_water,ro_salt,Mw,Ms,Rw,T0,eta,sigma,p_r,rho_r,C_r,swro_L
 %   option_data = 3
 %
 %   Input:
-%       input1        -   [Pd_0, pd_0, pd_L, pf_0]
+%       input1        -   [L, Pd_0, pd_0, pd_L, pf_0]
 %       input2        -   x
 
 %% model versions
@@ -46,23 +46,23 @@ swro_Z=1;               % width of SWRO membrane [m]
 swro_L=4;               % length of SWRO membrane [m]
 if version(6)== 2; swro_L=1; end
 swro_alpha = 5.0815e-9; % SWRO water permeablity co-efficient [s/m]
-swro_R =0.96;           % SWRO salt rejection rate 
+swro_R = 0.96;          % SWRO salt rejection rate 
 swro_KK = 1e-2;         % SWRO ICP mass transfer coefficient
 swro_KD = 1/swro_KK;    % SWRO ECP draw side mass transfer coefficient
 swro_KF = 1/swro_KK;    % SWRO ECP fresh side mass transfer coefficient
-swro_x_r=swro_L^2;      % x_r=swro_L^2 since x = linspace(0,1,n) (if x = linspace(0,swro_L,n) then x_r=swro_L;)     
-swro_b1 = H/swro_x_r;                           % H/swro_L ratio
-swro_b2 = swro_Z/swro_x_r;                      % Z/swro_L ratio
-J_r = sqrt(H^3/swro_x_r*p_r*rho_r);             % flux [kg/s^2]
-swro_gamma= swro_x_r * p_r *  swro_alpha /J_r;  % SWRO scaling factor - mass balance
-swro_gamma2= J_r^2./(swro_x_r^2 * p_r * rho_r); % SWRO scaling factor - momentum balance
-swro_W_r=J_r*p_r/rho_r;                         % net work [W/m^2]
-sigma=0.999 ;                                   % Rejection coefficient
-swro_beta_fix=4.43e-4/J_r*swro_x_r;             % value for fixed SWRO beta [kg/sm^2]
+swro_x_r= swro_L^2;     % x_r=swro_L^2 since x = linspace(0,1,n) (if x = linspace(0,swro_L,n) then x_r=swro_L;)     
+swro_b1 = H/swro_x_r;                            % H/swro_L ratio
+swro_b2 = swro_Z/swro_x_r;                       % Z/swro_L ratio
+J_r = sqrt(H^3/swro_x_r*p_r*rho_r);              % flux [kg/s^2]
+swro_gamma = swro_x_r * p_r *  swro_alpha /J_r;  % SWRO scaling factor - mass balance
+swro_gamma2 = J_r^2./(swro_x_r^2 * p_r * rho_r); % SWRO scaling factor - momentum balance
+swro_W_r = J_r*p_r/rho_r;                        % net work [W/m^2]
+sigma = 0.999 ;                                  % Rejection coefficient
+swro_beta_fix = 4.43e-4/J_r*swro_x_r;            % value for fixed SWRO beta [kg/sm^2]
 
 %% PRO
-Z = 1;                % width of the PRO membrane [m]
-L = 1.217202844329564;% length of the PRO membrane [m]      
+Z = 1;              % width of the PRO membrane [m]
+L = input1(1);      % length of the PRO membrane [m]      
 alpha = 5.47e-9;    % water permeablity co-efficient [s/m]
 R = 0.94;           % salt rejection rate [1]
 KK = 7.13e2;        % mass transfer coefficient [sm^2/kg]
@@ -87,16 +87,16 @@ J_sf_0 = 0;              % salt flux in fresh side at 0
 J_wf_0 = 0;              % water flux in fresh side at L               
 Pf_L = pE;               % pressure fresh side at L
 
-Pd_0 =  input1(1);       % pressure draw side at 0
+Pd_0 =  input1(2);       % pressure draw side at 0
 Pd_L =  0;               % not needed in the hybrid system !
 
 %% PRO operation conditions 
 Q_sf_0 = 0;              % salt flux in fresh side at 0
 pf_L = pE;               % pressure of fresh side at L
 
-pd_0 = input1(2);         % pressure draw side at 0
-pd_L = input1(3);       % pressure of fresh side at 0
-pf_0 = input1(4);        % pressure draw side at L 
+pd_0 = input1(3);         % pressure draw side at 0
+pd_L = input1(4);       % pressure of fresh side at 0
+pf_0 = input1(5);        % pressure draw side at L 
 
 %% ERD/Turbine/Pump parameters
 T_eff  = .95;               % turbine efficiency
@@ -113,8 +113,7 @@ pe = 0.3;                   % electricity price [$/kWh]
 mixer_ERD = 1;              % PRO Draw outlet mixer adjustment (only if 2nd ERDs) (mixer_ERD=1 --> all flow to ERD2 no turbine needed)    
 
 %% display figures
-%fig=[1,1,1,1]; % f(i)=1 --> figure i will be displayed
-fig=[0,0,0,0]; % f(i)=1 --> figure i will be displayed
+fig=[1,1,1,1]; % f(i)=1 --> figure i will be displayed
 
 %% model specific changes:
 % co-current

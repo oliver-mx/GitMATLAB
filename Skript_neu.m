@@ -925,6 +925,9 @@ function surf_pareto()
     %
     surf(A,-repmat(Y1(1,:),21,1)',repmat(Y1(2,:),21,1)','FaceColor', 'red'); hold on;
     surf(A,-repmat(Y2(1,:),21,1)',repmat(Y2(2,:),21,1)','FaceColor', 'blue'); hold on;
+    load DATA_case3.mat X3_sqp Y3_sqp
+    X3_sqp(1),Y3_sqp(1),Y3_sqp(2)
+    plot3(X3_sqp(1),-Y3_sqp(1),Y3_sqp(2),'ro', 'MarkerFaceColor', 'r','MarkerEdgeColor', 'k', 'MarkerSize', 5)
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function scatter_select(I)
