@@ -592,9 +592,9 @@ function updatePlot2(ax, s1, s2)
     plot([c,c], [0,b*.96], 'r');
     scatter(c, b, 'r');
     %
-    [~,bb]=max(s1.*Y_21(2,:) + s2.*Y_21(2,:).*Y_21(1,:));
+    [~,bb]=max(s1.*Y_22(2,:) + s2.*Y_22(2,:).*Y_22(1,:));
     bb,
-    disp(X_21(:,bb)),
+    disp(X_22(:,bb)),
     %
     grid on; xlim([0 3]); ylim([-.1 1.5]);view(2);
     ylabel('Revenue [$/h]')

@@ -218,19 +218,61 @@ endTime=datetime("now");
 time3_sqp = endTime - startTime; 
 save DATA_case3 X3_sqp Y3_sqp X3_P Y3_P time3_sqp time3_P
 
-% int-point-alg 
-% 3      27   -4.649866e-01    0.000e+00    2.445e-02    7.494e-02
-% 4      39   -4.661399e-01    0.000e+00    1.500e-02    4.261e-02
-%
 % sqp
-% 0           6   -4.835230e-01     0.000e+00     1.000e+00     0.000e+00     1.418e-02
-% 1          16   -4.835535e-01     0.000e+00     2.401e-01     2.849e-03     1.543e+07
+% best revenue:
 %
-
+%    2.1024
+%   70.0000
+%   15.6287
+%   20.0000
+%    2.7260
+%
+% -2.1655    0.3581    0.4836   43.2704   58.4389
+%
 system('git status');
 system('git add .');
 system('git commit -m "fmincon sqp"');
 system('git push https://github.com/oliver-mx/GitMATLAB.git');
+
+%% lower test
+% best revenue: 
+%
+%    2.0032
+%   70.0000
+%   15.8672
+%   19.9997
+%    2.3625
+%
+% -2.2241    0.3625    0.4831   41.9709   58.9736
+
+A= []; b=[]; Aeq=[]; beq=[]; lb = [1.9;30;10;10;1]; ub = [2.1;70;20;20;5];
+option_mesh = 1e4; option_BVP = 1e-6; option_data = .3;
+foptions = optimoptions('fmincon','Display','iter','Algorithm','sqp', 'StepTolerance', 1e-16, 'OptimalityTolerance',1e-4, 'MaxFunEvals',15000);
+rng default
+%
+load DATA_20.mat
+x0 = X_20(:,61);
+%
+X3_sqp = fmincon(@(x)fun_1(x,option_data,'Rev',option_mesh,option_BVP),x0,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'default'),foptions);
+Y3_sqp = fun_1(X3_sqp,option_data,'sol',option_mesh,option_BVP);
+display(X3_sqp)
+display(Y3_sqp)
+ 
+%% upper test
+% best revenue: 
+%
+A= []; b=[]; Aeq=[]; beq=[]; lb = [1.9;30;10;10;1]; ub = [2.1;70;20;20;5];
+option_mesh = 1e4; option_BVP = 1e-6; option_data = .3;
+foptions = optimoptions('fmincon','Display','iter','Algorithm','sqp', 'StepTolerance', 1e-16, 'OptimalityTolerance',1e-4, 'MaxFunEvals',15000);
+rng default
+%
+load DATA_22.mat
+x0 = X_22(:,100);
+%
+X3_sqp = fmincon(@(x)fun_1(x,option_data,'Rev',option_mesh,option_BVP),x0,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'default'),foptions);
+Y3_sqp = fun_1(X3_sqp,option_data,'sol',option_mesh,option_BVP);
+display(X3_sqp)
+display(Y3_sqp)
 
 %% Calculate optimal revenue for hybrid system for different lengths
 %
@@ -258,7 +300,7 @@ end
 endTime=datetime("now");     
 time_R = endTime - startTime; 
 %
-save DATA_test.mat time_R X3_R Y3_R
+
 %
 
 
@@ -275,67 +317,58 @@ save DATA_test.mat time_R X3_R Y3_R
 
 %% test locally around best point so far
 %
-n=2000;
-a1=      1.1.*ones(1,n) + .2.*rand(1,n);
-a2=       70.*ones(1,n);
-a4=       20.*ones(1,n);
-a3= a4 - 1.1.*ones(1,n) -  .3.*rand(1,n);
-a5=   1.0001.*ones(1,n) + .02.*rand(1,n);
+n=16000;
+a1=      2.*ones(1,n) + .2.*rand(1,n);
+a2=      70.*ones(1,n);
+a4=      20.*ones(1,n);
+a3=      10.*ones(1,n) +  8.*rand(1,n);
+a5=   1.001.*ones(1,n) + 5.*rand(1,n);
 %
-X_test=[a1; a2; a3; a4; a5];
+X_Rt=[a1; a2; a3; a4; a5];
 %
 parfor i=1:n
-i,
-Y_test(:,i)=fun_1(X_test(:,i), .3 ,'sol', 1e4 , 1e-6);
+Y_Rt(:,i)=fun_1(X_Rt(:,i), .3 ,'sol', 1e4 , 1e-6);
 end
-%
-scatter(Y_test(1,:),Y_test(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','g'); hold on
-%
-R=Y_test(3,:);
+R=Y_Rt(3,:);
 R = R(~isnan(R))';
 R = R(~isinf(R))';
 a=max(R);
-c=find(Y_test(3,:)== a);
+c=find(Y_Rt(3,:)== a);
 %
-Y_test(:,c)'
-beep,
-X_test(:,c)
+disp(X_Rt(:,c))
+disp(Y_Rt(:,c)')
+save DATA_Rev_test.mat X_Rt Y_Rt
+%
+system('git status');
+system('git add .');
+system('git commit -m "sim around sqp best point"');
+system('git push https://github.com/oliver-mx/GitMATLAB.git');
+system('shutdown /s /t 30');
 
-%
-% 1st test
-% 1.701334230850316 70 17.303900763215214 19.518212394164596 2.515543290319345
-% -2.3210  0.3430  0.4594  41.8200  2.6930
-%
 
+% we try to beat 
 %
-% 2nd test
-% 1.645379340650449 70 17.918231682265990 19.890375014904670 2.018569892899560
-% -2.2546    0.3390    0.4654   42.4818    3.2361
+% sqp
+% best revenue:
 %
-
+%    2.1024
+%   70.0000
+%   15.6287
+%   20.0000
+%    2.7260
 %
-% 3rd test
-% 1.515502010177877 70 18.144811408171233 19.888390283989512 1.214990800883215
-% -2.2550    0.3431    0.4709   41.9577    9.4891
-%
-
-%
-% 4th test
-% 1.581025550521746 70 18.086408450978364 20 1.109362628068349
-% -2.2325    0.3427    0.4742   42.2457   40.7659
+% -2.1655    0.3581    0.4836   43.2704   58.4389
 %
 
-%
-% 5th test
-% 1.414591373229294 70 18.465466683045230 20 1.051796875666936
-% -2.2352    0.3437    0.4751   42.0992   47.1326
-%
 
-%
-% 6th test
-% 1.217202844329564 70 18.869106506608680 20 1.019759965650840
-% -2.2348    0.3440    0.4756   42.0134   51.5381
-%
+
+
+
+
+
+
+
+
 
 %% Simulate hybrid data - for paretosearch initial guess
 n=3000;
