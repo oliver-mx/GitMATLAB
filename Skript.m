@@ -238,7 +238,8 @@ save DATA_case3 X3_sqp Y3_sqp X3_P Y3_P time3_sqp time3_P
 
 %% test locally around best point so far
 %
-n=16000; %16000 = 5h at home
+clc
+n=20000; %16000 = 5h at home
 a1=      1.8.*ones(1,n) + 1.4.*rand(1,n);
 a2=      70.*ones(1,n);
 a4=      20.*ones(1,n);
@@ -274,17 +275,6 @@ system('git add .');
 system('git commit -m "testing 1.8 - 2.2m"');
 system('git push https://github.com/oliver-mx/GitMATLAB.git');
 %system('shutdown /s /t 30');
-
-
-
-%%
-system('git status');
-system('git add .');
-system('git commit -m "safety push"');
-system('git push https://github.com/oliver-mx/GitMATLAB.git');
-
-
-
 
 %% Simulate hybrid data - for paretosearch initial guess
 n=3000;
