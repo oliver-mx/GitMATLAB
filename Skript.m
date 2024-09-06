@@ -239,6 +239,7 @@ save DATA_case3 X3_sqp Y3_sqp X3_P Y3_P time3_sqp time3_P
 %% test locally around best point so far
 %
 clc
+load DATA_Rev_test.mat
 n=20000; %16000 = 5h at home
 a1=      1.8.*ones(1,n) + 1.4.*rand(1,n);
 a2=      70.*ones(1,n);
@@ -249,7 +250,7 @@ a5=   1.001.*ones(1,n) + 5.*rand(1,n);
 X_Rt=[a1; a2; a3; a4; a5];
 %
 parfor i=1:n
-Y_Rt(:,i)=fun_1(X_Rt(:,i), .3 ,'sol', 1e4 , 1e-6);
+Y_Rt(:,i)=fun_1(X_Rt(:,i), 3 ,'sol', 1e4 , 1e-6);
 end
 R=Y_Rt(3,:);
 R = R(~isnan(R))';
@@ -272,7 +273,7 @@ save DATA_Rev_test.mat X_Rt Y_Rt
 
 system('git status');
 system('git add .');
-system('git commit -m "testing 1.8 - 2.2m"');
+system('git commit -m "testing again 1.8 - 2.2m haha"');
 system('git push https://github.com/oliver-mx/GitMATLAB.git');
 %system('shutdown /s /t 30');
 
