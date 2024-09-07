@@ -271,11 +271,41 @@ save DATA_Rev_test.mat X_Rt Y_Rt
 
 %   -2.1330    0.3588    0.4880   43.0727   92.1842
 
-system('git status');
-system('git add .');
-system('git commit -m "testing again 1.8 - 2.2m haha"');
-system('git push https://github.com/oliver-mx/GitMATLAB.git');
+%system('git status');
+%system('git add .');
+%system('git commit -m "testing again 1.8 - 2.2m haha"');
+%system('git push https://github.com/oliver-mx/GitMATLAB.git');
 %system('shutdown /s /t 30');
+
+%%
+% remove points with negative REC
+
+find(Y_Rt(5,:)<0)
+
+R=Y_Rt(3,:);
+R(3024)=0;R(10606)=0;R(14386)=0;
+R = R(~isnan(R))';
+R = R(~isinf(R))';
+a=max(R);
+c=find(Y_Rt(3,:)== a);
+%
+disp(X_Rt(:,c))
+disp(Y_Rt(:,c)')
+
+%    2.0367
+%   70.0000
+%   15.6380
+%   20.0000
+%    1.8386
+%   -2.2019    0.3633    0.4866   42.0110   84.4000
+
+
+
+
+
+
+
+
 
 %% Simulate hybrid data - for paretosearch initial guess
 n=3000;
@@ -383,6 +413,65 @@ Rev= 2.5.*FW_approx -0.5.*FW_approx.*SEC_approx;
 
 
 
+
+
+
+
+
+%% test locally around best point so far
+%
+clc
+load("DATA_case3.mat")
+load DATA_testy.mat
+rng default
+n=30000;
+a1=      X3_sqp(1).*ones(1,n);
+a2=      58.*ones(1,n) +  12.*rand(1,n);
+a2(1:10000)=70.*ones(1,10000);
+a4=      17.*ones(1,n) +  3.*rand(1,n);
+a4(1+5000:10000+5000)=20.*ones(1,10000);
+a3=  a4-    .9.*ones(1,n) +  4.1.*rand(1,n);
+a5=   1.001.*ones(1,n) + 3.9.*rand(1,n);
+%
+X_testy=[a1; a2; a3; a4; a5];
+%
+parfor i=1:n
+Y_testy(:,i)=fun_1(X_testy(:,i), 3 ,'sol', 1e4 , 1e-6);
+end
+
+save DATA_testy.mat X_testy Y_testy
+
+system('git status');
+system('git add .');
+system('git commit -m "Simulations for optimal Ratio"');
+system('git push https://github.com/oliver-mx/GitMATLAB.git');
+%system('shutdown /s /t 30');
+
+% optimal revenue
+%    2.0179
+%   70.0000
+%   15.9461
+%   20.0000
+%    1.7051
+
+%   -2.1330    0.3588    0.4880   43.0727   92.1842
+
+close all;
+load("DATA_case1.mat")
+f=figure(1); f.Position = [1200 500 800 500];
+scatter(Y1(1,:),Y1(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
+scatter(Y1_P(1,:),Y1_P(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','m'); hold on
+scatter(Y1_R(1),Y1_R(2),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','y'); hold on
+load("DATA_case2.mat")
+scatter(Y2(1,:),Y2(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold on
+scatter(Y2_P(1,:),Y2_P(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','c'); hold on
+scatter(Y2_R(1),Y2_R(2),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','y'); hold on
+load("DATA_case3.mat")
+scatter(Y_testy(1,:),Y_testy(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',[0.9290 0.6940 0.1250]); hold on
+scatter(Y3_sqp(1),Y3_sqp(2),'y', 'filled'); hold on
+grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
+legend('Case1: \epsilon-constraint method', 'Case1: paretosearch','','Case2: \epsilon-constraint method', 'Case2: paretosearch','','Case3: paretosearch', '','Location', 'Northeast');
+ylabel('FW [m^3/h]','FontSize',16);xlabel('SEC_{net} [kWh/m^3]','FontSize',16);
 
 
 
