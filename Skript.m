@@ -61,9 +61,9 @@ load("DATA_case2.mat")
 scatter(Y2(1,:),Y2(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold on
 scatter(Y2_P(1,:),Y2_P(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','c'); hold on
 scatter(Y2_R(1),Y2_R(2),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','y'); hold on
-%load("DATA_case3.mat")
+load("DATA_case3.mat")
 %scatter(Y3_P(1,:),Y3_P(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',[0.9290 0.6940 0.1250]); hold on
-%scatter(-2.2347,0.3440,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','y'); hold on
+scatter(-2.1330,0.3588,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','y'); hold on
 
 grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
 legend('Case1: \epsilon-constraint method', 'Case1: paretosearch','','Case2: \epsilon-constraint method', 'Case2: paretosearch','','Case3: paretosearch', '','Location', 'Northeast');
@@ -220,6 +220,7 @@ time3_sqp = endTime - startTime;
 %% Case3: paretosearch
 %
 load("DATA_case3.mat")
+%X3_P_initial=X3_P';
 % 
 startTime=datetime("now");
 A= []; b=[]; Aeq=[]; beq=[]; lb = [X3_sqp(1);30;10;10;1]; ub = [X3_sqp(1);70;20;20;5];
@@ -240,7 +241,7 @@ system('git status');
 system('git add .');
 system('git commit -m "2.0179m Pareto front (test1)"');
 system('git push https://github.com/oliver-mx/GitMATLAB.git');
-%system('shutdown /s /t 30');
+system('shutdown /s /t 30');
 
 
 
@@ -252,12 +253,17 @@ system('git push https://github.com/oliver-mx/GitMATLAB.git');
 
 
 
+%%
+load("DATA_case3.mat")
+for i=1:200
+    if Y3_P(1,i)>-0.69
+        Y3_P(:,i)=Y3_P(:,1);
+        X3_P(:,i)=X3_P(:,1);
+    end
+end
+scatter(Y3_P(1,:),Y3_P(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',[0.9290 0.6940 0.1250]); hold on
 
-
-
-
-
-
+%save DATA_case3 X3_sqp Y3_sqp  X3_P Y3_P time3_sqp time3_P X3_sqp_initial X3_P_initial
 
 
 

@@ -61,9 +61,9 @@ load("DATA_case2.mat")
 scatter(Y2(1,:),Y2(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold on
 scatter(Y2_P(1,:),Y2_P(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','c'); hold on
 scatter(Y2_R(1),Y2_R(2),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','y'); hold on
-%load("DATA_case3.mat")
+load("DATA_case3.mat")
 %scatter(Y3_P(1,:),Y3_P(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',[0.9290 0.6940 0.1250]); hold on
-%scatter(-2.2347,0.3440,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','y'); hold on
+scatter(-2.1330,0.3588,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','y'); hold on
 
 grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
 legend('Case1: \epsilon-constraint method', 'Case1: paretosearch','','Case2: \epsilon-constraint method', 'Case2: paretosearch','','Case3: paretosearch', '','Location', 'Northeast');
@@ -227,7 +227,7 @@ option_mesh = 1e4; option_BVP = 1e-6; option_data = 3;
 rng default
 options = optimoptions('paretosearch','ParetoSetSize',200, 'InitialPoints',X3_P_initial,'Display','iter', 'MaxFunctionEvaluations',10000, 'ParetoSetChangeTolerance',1e-6,'UseParallel', true);
 X = paretosearch(@(x)fun_1(x,option_data,'Pareto',option_mesh,option_BVP),5,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'default'),options); 
-%%
+%
 parfor i=1:200
     X3_P(:,i)=X(i,:)
     Y3_P(:,i)=fun_1([X3_P(:,i)],option_data,'sol',option_mesh,option_BVP);
@@ -252,12 +252,14 @@ system('git push https://github.com/oliver-mx/GitMATLAB.git');
 
 
 
+%%
+load("DATA_case3.mat")
+for i=1:200
+    if Y3_P(i,:)>-0.69
+Y3_P
+scatter(Y3_P(1,:),Y3_P(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',[0.9290 0.6940 0.1250]); hold on
 
-
-
-
-
-
+%save DATA_case3 X3_sqp Y3_sqp  X3_P Y3_P time3_sqp time3_P X3_sqp_initial X3_P_initial
 
 
 
