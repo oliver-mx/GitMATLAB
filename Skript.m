@@ -238,9 +238,44 @@ save DATA_case3 X3_sqp Y3_sqp  X3_P Y3_P time3_sqp time3_P X3_sqp_initial X3_P_i
 
 system('git status');
 system('git add .');
-system('git commit -m "2.0179m Pareto front (test1)"');
+system('git commit -m "Refined 2.0179m Pareto front"');
 system('git push https://github.com/oliver-mx/GitMATLAB.git');
 system('shutdown /s /t 30');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 %% detailled simulations
 %
@@ -290,25 +325,43 @@ scatter3(Y_test(1,:),Y_test(2,:),1:1:7600,'MarkerEdgeColor',[0 0 0],'MarkerFaceC
 grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
 beep 
 
-system('git status');
-system('git add .');
-system('git commit -m "refined simulations"');
-system('git push https://github.com/oliver-mx/GitMATLAB.git');
+%system('git status');
+%system('git add .');
+%system('git commit -m "refined simulations"');
+%system('git push https://github.com/oliver-mx/GitMATLAB.git');
 
 
 
 
+% 59 159 73 102 204 197 47 237 272 372 620 178 479 520 426 187 770 546 849
+% 847 1328 499 548 1393 1232 940 1675 1861 1776 1907 2071 2122 2103 2164
+% 2285 2144 2255 2364 2363 2386 2398 2543 2478 2774 2740 2996 2894 2922
+% 2904 2824 2818 3274 3328 3346 6322 6239 6314 6259 6328 6311 3721 6329
+% 3644 3622 3630 6415 6568 4220 4205 4330 4272 4364 4706 4773 4334 4336 
+% 4692 4757 4643 6672 6686 6712 6788 6649 6858 6958 6976 6978 6951 5003
+% 5017 7041 7051 7141 7044 7037 7088 7059 7058 7014  7159 7083 7132 7104
+% 7270 7467 7298 7576 7436 7575 7496 5789 5651 6004 6093 
+
+% 1 142 107 121 162 93 67  154 52 146 28 43 42 35 53 30 14 13 196 29 200 82
 
 
+%% 
+    
+length(a)
 
 
-
-
-
-
-
-
-
+%%
+X_neu=zeros(200,5);
+a=[1 142 107 121 162 93 67 21 45 53 154 52 146 28 43 42 35 53 30 14 13 196 29 200 82  175 12 50 198];
+X_neu(1:50,:)=X3_P(:,1:50)';
+for i=1:length(a)
+    X_neu(50+i,:)=X3_P(:,a(i));
+end
+b=[59 37 16 18 17 46 59 159 73 102 204 197 47 237 272 372 620 178 479 520 426 187 770 546 849  847 1328 499 548 1393 1232 940 1675 1861 1776 1907 2071 2122 2103 2164  2285 2144 2255 2364 2363 2386 2398 2543 2478 2774 2740 2996 2894 2922  2904 2824 2818 3274 3328 3346 6322 6239 6314 6259 6328 6311 3721 6329  3644 3622 3630 6415 6568 4220 4205 4330 4272 4364 4706 4773 4334 4336   4692 4757 4643 6672 6686 6712 6788 6649 6858 6958 6976 6978 6951 5003  5017 7041 7051 7141 7044 7037 7088 7059 7058 7014  7159 7083 7132 7104  7270 7467 7298 7576 7436 7575 7496 5789 5651 6004 6093];
+for i=1:length(b)
+    X_neu(50+length(a)+i,:)=X_test(b(i),:);
+end
+X3_P_initial=X_neu;
 
 %% delete too low flow rates from the plot
 load("DATA_case3.mat")
