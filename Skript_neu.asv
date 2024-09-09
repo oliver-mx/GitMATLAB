@@ -291,8 +291,6 @@ close all;
 scatter_revenue()
 
 %% one revenue plot
-close all
-revenue()
 
 %% try 3d surf plot ???
 close all;
@@ -300,7 +298,7 @@ surf_pareto() % evtl mark optimal revenue point
 
 %% plto only selected curves
 close all;
-scatter_select([.8 1.4 2.3])
+scatter_select([.6 1.4 2.1 2.5])
 
 %%
 clc,
@@ -444,109 +442,21 @@ scatter3(-Y_neu(:,1), -Y_neu(:,2),1:1:200, 'c')
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 %% all functions of the script:
 close all
-revenue()
-function revenue()
-    % Create a figure and axis
-    fig = figure('Name', 'Interactive revenue plot', 'NumberTitle', 'off');
-    fig.Position=[1200 500 800 500];
-    Color=summer(30);
-    Color=flipud(Color());
-    a=zeros(1,21);
-    s1=2;s2=.3;
-    %
-    load DATA_05.mat X_05 Y_05
-    load DATA_06.mat X_06 Y_06
-    load DATA_07.mat X_07 Y_07
-    load DATA_08.mat X_08 Y_08
-    load DATA_09.mat X_09 Y_09
-    load DATA_10.mat X_10 Y_10
-    load DATA_11.mat X_11 Y_11
-    load DATA_12.mat X_12 Y_12
-    load DATA_13.mat X_13 Y_13
-    load DATA_14.mat X_14 Y_14
-    load DATA_15.mat X_15 Y_15
-    load DATA_16.mat X_16 Y_16
-    load DATA_17.mat X_17 Y_17
-    load DATA_18.mat X_18 Y_18
-    load DATA_19.mat X_19 Y_19
-    load DATA_20.mat X_20 Y_20
-    load DATA_21.mat X_21 Y_21
-    load DATA_22.mat X_22 Y_22
-    load DATA_23.mat X_23 Y_23
-    load DATA_24.mat X_24 Y_24
-    load DATA_25.mat X_25 Y_25
-    %
-    a(1)=max(s1.*Y_05(2,:) + s2.*Y_05(2,:).*Y_05(1,:));
-    scatter(X_05(1,1),a(1),'MarkerEdgeColor','none','MarkerFaceColor',Color(5,:));hold on
-    %
-    a(2)=max(s1.*Y_06(2,:) + s2.*Y_06(2,:).*Y_06(1,:));
-    scatter(X_06(1,1),a(2),'MarkerEdgeColor','none','MarkerFaceColor',Color(6,:));hold on
-    %    
-    a(3)=max(s1.*Y_07(2,:) + s2.*Y_07(2,:).*Y_07(1,:));
-    scatter(X_07(1,1),a(3),'MarkerEdgeColor','none','MarkerFaceColor',Color(7,:));hold on
-    %   
-    a(4)=max(s1.*Y_08(2,:) + s2.*Y_08(2,:).*Y_08(1,:));
-    scatter(X_08(1,1),a(4),'MarkerEdgeColor','none','MarkerFaceColor',Color(8,:));hold on
-    %
-    a(5)=max(s1.*Y_09(2,:) + s2.*Y_09(2,:).*Y_09(1,:));
-    scatter(X_09(1,1),a(5),'MarkerEdgeColor','none','MarkerFaceColor',Color(9,:));hold on
-    % 
-    a(6)=max(s1.*Y_10(2,:) + s2.*Y_10(2,:).*Y_10(1,:));
-    scatter(X_10(1,1),a(6),'MarkerEdgeColor','none','MarkerFaceColor',Color(10,:));hold on
-    %
-    a(7)=max(s1.*Y_11(2,:) + s2.*Y_11(2,:).*Y_11(1,:));
-    scatter(X_11(1,1),a(7),'MarkerEdgeColor','none','MarkerFaceColor',Color(11,:));hold on
-    %
-    a(8)=max(s1.*Y_12(2,:) + s2.*Y_12(2,:).*Y_12(1,:));
-    scatter(X_12(1,1),a(8),'MarkerEdgeColor','none','MarkerFaceColor',Color(12,:));hold on
-    %
-    a(9)=max(s1.*Y_13(2,:) + s2.*Y_13(2,:).*Y_13(1,:));
-    scatter(X_13(1,1),a(9),'MarkerEdgeColor','none','MarkerFaceColor',Color(13,:));hold on
-    %
-    a(10)=max(s1.*Y_14(2,:) + s2.*Y_14(2,:).*Y_14(1,:));
-    scatter(X_14(1,1),a(10),'MarkerEdgeColor','none','MarkerFaceColor',Color(14,:));hold on
-    %
-    a(11)=max(s1.*Y_15(2,:) + s2.*Y_15(2,:).*Y_15(1,:));
-    scatter(X_15(1,1),a(11),'MarkerEdgeColor','none','MarkerFaceColor',Color(15,:));hold on
-    %
-    a(12)=max(s1.*Y_16(2,:) + s2.*Y_16(2,:).*Y_16(1,:));
-    scatter(X_16(1,1),a(12),'MarkerEdgeColor','none','MarkerFaceColor',Color(16,:));hold on
-    %
-    a(13)=max(s1.*Y_17(2,:) + s2.*Y_17(2,:).*Y_17(1,:));
-    scatter(X_17(1,1),a(13),'MarkerEdgeColor','none','MarkerFaceColor',Color(17,:));hold on
-    %
-    a(14)=max(s1.*Y_18(2,:) + s2.*Y_18(2,:).*Y_18(1,:));
-    scatter(X_18(1,1),a(14),'MarkerEdgeColor','none','MarkerFaceColor',Color(18,:));hold on
-    %
-    a(15)=max(s1.*Y_19(2,:) + s2.*Y_19(2,:).*Y_19(1,:));
-    scatter(X_19(1,1),a(15),'MarkerEdgeColor','none','MarkerFaceColor',Color(19,:));hold on
-    %
-    a(16)=max(s1.*Y_20(2,:) + s2.*Y_20(2,:).*Y_20(1,:));
-    scatter(X_20(1,1),a(16),'MarkerEdgeColor','none','MarkerFaceColor',Color(20,:));hold on
-    %
-    a(17)=max(s1.*Y_21(2,:) + s2.*Y_21(2,:).*Y_21(1,:));
-    scatter(X_21(1,1),a(17),'MarkerEdgeColor','none','MarkerFaceColor',Color(21,:));hold on
-    %
-    a(18)=max(s1.*Y_22(2,:)+ s2.*Y_22(2,:).*Y_22(1,:));
-    scatter(X_22(1,1),a(18),'MarkerEdgeColor','none','MarkerFaceColor',Color(22,:));hold on
-    %
-    a(19)=max(s1.*Y_23(2,:) + s2.*Y_23(2,:).*Y_23(1,:));
-    scatter(X_23(1,1),a(19),'MarkerEdgeColor','none','MarkerFaceColor',Color(23,:));hold on
-    %
-    a(20)=max(s1.*Y_24(2,:) + s2.*Y_24(2,:).*Y_24(1,:));
-    scatter(X_24(1,1),a(20),'MarkerEdgeColor','none','MarkerFaceColor',Color(24,:));hold on
-    %
-    a(21)=max(s1.*Y_25(2,:) + s2.*Y_25(2,:).*Y_25(1,:));
-    scatter(X_25(1,1),a(21),'MarkerEdgeColor','none','MarkerFaceColor',Color(25,:));hold on
-    %
-    grid on; xlim([.49 2.51]); ylim([0.4551 .4901]);view(2);
-    ylabel('Revenue [$/h]')
-    xlabel('L^{PRO} [m]')
-end
-
-
+surf_pareto()
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  function scatter_revenue()   
     % Create a figure and axis
@@ -964,8 +874,6 @@ function updatePlot(ax, plotType)
         legend('Case1: \epsilon-constraint method', 'Case2: \epsilon-constraint method', ['L^{PRO} = ',num2str(X_25(1,1)), 'm'],'Location', 'Northeast');
         title(ax, ['SWRO vs PRO length ratio:    1 : ',num2str(X_25(1,1)/4)]);
     end 
-    load DATA_case3.mat Y3_P
-    scatter(Y3_P(1,:),Y3_P(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',[0.9290 0.6940 0.1250]); hold on
     hLabel = uicontrol('Style', 'text', ...
                    'Position', [10, 8, 110, 20], ... % [left, bottom, width, height]
                    'String', '       L^{PRO}:', ...
@@ -1084,7 +992,4 @@ function scatter_select(I)
     if length(I)==4;legend('Case1: L^{RO}= 4m', 'Case2: L^{RO}= 4m', ['Hybrid: L^{RO}= 4m, L^{PRO}= ',num2str(I(1)),'m'],['Hybrid: L^{RO}= 4m, L^{PRO}= ',num2str(I(2)),'m'],['Hybrid: L^{RO}= 4m, L^{PRO}= ',num2str(I(3)),'m'],['Hybrid: L^{RO}= 4m, L^{PRO}= ',num2str(I(4)),'m'],'Location', 'SouthWest');end
     if length(I)>4;legend('Case1: L^{RO}= 4m', 'Case2: L^{RO}= 4m', ['Hybrid: L^{RO}= 4m, L^{PRO}= ',num2str(I(1)),'m'],['Hybrid: L^{RO}= 4m, L^{PRO}= ',num2str(I(2)),'m'],['Hybrid: L^{RO}= 4m, L^{PRO}= ',num2str(I(3)),'m'],['Hybrid: L^{RO}= 4m, L^{PRO}= ',num2str(I(4)),'m'],['Hybrid: L^{RO}= 4m, L^{PRO}= ',num2str(I(5)),'m'],'Location', 'SouthWest');end
     title('Pareto fronts');
-    load DATA_case3.mat Y3_P
-    scatter(Y3_P(1,:),Y3_P(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',[0.9290 0.6940 0.1250]); hold on
-   
 end

@@ -451,7 +451,7 @@ if version(6)==1; vals1(5) = p_exit*p_r; vals2(5) = 100*c_exit; vals3(5) = Q_exi
 if version(6)==4; vals1(1)= pERD2*p_r; vals2(1)=100*C_ERD2; end
 nexttile
 b = bar(1,vals1, 'FaceColor', 'b'); b(4).FaceColor = "#77AC30"; b(5).FaceColor = [.2 .6 .5]; b(1).FaceColor = '#0072bD';
-xticklabels({'[kg/ms^2]'}); ylim([0 1.1*max(vals1)]);ay=gca;ay.YAxis(1).Exponent=5;
+xticklabels({'[Pa]'}); ylim([0 1.1*max(vals1)]);ay=gca;ay.YAxis(1).Exponent=5;
 t=text(b(1).XEndPoints,b(1).YEndPoints,"P_{s}^{1;in} ",'HorizontalAlignment','center','VerticalAlignment','bottom');
 t=text(b(2).XEndPoints+rx ,b(2).YEndPoints,"P_{s}^{1;out}",'HorizontalAlignment','center','VerticalAlignment','bottom'); 
 t=text(b(4).XEndPoints,b(4).YEndPoints,"P_{b}^{1;in}",'HorizontalAlignment','center','VerticalAlignment','bottom'); 
@@ -486,7 +486,7 @@ vals3 = [J_E_sea*J_r; 2*J_E*J_r; 0; mixer_ERD*Q_d(end)*Q_r; Q_exit*Q_r];
 if version(1)==1; vals1(4) = p_d(1)*p_r; vals2(4)=c_d(1)*100;vals3(4)=-mixer_ERD*Q_d(1)*Q_r; end
 nexttile
 b = bar(1,vals1, 'FaceColor', 'b'); b(4).FaceColor = "#77AC30"; b(5).FaceColor = [.2 .6 .5]; b(1).FaceColor = '#0072bD';
-xticklabels({'[kg/ms^2]'}); ylim([0 1.1*max(vals1)]);ay=gca;ay.YAxis(1).Exponent=5;
+xticklabels({'[Pa]'}); ylim([0 1.1*max(vals1)]);ay=gca;ay.YAxis(1).Exponent=5;
 t=text(b(1).XEndPoints,b(1).YEndPoints,"P_E",'HorizontalAlignment','center','VerticalAlignment','bottom');
 t=text(b(2).XEndPoints+rx ,b(2).YEndPoints,"P_{s}^{2;out}",'HorizontalAlignment','center','VerticalAlignment','bottom'); 
 t=text(b(4).XEndPoints,b(4).YEndPoints,"P_b^{2;in}",'HorizontalAlignment','center','VerticalAlignment','bottom');
