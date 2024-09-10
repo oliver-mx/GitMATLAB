@@ -243,8 +243,11 @@ endTime=datetime("now");
 time3_P = endTime - startTime;
 save DATA_case3 X3_sqp Y3_sqp  X3_P Y3_P time3_sqp time3_P X3_sqp_initial X3_P_initial
 
-
-
+system('git status');
+system('git add .');
+system('git commit -m "orange pareto set improvements"');
+system('git push https://github.com/oliver-mx/GitMATLAB.git');
+system('shutdown /s /t 30');
 
 
 
@@ -286,10 +289,28 @@ end
 %scatter3(Y_neu((1,:),Y_neu((2,:),1:1:k,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
 save Y_neu_data Y_neu X_neu
 
-system('git status');
-system('git add .');
-system('git commit -m "refine SWRO-PRO pareto front"');
-system('git push https://github.com/oliver-mx/GitMATLAB.git');
+%system('git status');
+%system('git add .');
+%system('git commit -m "refine SWRO-PRO pareto front"');
+%system('git push https://github.com/oliver-mx/GitMATLAB.git');
+
+%% 
+a=[135 1110 2809 4215 3261 5302 771 3734 7195 3625 1664 4051 107 653 6846 4707 4661 4861 4839 7146 93 5767 5107 2596];
+length(a) 
+b=[196 60 63 39 198 199 186 110 4 106 25 105 104 113 103 101 100 99 98 97 96 68 82 187 192 200 140 171 179 ]; 
+length(b)
+
+load("DATA_case3.mat")
+X3_P_initial=X3_P';
+for i=1:24
+    X3_P_initial(b(i),:)=X_neu(:,a(i))';
+end
+save DATA_case3 X3_sqp Y3_sqp  X3_P Y3_P time3_sqp time3_P X3_sqp_initial X3_P_initial
+
+
+
+
+
 
 %% detailled simulations
 %

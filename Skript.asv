@@ -272,27 +272,41 @@ Z=[113 105 106 107 1 108 4 110 111 2 115 73 100 97];
 for i=1:length(Z)
     disp(X3_P(:,Z(i))')
 end
-
 k=8000;
-option_mesh = 1e3; option_BVP = 1e-4; option_data = .3;
-I1=2.5.*ones(1,k);
+option_mesh = 1e4; option_BVP = 1e-6; option_data = 3;
+I1=X3_sqp(1).*ones(1,k);
 I2=70.*ones(1,k); 
-I3=10.*ones(1,k)+5.*rand(1,k);
+I3=15.6.*ones(1,k)+.8.*rand(1,k);
 I4=20.*ones(1,k); 
-I5=4..*ones(1,k)+rand(1,k); 
-X_init=[I1;I2;I3;I4;I5];
+I5=1.7.*ones(1,k)+ 1.1.*rand(1,k); 
+X_neu=[I1;I2;I3;I4;I5];
 parfor i=1:k
-Y_sol(:,i)=fun_1(X_init(:,i),option_data,'sol',option_mesh,option_BVP);
+Y_neu(:,i)=fun_1(X_neu(:,i),option_data,'sol',option_mesh,option_BVP);
+end
+%scatter3(Y_neu((1,:),Y_neu((2,:),1:1:k,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
+save Y_neu_data Y_neu X_neu
+
+%system('git status');
+%system('git add .');
+%system('git commit -m "refine SWRO-PRO pareto front"');
+%system('git push https://github.com/oliver-mx/GitMATLAB.git');
+
+%% 
+a=[135 1110 2809 4215 3261 5302 771 3734 7195 3625 1664 4051 107 653 6846 4707 4661 4861 4839 7146 93 5767 5107 2596];
+length(a) 
+b=[196 60 63 39 198 199 186 110 4 106 25 105 104 113 103 101 100 99 98 97 96 68 82 187 192 200 140 171 179 ]; 
+length(b)
+
+load("DATA_case3.mat")
+X3_P_initial=X3_P';
+for i=1:24
+    X3_P_initial(b(i),:)=X_neu(:,a(i))'
 end
 
 
 
 
 
-%system('git status');
-%system('git add .');
-%system('git commit -m "refine SWRO-PRO pareto front"');
-%system('git push https://github.com/oliver-mx/GitMATLAB.git');
 
 %% detailled simulations
 %
