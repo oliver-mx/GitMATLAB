@@ -52,9 +52,15 @@ mean(T) %uni: 6.1215
 
 %% plot for paper
 close all
-revenue_pareto_plot()
+revenue_pareto_plot([.8 1.4 2])
 %
 %figure(1); set(gcf,'color','w'); f = gcf; exportgraphics(f,'Figure_10.png');
+%
+%% another plot
+close all
+plot1()
+%
+%figure(1); set(gcf,'color','w'); f = gcf; exportgraphics(f,'Figure_11.png');
 %
 
 %% plot of the Pareto fronts
@@ -243,160 +249,63 @@ endTime=datetime("now");
 time3_P = endTime - startTime;
 save DATA_case3 X3_sqp Y3_sqp  X3_P Y3_P time3_sqp time3_P X3_sqp_initial X3_P_initial
 
-system('git status');
-system('git add .');
-system('git commit -m "orange pareto set improvements"');
-system('git push https://github.com/oliver-mx/GitMATLAB.git');
-system('shutdown /s /t 30');
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-%%
-Z=[113 105 106 107 1 108 4 110 111 2 115 73 100 97];
-for i=1:length(Z)
-    disp(X3_P(:,Z(i))')
-end
-k=8000;
-option_mesh = 1e4; option_BVP = 1e-6; option_data = 3;
-I1=X3_sqp(1).*ones(1,k);
-I2=70.*ones(1,k); 
-I3=15.6.*ones(1,k)+.8.*rand(1,k);
-I4=20.*ones(1,k); 
-I5=1.7.*ones(1,k)+ 1.1.*rand(1,k); 
-X_neu=[I1;I2;I3;I4;I5];
-parfor i=1:k
-Y_neu(:,i)=fun_1(X_neu(:,i),option_data,'sol',option_mesh,option_BVP);
-end
-%scatter3(Y_neu((1,:),Y_neu((2,:),1:1:k,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
-save Y_neu_data Y_neu X_neu
-
 %system('git status');
 %system('git add .');
-%system('git commit -m "refine SWRO-PRO pareto front"');
+%system('git commit -m "orange pareto set improvements"');
 %system('git push https://github.com/oliver-mx/GitMATLAB.git');
 
-%% 
-a=[135 1110 2809 4215 3261 5302 771 3734 7195 3625 1664 4051 107 653 6846 4707 4661 4861 4839 7146 93 5767 5107 2596];
-length(a) 
-b=[196 60 63 39 198 199 186 110 4 106 25 105 104 113 103 101 100 99 98 97 96 68 82 187 192 200 140 171 179 ]; 
-length(b)
 
-load("DATA_case3.mat")
-X3_P_initial=X3_P';
-for i=1:24
-    X3_P_initial(b(i),:)=X_neu(:,a(i))';
-end
-save DATA_case3 X3_sqp Y3_sqp  X3_P Y3_P time3_sqp time3_P X3_sqp_initial X3_P_initial
-
-
-
-
-
-
-%% detailled simulations
-%
-% 113 105 106 107 1 108 4 110 111 2 115 73 100 97
+%% find points
+close all;
+plot1()
 % 
-%
-clc
-load("DATA_case3.mat")
-rng default
-Z1=[4 26 166 75 181 138 171 197 77 102 62 113 27 1 5 109 7 124 158 3 157 68 184 125 177 64 8 69 129 6 34];
-Z2=[31 73 72 74 2 126 128]; % co-current
-%
-X_test=zeros(5,38*200)'; % 7600
-X_test(:,1)=X3_sqp(1).*ones(1,38*200);
-%
-k=0;
-%
-for i=1:length(Z1)
-    for t=1:200
-        k=k+1;
-        A=X3_P(:,Z1(i));
-        X_test(k,2) = min(A(2)-.2+.4*rand(),70);
-        X_test(k,4) = min(A(4)-.2+.4*rand(),20);
-        X_test(k,3) = min(A(3)-.1+.2*rand(),X_test(k,4)-.1);
-        X_test(k,5) = max(A(5)-.3+.6*rand(),1.01);
-    end
-end
-for j=1:length(Z2)
-    for t2=1:200
-        k=k+1;
-        A=X3_P(:,Z2(j));
-        X_test(k,2) = min(A(2)-.2+.4*rand(),70);
-        X_test(k,3) = min(A(3)-.2+.4*rand(),20);
-        X_test(k,4) = min(A(4)-.1+.2*rand(),X_test(k,3)-.1);
-        X_test(k,5) = max(A(5)-.3+.6*rand(),1.01);
-    end
-end
-
-Y_test=zeros(5,k);
-parfor i=1:7600
-    Y_test(:,i)=fun_1(X_test(i,:),3,'sol',1e4,1e-6);
-end
-%% plots zum vergleich
-scatter3(Y_test(1,:),Y_test(2,:),1:1:7600,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
-%
-grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
-beep 
-
-
-
-
-%% 
-    
-length(a)
-
 
 %%
-X_neu=zeros(200,5);
-a=[1 142 107 121 162 93 67 21 45 53 154 52 146 28 43 42 35 53 30 14 13 196 29 200 82  175 12 50 198];
-X_neu(1:50,:)=X3_P(:,1:50)';
-for i=1:length(a)
-    X_neu(50+i,:)=X3_P(:,a(i));
+clc;close all;rng default;load("DATA_case3.mat")
+%
+k=16*20;
+X0=X3_P(:,118);
+%
+X_init=zeros(5,k);
+for i=1:k
+    X_init(:,i)=[X0(1) X0(2) X0(3)-.2+.4*rand() X0(4) X0(5)-.2+.4*rand()];
 end
-b=[59 37 16 18 17 46 59 159 73 102 204 197 47 237 272 372 620 178 479 520 426 187 770 546 849  847 1328 499 548 1393 1232 940 1675 1861 1776 1907 2071 2122 2103 2164  2285 2144 2255 2364 2363 2386 2398 2543 2478 2774 2740 2996 2894 2922  2904 2824 2818 3274 3328 3346 6322 6239 6314 6259 6328 6311 3721 6329  3644 3622 3630 6415 6568 4220 4205 4330 4272 4364 4706 4773 4334 4336   4692 4757 4643 6672 6686 6712 6788 6649 6858 6958 6976 6978 6951 5003  5017 7041 7051 7141 7044 7037 7088 7059 7058 7014  7159 7083 7132 7104  7270 7467 7298 7576 7436 7575 7496 5789 5651 6004 6093];
-for i=1:length(b)
-    X_neu(50+length(a)+i,:)=X_test(b(i),:);
+Y_init=zeros(5,k);
+parfor i=1:k
+    Y_init(:,i)=fun_1(X_init(:,i),3,'sol',1e4,1e-6);
 end
-X3_P_initial=X_neu;
+%% plot zum vergleich
+plot1()
+scatter3(Y_init(1,:),Y_init(2,:),1:1:k,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
+%
+grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
 
-%% delete too low flow rates from the plot
+%% replace X and Y in X3_p:
 load("DATA_case3.mat")
-for i=1:200
-    if Y3_P(1,i)>-0.69
-        Y3_P(:,i)=Y3_P(:,1);
-        X3_P(:,i)=X3_P(:,1);
+%
+index_neu=[267];
+%
+index_alt=[154];
+%
+if length(index_neu)==length(index_alt)
+    for i = 1:length(index_neu)
+        X3_P(:,index_alt(i)) = X_init(:,index_neu(i));
+        Y3_P(:,index_alt(i)) = Y_init(:,index_neu(i));
     end
+else
+    display('lengths are not equal !')
 end
-scatter3(Y3_P(1,:),Y3_P(2,:),1:1:200,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',[0.9290 0.6940 0.1250]); hold on
+save DATA_case3 X3_sqp Y3_sqp  X3_P Y3_P time3_sqp time3_P X3_sqp_initial X3_P_initial
+close all;
+plot1()
 
-%save DATA_case3 X3_sqp Y3_sqp  X3_P Y3_P time3_sqp time3_P X3_sqp_initial X3_P_initial
 
-% 4 26 181 62 27 1 5 7 31 179
-N=[4 26 181 62 27 1 5 7 31 179];
-for j=1:length(N)
-disp(X3_P(:,j)')
-end
+
+
+
+
+
+
 
 %%
 clc;
@@ -423,53 +332,9 @@ beep
 
 
 
-
-%% test locally around best point so far
-%
-clc
-load DATA_Rev_test.mat
-n=20000; %16000 = 5h at home
-a1=      1.8.*ones(1,n) + 1.4.*rand(1,n);
-a2=      70.*ones(1,n);
-a4=      20.*ones(1,n);
-a3=      12.*ones(1,n) +  6.*rand(1,n);
-a5=   1.001.*ones(1,n) + 5.*rand(1,n);
-%
-X_Rt=[a1; a2; a3; a4; a5];
-%
-parfor i=1:n
-Y_Rt(:,i)=fun_1(X_Rt(:,i), 3 ,'sol', 1e4 , 1e-6);
-end
-R=Y_Rt(3,:);
-R = R(~isnan(R))';
-R = R(~isinf(R))';
-a=max(R);
-c=find(Y_Rt(3,:)== a);
-%
-disp(X_Rt(:,c))
-disp(Y_Rt(:,c)')
-save DATA_Rev_test.mat X_Rt Y_Rt
-
-% we try to beat:
-%    2.0179
-%   70.0000
-%   15.9461
-%   20.0000
-%    1.7051
-
-%   -2.1330    0.3588    0.4880   43.0727   92.1842
-
-%system('git status');
-%system('git add .');
-%system('git commit -m "testing again 1.8 - 2.2m haha"');
-%system('git push https://github.com/oliver-mx/GitMATLAB.git');
-%system('shutdown /s /t 30');
-
 %%
 % remove points with negative REC
-
 find(Y_Rt(5,:)<0)
-
 R=Y_Rt(3,:);
 R(3024)=0;R(10606)=0;R(14386)=0;
 R = R(~isnan(R))';
@@ -480,228 +345,82 @@ c=find(Y_Rt(3,:)== a);
 disp(X_Rt(:,c))
 disp(Y_Rt(:,c)')
 
-%    2.0367
-%   70.0000
-%   15.6380
-%   20.0000
-%    1.8386
-%   -2.2019    0.3633    0.4866   42.0110   84.4000
+
+
+
+
+
+%% find best candidates
 
 
 
 
 
 
-
-
-
-%% Simulate hybrid data - for paretosearch initial guess
-n=3000;
-a1=       50*ones(1,n)  +   13.*rand(1,n);
-a3=      12.*ones(1,n)  +   2.*rand(1,n);
-a2=  a3 - 1.*ones(1,n)  -  .6.*rand(1,n);
-a4=     1.7.*ones(1,n)  +      rand(1,n);
+%% imporve fig 10 right
+% lengths
+I=[1.6 1.7 1.8 1.9 2.1 2.2 2.3 2.4 2.5];
+% coressponding start vector:
+X0=[1.6000   70.0000   17.6408   20.0000    1.5522;
+    1.7000   70.0000   17.1616   20.0000    1.4811;
+    1.8000   70.0000   16.8488   20.0000    1.9343;
+    1.9000   70.0000   16.5807   20.0000    2.0394;
+    2.1000   70.0000   15.6291   20.0000    2.7275;
+    2.2000   70.0000   15.1129   20.0000    3.1129;
+    2.3000   70.0000   14.5006   20.0000    3.8143;
+    2.4000   70.0000   13.6224   20.0000    4.0084;
+    2.5000   70.0000   13.6484   20.0000    4.6532]';
 %
-X_test=[a1; a2; a3; a4];
+rng default
+option_mesh = 1e4; option_BVP = 1e-6; option_data = 3;  
 %
-parfor i=1:n
-i,
-Y_test(:,i)=fun_1(X_test(:,i), 3 ,'sol', 1e4 , 1e-6);
+k=14*40;
+X_init=zeros(5,9*k);
+Y_init=zeros(5,9*k);
+z=0;
+for j=1:9
+    A=X0(:,j)';
+    for i=1:k
+        z=z+1;
+        X_init(:,z)=[A(1) A(2) A(3)-.2+.4*rand() A(4) A(5)-.2+.4*rand()];
+    end
 end
-%
-scatter3(Y_test(1,:),Y_test(2,:), 1:1:3000,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','g'); hold on
-%
+%%
+parfor i2=20203:k*9
+        Y_init(:,i2)=fun_1(X_init(:,i2),option_data,'sol',option_mesh,option_BVP);
+end
 
-load("DATA_case1.mat")
-f=figure(1); f.Position = [1200 500 800 500];
-scatter(Y1(1,:),Y1(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
-scatter(Y1_R(1),Y1_R(2),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','y'); hold on
-load("DATA_case2.mat")
-scatter(Y2(1,:),Y2(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold on
-scatter(Y2_R(1),Y2_R(2),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','y'); hold on
-load("DATA_case3.mat")
-scatter(Y3_R(1),Y3_R(2),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','y'); hold on
-view(2);
-grid on
+system('git status');
+system('git add .');
+system('git commit -m "improve Fig.10 (right)"');
+system('git push https://github.com/oliver-mx/GitMATLAB.git');
+
+%%
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-%% in the end comparison with "old" besd curve
-load DATA_Pareto.mat
-scatter(SEC_Pareto_1,FW_Pareto_1);hold on
-scatter(SEC_Pareto_2,FW_Pareto_2);hold on
-load DATA_Approx.mat
-scatter(SEC_approx, FW_approx);hold on
-Rev= 2.5.*FW_approx -0.5.*FW_approx.*SEC_approx;
-[a,b]=max(Rev),
-
-
-
-
-
-
-
-
-
-
-
-
-
-%% test locally around best point so far
-%
+%%
+%%
 clc
-load("DATA_case3.mat")
-load DATA_testy.mat
-rng default
-n=30000;
-a1=      X3_sqp(1).*ones(1,n);
-a2=      58.*ones(1,n) +  12.*rand(1,n);
-a2(1:10000)=70.*ones(1,10000);
-a4=      17.*ones(1,n) +  3.*rand(1,n);
-a4(1+5000:10000+5000)=20.*ones(1,10000);
-a3=  a4-    .9.*ones(1,n) +  4.1.*rand(1,n);
-a5=   1.001.*ones(1,n) + 3.9.*rand(1,n);
+XX=X_init(:,1681:1:2238);
+YY=Y_init(:,1681:1:2238);
+%load Data_25.mat
+%z=Y_25(3,:);
+z=YY(3,:);
+REV=z;
+REV= REV(~isnan(REV));
+a=max(REV);
+c=find(z==a);
+c=c(1);
 %
-X_testy=[a1; a2; a3; a4; a5];
-%
-parfor i=1:n
-Y_testy(:,i)=fun_1(X_testy(:,i), 3 ,'sol', 1e4 , 1e-6);
-end
+%disp(X_25(:,c)')
+%disp(Y_25(:,c)')
+disp(XX(:,c)')
+disp(YY(:,c)')
 
-save DATA_testy.mat X_testy Y_testy
-
-%system('git status');
-%system('git add .');
-%system('git commit -m "Simulations for optimal Ratio"');
-%system('git push https://github.com/oliver-mx/GitMATLAB.git');
-%system('shutdown /s /t 30');
-
-% optimal revenue
-%    2.0179
-%   70.0000
-%   15.9461
-%   20.0000
-%    1.7051
-
-%   -2.1330    0.3588    0.4880   43.0727   92.1842
-%%
-load DATA_testy.mat
-close all;
-load("DATA_case1.mat")
-f=figure(1); f.Position = [1200 500 800 500];
-scatter(Y1(1,:),Y1(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
-scatter(Y1_P(1,:),Y1_P(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','m'); hold on
-scatter(Y1_R(1),Y1_R(2),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','y'); hold on
-load("DATA_case2.mat")
-scatter(Y2(1,:),Y2(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold on
-scatter(Y2_P(1,:),Y2_P(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','c'); hold on
-scatter(Y2_R(1),Y2_R(2),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','y'); hold on
-load("DATA_case3.mat")
-scatter3(Y_testy(1,:),Y_testy(2,:),1:1:30000,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',[0.9290 0.6940 0.1250]); hold on
-scatter(Y3_sqp(1),Y3_sqp(2),'y', 'filled'); hold on
-grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
-legend('Case1: \epsilon-constraint method', 'Case1: paretosearch','','Case2: \epsilon-constraint method', 'Case2: paretosearch','','Case3: paretosearch', '','Location', 'Northeast');
-ylabel('FW [m^3/h]','FontSize',16);xlabel('SEC_{net} [kWh/m^3]','FontSize',16);
-%
-load DATA_20.mat X_20 Y_20
-scatter3(Y_20(1,:),Y_20(2,:),1:1:200,'MarkerEdgeColor','none','MarkerFaceColor','k'); hold on
-grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
-
-%scatter(Y3_P(1,:),Y3_P(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',[0.8 0.5 0.1]); hold on
 
 %%
-%
-% optimal revenue 
-% X3_sqp
-%
-% von schwarz:
-% 2  28 73 98 190 161 25
-% 19 61 89 70 36 167 186 84 152 95 160 104 121 18 132 137 62 119 64 176 44
-% 138 131 189 145 133 65 155 57 60 184 78 171 158 93 105 41
-%
-% von orange:
-% 29467 11438 28573 18320 14054 10298 14091 23681 11936 29277 13727 10984
-% 10466 6693 13360 14893 24984 9352 6966 14226 12681 8128 6474 5656 8028
-% 9101 8266 7385 7178 8815 5112 12289 12206 5040 8821 8139 8463 8143 9140
-% 8189 8730 9198 6668
-%
-
-a1=[1]
-a2=[71 191 91 186 22 94 112 82 61 153 142 95 59 120 30 75 123 45 64 21 152 20 104 133 55 63 66 157 169 154 74 180 84 174 144 192 128 193 118 189 184 165 100 58 161 68 62 67 176 135 90];
-a4=[ 11873 18320 14054 14091 29736 18910 14472 28418 11303 25103 12020 27472 11500 526 3841 14261 29467 11438 28573 18320 14054 10298 14091 23681 11936 29277 13727 10984  10466 6693 13360 14893 24984 9352 6966 14226 12681 8128 6474 5656 8028  9101 8266 7385 7178 8815 5112 12289]
-
-X3_P_initial = [X3_sqp'];
-for i=1:length(a2)
-    X3_P_initial = [X3_P_initial; X_20(:,a2(i))'];
-end
-
-for j=1:length(a4)
-    X3_P_initial = [X3_P_initial; X_testy(:,a4(j))'];
-end
-X3_P_initial=[X3_P_initial;X3_P_initial];
-size(X3_P_initial)
-
-
-
-
-
-
-%% simulate best revenue for fixed PRO length
-%
-% length fixed
-% P_d0=70 and p_dL=20 fix
-%
-L=2.1;
-k=700;
-%
-rng default
-X_test=[L.*ones(k,1), 70.*ones(k,1), 15.7*ones(k,1) - .2.*rand(k,1) ,20.*ones(k,1), 2.5.*ones(k,1) + .4.*rand(k,1) ];
-Y_test=zeros(5,k);
-%
-parfor i=1:k
-    Y_test(:,i)=fun_1(X_test(i,:), 3 ,'sol', 1e4 , 1e-6);
-end
-%%
-REV= Y_test(3,:);
+z=1;
+REV= Y_init(3,(z-1)*14*80:1:z*14*80);
 REV= REV(~isnan(REV))';
 a=max(REV);
 c=find(Y_test(3,:)== a);
@@ -711,16 +430,75 @@ disp(Y_test(:,c)')
 
 %%
 load DATA_MaxRev.mat
-y_rev(10*(L-.4))=a;
+y_rev(12)=.4825; %1.6 = 12
 save DATA_MaxRev.mat x_length y_rev
 
 %% plot functions:
 close all
-revenue_pareto_plot()
-function revenue_pareto_plot()
+revenue_pareto_plot([.8 1.4 2])
+function revenue_pareto_plot(I)
     fig = figure(1);
     fig.Position=[592.3333 516.3333 1.4077e+03 483.3333];
     tiledlayout(1, 2);
+    %%%%%%%%
+    nexttile;
+    L = 0.5:0.1:2.5;
+    load DATA_05.mat X_05 Y_05
+    load DATA_06.mat X_06 Y_06
+    load DATA_07.mat X_07 Y_07
+    load DATA_08.mat X_08 Y_08
+    load DATA_09.mat X_09 Y_09
+    load DATA_10.mat X_10 Y_10
+    load DATA_11.mat X_11 Y_11
+    load DATA_12.mat X_12 Y_12
+    load DATA_13.mat X_13 Y_13
+    load DATA_14.mat X_14 Y_14
+    load DATA_15.mat X_15 Y_15
+    load DATA_16.mat X_16 Y_16
+    load DATA_17.mat X_17 Y_17
+    load DATA_18.mat X_18 Y_18
+    load DATA_19.mat X_19 Y_19
+    load DATA_20.mat X_20 Y_20
+    load DATA_21.mat X_21 Y_21
+    load DATA_22.mat X_22 Y_22
+    load DATA_23.mat X_23 Y_23
+    load DATA_24.mat X_24 Y_24
+    load DATA_25.mat X_25 Y_25
+    Color=summer(30);
+    Color=flipud(Color());
+    if any(I==.5);scatter(Y_05(1,:),Y_05(2,:),15,'MarkerEdgeColor','none','MarkerFaceColor',Color(1,:)); hold on; end
+    if any(I==.6);scatter(Y_06(1,:),Y_06(2,:),15,'MarkerEdgeColor','none','MarkerFaceColor',Color(2,:)); hold on; end
+    if any(I==.7);scatter(Y_07(1,:),Y_07(2,:),15,'MarkerEdgeColor','none','MarkerFaceColor',Color(3,:)); hold on; end
+    if any(I==.8);scatter(Y_08(1,:),Y_08(2,:),15,'MarkerEdgeColor','none','MarkerFaceColor',Color(4,:)); hold on; end
+    if any(I==.9);scatter(Y_09(1,:),Y_09(2,:),15,'MarkerEdgeColor','none','MarkerFaceColor',Color(5,:)); hold on; end
+    if any(I==1);scatter(Y_10(1,:),Y_10(2,:),15,'MarkerEdgeColor','none','MarkerFaceColor',Color(6,:)); hold on; end
+    if any(I==1.1);scatter(Y_11(1,:),Y_11(2,:),15,'MarkerEdgeColor','none','MarkerFaceColor',Color(7,:)); hold on; end
+    if any(I==1.2);scatter(Y_12(1,:),Y_12(2,:),15,'MarkerEdgeColor','none','MarkerFaceColor',Color(8,:)); hold on; end
+    if any(I==1.3);scatter(Y_13(1,:),Y_13(2,:),15,'MarkerEdgeColor','none','MarkerFaceColor',Color(9,:)); hold on; end
+    if any(I==1.4);scatter(Y_14(1,:),Y_14(2,:),15,'MarkerEdgeColor','none','MarkerFaceColor',Color(10,:)); hold on; end
+    if any(I==1.5);scatter(Y_15(1,:),Y_15(2,:),15,'MarkerEdgeColor','none','MarkerFaceColor',Color(11,:)); hold on; end
+    if any(I==1.6);scatter(Y_16(1,:),Y_16(2,:),15,'MarkerEdgeColor','none','MarkerFaceColor',Color(12,:)); hold on; end
+    if any(I==1.7);scatter(Y_17(1,:),Y_17(2,:),15,'MarkerEdgeColor','none','MarkerFaceColor',Color(13,:)); hold on; end
+    if any(I==1.8);scatter(Y_18(1,:),Y_18(2,:),15,'MarkerEdgeColor','none','MarkerFaceColor',Color(14,:)); hold on; end
+    if any(I==1.9);scatter(Y_19(1,:),Y_19(2,:),15,'MarkerEdgeColor','none','MarkerFaceColor',Color(15,:)); hold on; end
+    if any(I==2);scatter(Y_20(1,:),Y_20(2,:),15,'MarkerEdgeColor','none','MarkerFaceColor',Color(16,:)); hold on; end
+    if any(I==2.1);scatter(Y_21(1,:),Y_21(2,:),15,'MarkerEdgeColor','none','MarkerFaceColor',Color(17,:)); hold on; end
+    if any(I==2.2);scatter(Y_22(1,:),Y_22(2,:),15,'MarkerEdgeColor','none','MarkerFaceColor',Color(18,:)); hold on; end
+    if any(I==2.3);scatter(Y_23(1,:),Y_23(2,:),15,'MarkerEdgeColor','none','MarkerFaceColor',Color(19,:)); hold on; end
+    if any(I==2.4);scatter(Y_24(1,:),Y_24(2,:),15,'MarkerEdgeColor','none','MarkerFaceColor',Color(20,:)); hold on; end
+    if any(I==2.5);scatter(Y_25(1,:),Y_25(2,:),15,'MarkerEdgeColor','none','MarkerFaceColor',Color(21,:)); hold on; end 
+    grid on;view(2);
+    ylabel('FW [m^3/h]','FontSize',16);xlabel('SEC_{net} [kWh/m^3]','FontSize',16);
+    %xlim([-5.501 -.5]); ylim([0 0.48])
+    if length(I)==1;legend(['L^{RO}= 4m, L^{PRO}= ',num2str(I(1)),'m'],'Location', 'Northeast');end
+    if length(I)==2;legend(['L^{RO}= 4m, L^{PRO}= ',num2str(I(1)),'m'],['L^{RO}= 4m, L^{PRO}= ',num2str(I(2)),'m'],'Location', 'SouthWest');end
+    if length(I)==3;legend(['L^{RO}= 4m, L^{PRO}= ',num2str(I(1)),'m'],['L^{RO}= 4m, L^{PRO}= ',num2str(I(2)),'m'],['L^{RO}= 4m, L^{PRO}= ',num2str(I(3)),'m'],'Location', 'SouthWest');end
+    if length(I)==4;legend(['L^{RO}= 4m, L^{PRO}= ',num2str(I(1)),'m'],['L^{RO}= 4m, L^{PRO}= ',num2str(I(2)),'m'],['L^{RO}= 4m, L^{PRO}= ',num2str(I(3)),'m'],['L^{RO}= 4m, L^{PRO}= ',num2str(I(4)),'m'],'Location', 'SouthWest');end
+    if length(I)>4;legend(['L^{RO}= 4m, L^{PRO}= ',num2str(I(1)),'m'],['L^{RO}= 4m, L^{PRO}= ',num2str(I(2)),'m'],['L^{RO}= 4m, L^{PRO}= ',num2str(I(3)),'m'],['L^{RO}= 4m, L^{PRO}= ',num2str(I(4)),'m'],['L^{RO}= 4m, L^{PRO}= ',num2str(I(5)),'m'],'Location', 'SouthWest');end
+    %
+    %load DATA_case3.mat Y3_P
+    %scatter3(Y3_P(1,:),Y3_P(2,:),1:1:200,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',[0.9290 0.6940 0.1250]); hold on
+    %
     %%%%%%%%
     nexttile;
     % Create a figure and axis
@@ -729,24 +507,12 @@ function revenue_pareto_plot()
     a=zeros(1,21);
     s1=2;s2=.3;
     %
-    load DATA_16.mat X_16 Y_16
-    load DATA_17.mat X_17 Y_17
-    load DATA_18.mat X_18 Y_18
     load DATA_19.mat X_19 Y_19
     load DATA_22.mat X_22 Y_22
     load DATA_23.mat X_23 Y_23
     load DATA_24.mat X_24 Y_24
     load DATA_25.mat X_25 Y_25
     load DATA_case3.mat X3_sqp Y3_sqp
-    %
-    a(12)=max(s1.*Y_16(2,:) + s2.*Y_16(2,:).*Y_16(1,:));
-    scatter(X_16(1,1),a(12),'MarkerEdgeColor','none','MarkerFaceColor',Color(16,:));hold on
-    %
-    a(13)=max(s1.*Y_17(2,:) + s2.*Y_17(2,:).*Y_17(1,:));
-    scatter(X_17(1,1),a(13),'MarkerEdgeColor','none','MarkerFaceColor',Color(17,:));hold on
-    %
-    a(14)=max(s1.*Y_18(2,:) + s2.*Y_18(2,:).*Y_18(1,:));
-    scatter(X_18(1,1),a(14),'MarkerEdgeColor','none','MarkerFaceColor',Color(18,:));hold on
     %
     a(15)=max(s1.*Y_19(2,:) + s2.*Y_19(2,:).*Y_19(1,:));
     scatter(X_19(1,1),a(15),'MarkerEdgeColor','none','MarkerFaceColor',Color(19,:));hold on
@@ -771,16 +537,17 @@ function revenue_pareto_plot()
     %
     grid on; xlim([.46 2.54]); ylim([0.4551 .4951]);view(2);
     ylabel('REV [$/h]','FontSize',16);xlabel('L^{PRO} [m]','FontSize',16);
-    %%%%%%%%
-    nexttile
+end
+function plot1()
     load DATA_case1.mat Y1 Y1_P
+    f=figure(1); f.Position = [1200 500 800 500];
     scatter(Y1(1,:),Y1(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
     scatter(Y1_P(1,:),Y1_P(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
     load DATA_case2.mat Y2 Y2_P
     scatter(Y2(1,:),Y2(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold on
     scatter(Y2_P(1,:),Y2_P(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b'); hold on
     load DATA_case3.mat Y3_P
-    scatter(Y3_P(1,:),Y3_P(2,:),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',[0.9290 0.6940 0.1250]); hold on
+    scatter3(Y3_P(1,:),Y3_P(2,:),1:1:200,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',[0.9290 0.6940 0.1250]); hold on
     grid on; xlim([-5.501 -.5]); ylim([0 0.48]);view(2);
     legend('Case1: SWRO','','Case2: SWRO with ERD','','Case3: SWRO-PRO hybrid','Location', 'Northeast');
     ylabel('FW [m^3/h]','FontSize',16);xlabel('SEC_{net} [kWh/m^3]','FontSize',16);
