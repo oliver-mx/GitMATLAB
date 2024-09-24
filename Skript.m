@@ -392,11 +392,10 @@ end
 parfor i2=1:k*9
         Y_init(:,i2)=fun_1(X_init(:,i2),option_data,'sol',option_mesh,option_BVP);
 end
-
-%%
+%
 system('git status');
 system('git add .');
-system('git commit -m "nach Urlaub"');
+system('git commit -m "Brechnungen für L>1.5"');
 system('git push https://github.com/oliver-mx/GitMATLAB.git');
 
 %%
