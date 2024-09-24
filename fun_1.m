@@ -438,7 +438,7 @@ yyaxis right;
 plot(x2*L, osm_diff*p_r,'Color', rc,'LineWidth',lw); ylabel('[Pa]','Fontsize',10); legend('\Delta P^{PRO}(x)','\Delta \pi^{PRO}(x)','Location','SouthEast');xlim([0 L]); ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc; %ylim([a b]);
 end
 %% figure 3
-if fig(3) == 1
+if fig(3) == 1 && version(6) > 0
 f=figure(3);  % ERD quantities
 f.Position = [637.6667 210.3333 900 347.3334]; tiledlayout(1,4); 
 rot=0; rx=0; %rotation and shift of texts

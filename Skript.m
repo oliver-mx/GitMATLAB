@@ -20,6 +20,9 @@ load("DATA_case3.mat")
 %figure(4); set(gcf,'color','w'); f = gcf; exportgraphics(f,'Figure_9.png');
 %
 
+%% ERD test
+output1=fun_1([70,50], 1,'fig', 1e4 , 1e-6),
+
 %% Average simulation time:
 %
 % calculate average computation time of the simulation above
@@ -374,7 +377,7 @@ X0=[1.6000   70.0000   17.6408   20.0000    1.5522;
 rng default
 option_mesh = 1e4; option_BVP = 1e-6; option_data = 3;  
 %
-k=14*40;
+k=14*60;
 X_init=zeros(5,9*k);
 Y_init=zeros(5,9*k);
 z=0;
@@ -386,13 +389,14 @@ for j=1:9
     end
 end
 %%
-parfor i2=20203:k*9
+parfor i2=1:k*9
         Y_init(:,i2)=fun_1(X_init(:,i2),option_data,'sol',option_mesh,option_BVP);
 end
 
+%%
 system('git status');
 system('git add .');
-system('git commit -m "improve Fig.10 (right)"');
+system('git commit -m "nach Urlaub"');
 system('git push https://github.com/oliver-mx/GitMATLAB.git');
 
 %%
