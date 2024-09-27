@@ -1,4 +1,4 @@
-function [ res ] = ERD_boundary2(ya, yb, DATA)
+function [ res ] = Boundary2(ya, yb, DATA)
 % Residual function for boundary conditions
 % version(6) == 0 
 % --> only SWRO (no ERD)
@@ -26,7 +26,11 @@ res =   [ % SWRO part:
           ya(12)- pf_0      	% pressure of fresh side at 0
           yb(11)- pd_L          % pressure draw side at L 
           yb(12)- pf_L];    	% pressure of fresh side at L
-	
+
+if Pd_L == 0
+    res(5) = swro_Z*(ya(1)*ya(2)+ya(2))*J_r/((yb(1) + 1)./(yb(1)/ro_salt + 1/ro_water))/rho_r - 0.291;
+end
+
 %% counter current    
 if version(1) ==1; res(7)=yb(7) - cE; end 
 

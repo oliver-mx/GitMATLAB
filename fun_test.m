@@ -1,4 +1,4 @@
-function [output1, output2, output3] = fun_1(input,option_data,obj,option_mesh,option_BVP)
+function [output1, output2, output3] = fun_test(input,option_data,obj,option_mesh,option_BVP)
 %%  fun   Solves BVP for SWRO-PRO hybrid system using bvp5c
 %
 %       fun(input,option_data,obj,option_mesh,option_BVP) will solve the
@@ -31,6 +31,8 @@ if nargout>2
 end
 
 %% Read data
+%
+if option_data == 0; DATA = @(x)Test_1_data(input); end
 %
 if option_data == 1; DATA = @(x)Pareto_1_data(input); end
 if option_data == 2; DATA = @(x)Pareto_2_data(input); end
@@ -87,8 +89,8 @@ P_f = Y(:,6);
 swro_p_osm_d = ro_water*Rw*T0*log(1 + 2*Mw*Y(:,1)/Ms)/p_r;
 swro_p_osm_f = ro_water*Rw*T0*log(1 + 2*Mw*Y(:,3)/Ms./Y(:,4))/p_r;
 swro_del_c = Y(:,1)./(Y(:,1) + 1) - Y(:,3)./(Y(:,3) + Y(:,4));
-swro_local_ro_d = (Y(:,1) + 1)./(ro_water*Y(:,1)/ro_salt + 1);
-swro_local_ro_f = (Y(:,3) + Y(:,4))./(ro_water*Y(:,3)/ro_salt + Y(:,4));
+swro_local_ro_d = (Y(:,1) + 1)./(Y(:,1)./ro_salt + ones(1,n)./ro_water);
+swro_local_ro_f = (Y(:,3) + Y(:,4))./(Y(:,3)./ro_salt + Y(:,4)./ro_water);
 swro_beta = (1 - swro_R)*((Y(:,5) - Y(:,6)) - sigma.*(swro_p_osm_d - swro_p_osm_f))/swro_R;
 if version(2) == 0 ;swro_beta= swro_beta_fix.*ones(1,n); end
 if version(4) == 0 ;swro_beta=zeros(1,n); end
@@ -417,9 +419,15 @@ f=figure(2); %
 f.Position = [1.2977e+03 635.6667 1.0987e+03 639.3333];
 % Permeate flows 
 subplot(2,2,1); lc='k';rc='#b81414'; J_cross2=J_cross(2:end);J_sin2=J_sin(2:end);
-plot(x2*swro_L, J_cross2*J_r/swro_x_r, 'Color', lc, 'LineWidth',lw);xlabel('x [m]','Fontsize',10);  ylabel('[kg/sm^2]','Fontsize',10);ay=gca; ay.YAxis.Exponent = 0;ylim([min( J_cross2*J_r/swro_x_r) 1.1*max( J_cross2*J_r/swro_x_r)]); hold on
+plot(x2*swro_L, real(J_cross2*J_r)/swro_x_r, 'Color', lc, 'LineWidth',lw);xlabel('x [m]','Fontsize',10);  ylabel('[kg/sm^2]','Fontsize',10);ay=gca; ay.YAxis.Exponent = 0;ylim([min( real(J_cross2*J_r/swro_x_r)) 1.1*max( real(J_cross2*J_r/swro_x_r))]); hold on
 yyaxis right
-plot(x2*swro_L, J_sin2*J_r/swro_x_r, 'Color', rc, 'LineWidth',lw); ylabel('[kg/sm^2]','Fontsize',10); legend('J_{w,in}^{RO}(x)','J_{s,in}^{RO}(x)','Location','best');xlim([0 swro_L]);ylim([min( J_sin2*J_r/swro_x_r) 1.1*max( J_sin2*J_r/swro_x_r)+.00001]);ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc;
+if version(4)>0
+    if version(2)==0
+        plot(x2*swro_L, J_sin2*J_r/swro_x_r, 'Color', rc, 'LineWidth',lw); ylabel('[kg/sm^2]','Fontsize',10); legend('J_{w,in}^{RO}(x)','J_{s,in}^{RO}(x)','Location','best');xlim([0 swro_L]);ylim([min( J_sin2*J_r/swro_x_r) 1.1*max( J_sin2*J_r/swro_x_r)+.00001]);ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc;
+    else
+        %plot(x2*swro_L, J_sin2*J_r/swro_x_r, 'Color', rc, 'LineWidth',lw); ylabel('[kg/sm^2]','Fontsize',10); legend('J_{w,in}^{RO}(x)','J_{s,in}^{RO}(x)','Location','best');xlim([0 swro_L]);ylim([min( J_sin2*J_r/swro_x_r) 1.1*max( J_sin2*J_r/swro_x_r)+.00001]);ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc;
+    end
+end
 % Osmotic/ Hydraulic pressure difference
 subplot(2,2,3);lc='k';rc='#b81414'; osm_diff=swro_p_osm_d(2:end)-swro_p_osm_f(2:end); a=min([min(osm_diff*p_r) min((P_d-P_f)*p_r)]); b=max( [max(osm_diff*p_r), max((P_d-P_f)*p_r)]);
 plot(x*swro_L, (P_d-P_f)*p_r,'Color', lc,'LineWidth',lw);xlabel('x [m]','Fontsize',10); ylabel('[Pa]','Fontsize',10); ylim([a b]);ay=gca; ay.YAxis.Exponent = 6; hold on
@@ -511,5 +519,14 @@ lgd.Layout.Tile = 4; axis off ;
 end
 end
 end
+x1=swro_Z*J_d(1)*J_r/swro_local_ro_d(1)/rho_r;
+x2=swro_Z*J_f(end)*J_r/swro_local_ro_f(end)/rho_r;
+x3=C_f(end)*C_r;
+display(['SWRO feed flow rate:     ',num2str(x1),'m^3/s'])
+display(['Permeate  flow rate:     ',num2str(x2),'m^3/s'])
+%
+display(['J_sf(0):      ',num2str(J_sf(1))])
+display(['J_wf(0):      ',num2str(J_wf(1))])
+display(['Permeate concentration:      ',num2str(x3*1e6),' g/m^3'])
 end
 
