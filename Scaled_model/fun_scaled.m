@@ -1,4 +1,4 @@
-function [output1, output2, output3] = fun_1(input,option_data,obj,option_mesh,option_BVP)
+function [output1, output2, output3] = fun_scaled(input,option_data,obj,option_mesh,option_BVP)
 %%  fun   Solves BVP for SWRO-PRO hybrid system using bvp5c
 %
 %       fun(input,option_data,obj,option_mesh,option_BVP) will solve the
@@ -31,6 +31,8 @@ if nargout>2
 end
 
 %% Read data
+if option_data == .1; DATA = @(x)Test_01_data(input); end
+if option_data == .2; DATA = @(x)Test_02_data(input); end
 %
 if option_data == 1; DATA = @(x)Pareto_1_data(input); end
 if option_data == 2; DATA = @(x)Pareto_2_data(input); end
@@ -75,6 +77,7 @@ y = deval(sol,x); Y = y'; Y = real(Y);
 %% SWRO evaluation
 C_d = Y(:,1);
 C_f = Y(:,3)./Y(:,4);
+C_f(end)
 J_sd = Y(:,1).*Y(:,2);
 J_wd = Y(:,2); 
 J_d = Y(:,1).*Y(:,2)+Y(:,2);
@@ -86,20 +89,31 @@ P_f = Y(:,6);
 % same quantities as in "ODEsystem.m" 
 swro_p_osm_d = ro_water*Rw*T0*log(1 + 2*Mw*Y(:,1)/Ms)/p_r;
 swro_p_osm_f = ro_water*Rw*T0*log(1 + 2*Mw*Y(:,3)/Ms./Y(:,4))/p_r;
-swro_del_c = Y(:,1)./(Y(:,1) + 1) - Y(:,3)./(Y(:,3) + Y(:,4));
-swro_local_ro_d = (Y(:,1) + 1)./(ro_water*Y(:,1)/ro_salt + 1);
-swro_local_ro_f = (Y(:,3) + Y(:,4))./(ro_water*Y(:,3)/ro_salt + Y(:,4));
-swro_beta = (1 - swro_R)*((Y(:,5) - Y(:,6)) - sigma.*(swro_p_osm_d - swro_p_osm_f))/swro_R;
-if version(2) == 0 ;swro_beta= swro_beta_fix.*ones(1,n); end
-if version(4) == 0 ;swro_beta=zeros(1,n); end
-% J_w,in and J_s,in
-J_cross = ((Y(:,5) - Y(:,6)) - sigma.*(swro_p_osm_d - swro_p_osm_f))./(1 + p_r*swro_alpha*swro_KK*sigma.*(swro_p_osm_d - swro_p_osm_f));
-if version(4) == 0; J_cross = ((Y(:,5) - Y(:,6)) - sigma*(swro_p_osm_d - swro_p_osm_f));  end 
-J_sin=swro_beta'.*swro_del_c;
-if version(7)==1 && version(4)>0
-J_cross = ((Y(:,5)-Y(:,6))-sigma.*(swro_p_osm_d - swro_p_osm_f) + swro_beta.*(Y(:,5)-Y(:,6)).*(swro_KK +1/swro_KD + 1/swro_KF)) ./ (1 + swro_alpha.*swro_beta.*(1/swro_KD + 1/swro_KF + swro_KK) + p_r*swro_alpha*sigma.*(-swro_p_osm_d./swro_KD -swro_p_osm_f.*(swro_KK + 1/swro_KF) ));
-J_sin = swro_beta.*( swro_del_c-J_cross.*( Y(:,1)./(Y(:,1) + 1)./swro_KD +  Y(:,3)./(Y(:,3) + Y(:,4)).*(swro_KK+1/swro_KF)))./(1+swro_alpha.*swro_beta.*(swro_KK+1/swro_KF+1/swro_KD));
-end
+% local density
+swro_local_ro_d = (Y(:,1) + 1)./(Y(:,1)./ro_salt + ones(n,1)./ro_water)/rho_r;
+swro_local_ro_f = (Y(:,3) + Y(:,4))./(Y(:,3)./ro_salt + Y(:,4)./ro_water)/rho_r;
+    % Salt permeability
+    if version(4) == 0
+        swro_beta = zeros(1,n);
+    elseif version(2) == 0
+        swro_beta = swro_beta_fix/p_r/swro_alpha.*ones(1,n);
+    else
+        swro_beta = (1 - swro_R)*((Y(:,5) - Y(:,6)) - sigma.*(swro_p_osm_d - swro_p_osm_f))/swro_R;
+    end
+    % Water Permeate flux J_win(x)
+    if version(4) == 0 % ideal
+        J_cross = ((Y(:,5) - Y(:,6)) - sigma*(swro_p_osm_d - swro_p_osm_f));
+    elseif version(7) == 0 % ICP
+        J_cross = ((Y(:,5) - Y(:,6)) - sigma.*(swro_p_osm_d - swro_p_osm_f))./(1 + p_r*swro_alpha*swro_KK*sigma.*(swro_p_osm_d - swro_p_osm_f));
+    else % ICP+ECP
+        J_cross = ((Y(:,5)-Y(:,6))-sigma.*(swro_p_osm_d - swro_p_osm_f) + swro_beta.*(Y(:,5)-Y(:,6)).*(swro_KK +1/swro_KD + 1/swro_KF)) ./ (1 + swro_alpha.*swro_beta.*(1/swro_KD + 1/swro_KF + swro_KK) + p_r*swro_alpha*sigma.*(-swro_p_osm_d./swro_KD -swro_p_osm_f.*(swro_KK + 1/swro_KF) ));
+    end
+    % Salt Permeate J_sin(x)
+    if version(7) == 1 % ICP+ECP
+        J_sin = swro_beta.*( swro_del_c-J_cross.*( Y(:,1)./(Y(:,1) + 1)./swro_KD +  Y(:,3)./(Y(:,3) + Y(:,4)).*(swro_KK+1/swro_KF)))./(1+swro_alpha.*swro_beta.*(swro_KK+1/swro_KF+1/swro_KD));
+    else
+        J_sin=swro_beta_fix.*(C_d-C_f);
+    end
 
 %% PRO evaluation
 c_d = Y(:,1+6);                    % concentration of draw side
@@ -133,7 +147,7 @@ end
 %% Freswater production and recovery rates
 Freshwater = J_wf(end)*J_r; %in [kg/s] 
 FW = (Freshwater*swro_Z/(swro_local_ro_f(end)*rho_r))*3600; %in [m^3/h] 
-SWRO_Recovery =(J_f(end)./J_d(1))*100;     % SWRO freshwater recovery [%]
+SWRO_Recovery =(J_wf(end)./J_d(1))*100;     % SWRO freshwater recovery [%]
 PRO_Recovery = (1- Q_f(end)./Q_f(1))*100;  % PRO recovery rate [%]
 
 % warning flags:
@@ -361,7 +375,7 @@ switch (obj)
             if sol.stats.maxerr > option_BVP
             output1 = [NaN, NaN, NaN, NaN, NaN];
             output2 = [NaN, NaN, NaN, NaN, NaN, NaN];
-            output3 = NaN;
+            output3 = [NaN, NaN, NaN, NaN];
             else
             if version(6) == 0; output1=[SEC_net, FW, Rev, SWRO_Recovery, NaN]; end
             if version(6) == 1; output1=[SEC_net, FW, Rev, SWRO_Recovery, NaN]; end
@@ -369,7 +383,9 @@ switch (obj)
             if version(6) == 3; output1=[SEC_net, FW, Rev, SWRO_Recovery, PRO_Recovery]; end
             if version(6) == 4; output1=[SEC_net, FW, Rev, SWRO_Recovery, PRO_Recovery]; end
             output2=[W_net, -W_p1, -W_p2,  -W_p3, -W_p4, W_t];
+            output3=[swro_Z*J_d(1)*J_r/swro_local_ro_d(1)/rho_r, swro_Z*J_f(end)*J_r/swro_local_ro_f(end)/rho_r, SWRO_Recovery, 10000*C_f(end)];
             end
+
 %% figure 1
 if sol.stats.maxerr ==1000
 fprintf(2,' \nERROR: bvp5c could not satisfy the relative error tolerance ---> no figures could be displayed\n');

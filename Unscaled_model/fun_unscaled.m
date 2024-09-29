@@ -30,6 +30,7 @@ function [output1, output2, output3] = fun_unscaled(input,option_data,obj,option
 %% Read data
 %
 if option_data == 0; DATA = @(x)Test_01_data(input); end
+if option_data == .2; DATA = @(x)Test_02_data(input); end
 %
 if option_data == 1; DATA = @(x)Pareto_1_data(input); end
 if option_data == 2; DATA = @(x)Pareto_2_data(input); end
@@ -68,6 +69,7 @@ y = deval(sol,x); Y = y'; Y = real(Y);
 %% SWRO evaluation
 C_d = Y(:,1);
 C_f = Y(:,3)./Y(:,4);
+C_f(end)
 J_sd = Y(:,1).*Y(:,2);
 J_wd = Y(:,2); 
 J_d = Y(:,1).*Y(:,2)+Y(:,2);
@@ -86,28 +88,29 @@ swro_local_ro_f = (Y(:,3) + Y(:,4))./(Y(:,3)./ro_salt + Y(:,4)./ro_water);
     if version(4) == 0
         swro_beta = zeros(1,n);
     elseif version(2) == 0
-        swro_beta = swro_beta_fix * J_r / swro_x_r.*ones(n,1);
+        swro_beta = swro_beta_fix.*ones(n,1);
     else
-        swro_beta = (1 - swro_R) .* ((J_p(5) - J_p(6)) - sigma .* (swro_p_osm_d - swro_p_osm_f)) ./ swro_R;
+        swro_beta = (1 - swro_R) .* ((Y(:,5) - Y(:,6)) - sigma .* (swro_p_osm_d - swro_p_osm_f)) ./ swro_R;
     end
     % Water Permeate flux J_win(x)
     if version(4) == 0 % ideal
         J_cross = swro_alpha.*((Y(:,5) - Y(:,6)) - sigma*(swro_p_osm_d - swro_p_osm_f));
     elseif version(7) == 0 % ICP
-        J_cross = swro_alpha .* ((swro_p_osm_d - swro_p_osm_f) - (Y(:,5) - Y(:,6)) - (Y(:,5) - Y(:,6)) .* swro_KK .* swro_beta) ./ (1 + swro_KK .* (swro_beta + swro_alpha .* swro_p_osm_f));
+        J_cross = swro_alpha .* ((Y(:,5) - Y(:,6)) - sigma.*(swro_p_osm_d - swro_p_osm_f))./(1 + swro_alpha*swro_KK*sigma.*(swro_p_osm_d - swro_p_osm_f));
     else % ICP+ECP
         J_cross = swro_alpha .* ((Y(:,5) - Y(:,6)) .* (1 + swro_beta .* (1 ./ swro_KD + swro_KK + 1 ./ swro_KF)) - sigma .* (swro_p_osm_d - swro_p_osm_f)) ./ (1 + swro_beta .* (1 ./ swro_KD + swro_KK + 1 ./ swro_KF) - swro_alpha .* sigma .* (swro_p_osm_d ./ swro_KD + swro_p_osm_f .* swro_KK + swro_p_osm_f ./ swro_KF));
     end
     % Salt Permeate J_sin(x)
     if version(7) == 1 % ICP+ECP
-        J_sin = swro_beta .* ((Y(:,1) - Y(:,3) ./ Y(:,4)) - Y(:,1) .* J_cross ./ swro_KD - (Y(:,3) ./ Y(:,4)) .* J_cross .* (swro_KK + 1 ./ swro_KF)) ./ (1 + swro_beta .* (1 ./ swro_KD + swro_KK + 1 ./ swro_KF));
+        J_sin = swro_beta .* ((C_d-C_f) - C_d .* J_cross ./ swro_KD - C_f .* J_cross .* (swro_KK + 1 ./ swro_KF)) ./ (1 + swro_beta .* (1 ./ swro_KD + swro_KK + 1 ./ swro_KF));
     else
-        J_sin=swro_beta_fix*J_r/swro_x_r.*(C_d-C_f);
+        J_sin = swro_beta_fix.*(C_d-C_f);
     end
+    
 %% Freswater production and recovery rates
 Freshwater = J_wf(end); %in [kg/s] 
 FW = (Freshwater*swro_Z/(swro_local_ro_f(end)))*3600; %in [m^3/h] 
-SWRO_Recovery =(J_f(end)./J_d(1))*100;     % SWRO freshwater recovery [%]
+SWRO_Recovery =(J_wf(end)./J_d(1))*100;     % SWRO freshwater recovery [%]
 
 % warning flags:
     if FW < 0 && strcmp(obj,'sol')==1
@@ -148,7 +151,7 @@ else
 close all
 lw=1.5; %Linewidth for all figures
 if fig(1) == 1
-f=figure(1); %
+f=figure(5); %
 f.Position = [1839 227 1100 1000];
 x2=x(2:end);
 % total mass flows
@@ -184,7 +187,7 @@ plot(x(2:end), swro_local_ro_f(2:end),'Color', rc,'LineWidth',lw); ylabel('[kg/m
 end
 %% figure 2
 if fig(2) == 1
-f=figure(2); %
+f=figure(6); %
 f.Position = [1.2977e+03 635.6667 1.0987e+03 639.3333];
 % Permeate flows 
 subplot(2,2,1); lc='k';rc='#b81414'; J_cross2=J_cross(2:end);J_sin2=J_sin(2:end);

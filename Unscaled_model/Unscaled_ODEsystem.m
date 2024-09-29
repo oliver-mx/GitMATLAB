@@ -33,7 +33,7 @@ function [dJ_dp] = Unscaled_ODEsystem(x, J_p, DATA)
     if version(4) == 0
         swro_beta = 0;
     elseif version(2) == 0
-        swro_beta = swro_beta_fix * J_r / swro_x_r;
+        swro_beta = swro_beta_fix;
     else
         swro_beta = (1 - swro_R) * ((J_p(5) - J_p(6)) - sigma .* (swro_p_osm_d - swro_p_osm_f)) ./ swro_R;
     end
@@ -41,9 +41,9 @@ function [dJ_dp] = Unscaled_ODEsystem(x, J_p, DATA)
     if version(4) == 0 % ideal
         J_cross = swro_alpha * ((J_p(5) - J_p(6)) - sigma .* (swro_p_osm_d - swro_p_osm_f));
     elseif version(7) == 0 % ICP
-        J_cross = swro_alpha * ((swro_p_osm_d - swro_p_osm_f) - (J_p(5) - J_p(6)) - (J_p(5) - J_p(6)) * swro_KK * swro_beta) / (1 + swro_KK * (swro_beta + swro_alpha * swro_p_osm_f));
+        J_cross = swro_alpha * ((J_p(5) - J_p(6)) - sigma.*(swro_p_osm_d - swro_p_osm_f)) ./   (1 + swro_alpha*swro_KK*sigma.*(swro_p_osm_d - swro_p_osm_f));
     else % ICP+ECP
-        J_cross = swro_alpha * ((J_p(5) - J_p(6) * (1 + swro_beta * (1 / swro_KD + swro_KK + 1 / swro_KF))) - sigma * (swro_p_osm_d - swro_p_osm_f)) / (1 + swro_beta * (1 / swro_KD + swro_KK + 1 / swro_KF) - swro_alpha * sigma * (swro_p_osm_d / swro_KD + swro_p_osm_f * swro_KK + swro_p_osm_f / swro_KF));
+        J_cross = swro_alpha * ((J_p(5) - J_p(6)) * (1 + swro_beta * (1 / swro_KD + swro_KK + 1 / swro_KF)) - sigma * (swro_p_osm_d - swro_p_osm_f)) / (1 + swro_beta * (1 / swro_KD + swro_KK + 1 / swro_KF) - swro_alpha * sigma * (swro_p_osm_d / swro_KD + swro_p_osm_f * swro_KK + swro_p_osm_f / swro_KF));
     end
     % Salt Permeate J_sin(x)
     if version(7) == 1 % ICP+ECP
