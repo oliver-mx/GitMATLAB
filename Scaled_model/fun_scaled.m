@@ -165,14 +165,18 @@ PRO_Recovery = (1- Q_f(end)./Q_f(1))*100;  % PRO recovery rate [%]
             fprintf(2,' \nERROR: Waring: PRO recovery is negative! \n');
         end
     end
-%% Output of System
-J_E = (C_d(1)*J_wd(1)+J_wd(1))/2; J_ERD = J_E; J_wE = J_E/(cE+1);
-W_p1 = 1/HP_eff * (P_d(1)-pE)*(J_E *swro_Z)/rho_E; W_p1 = W_p1*swro_W_r;
-W_p2 = 0; W_p2 = W_p2*swro_W_r; 
-W_p4 = 1/LP_eff * (p_f(1)-pE)*(Q_f(1)*Z)./local_ro_f(1); W_p4 = W_p4*W_r;
 
-    %% Version(6)=0 -->  only SWRO (no ERD)
-    if version(6)==0; W_p3=W_p1; W_p4=0; W_t=0; end
+%% Output of System
+% seawater enters the system
+J_E = J_d(1);
+J_wE = J_E/(cE+1);
+J_sE = J_E-J_wE;
+ 
+%% Version(6)=0 -->  only SWRO (no ERD)
+if version(6)==0
+    W_p1 = 1/HP_eff * (P_d(1)-pE)*(J_d(1) *swro_Z)/rho_E; W_p1 = W_p1*swro_W_r;
+    W_p2 = 0; W_p3=0; W_p4=0; W_t=0;
+end 
 
     %% Version(6)=1 -->  only SWRO (with ERD)
     if version(6)==1
@@ -200,6 +204,7 @@ W_p4 = 1/LP_eff * (p_f(1)-pE)*(Q_f(1)*Z)./local_ro_f(1); W_p4 = W_p4*W_r;
         if version(1) ==1; W_p2= 1/LP_eff * (p_d(end)-pE)*(abs(Q_d(end))*Z)./local_ro_d(end); end 
         W_p2 = W_p2*W_r;
     end
+%W_p4 = 1/LP_eff * (p_f(1)-pE)*(Q_f(1)*Z)./local_ro_f(1); W_p4 = W_p4*W_r;
 
     %% Version(6)=3 --> SWRO-PRO hybrid system (with one ERD)
     if version(6)==3

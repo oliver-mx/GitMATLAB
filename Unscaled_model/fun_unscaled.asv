@@ -128,7 +128,7 @@ J_sE = J_E-J_wE;
  
 %% Version(6)=0 -->  only SWRO (no ERD)
 if version(6)==0
-    W_p1 = 1/HP_eff * (1e5-P_d(1))*(J_E *swro_Z)/rho_E;
+    W_p1 = 1/HP_eff * (P_d(1)-1e5)*(J_E *swro_Z)/rho_E;
     W_p2 = 0; W_p3=0; W_p4=0; W_t=0;
 end 
 
@@ -149,21 +149,25 @@ if version(6)==1
     c_exit = (C_d(end)*J_wd(end)*(1 - eta_ERD)+cE*J_wE-C_ERD*J_wERD)/(J_wd(end)*(1 - eta_ERD)+J_wE-J_wERD);
     J_w_exit= J_exit/(c_exit+1);
     Q_exit = J_d(end)*(1-eta_ERD);
-    rho_exit = (J_exit)/(((c_exit*J_w_exit)/ro_salt)+(J_w_exit/ro_water)); 
+    rho_exit = (J_exit)/; 
     % energy balance
     f_1 = ERD_fric * mix_density * (Q_exit/rho_exit)*((J_M1*swro_Z)/(rho_E*A_ERD))^2; 
     f_2 = ERD_fric * mix_density * (J_ERD/rho_ERD)*((J_d(end)*swro_Z)/(swro_local_ro_d(end)*A_ERD))^2;
+
+
+    disp(rho_exit)
+    disp(rho_ERD)
+    disp(swro_local_ro_d(end))
+
     pERD = rho_ERD*(ERD_eff*(P_d(end)*J_exit/swro_local_ro_d(end)-1e5*Q_exit/rho_exit - f_2) + 1e5*J_E/rho_E - f_1)/J_ERD;
     %
-    W_p1 = 1/HP_eff * (1e5-P_d(1))*((J_E-J_M1) *swro_Z)/rho_E;
-    W_p3 = 1/HP_eff * (pERD-P_d(1))*(J_ERD*swro_Z)/rho_ERD; 
+    W_p1 = 1/HP_eff * ((1-mix_M1)*P_d(1)-1e5)*(J_E-J_M1 *swro_Z)/rho_E;
+    W_p3 = 1/HP_eff * ((1-mix_M1)*P_d(1)-1e5)*(J_ERD*swro_Z)/rho_ERD; 
     W_p2 = 0; W_p4=0; W_t=0;
 end
-disp(['% f_1  =          ',num2str(f_1)])
-disp(['% f_2  =          ',num2str(f_2)])
-disp(['% pERD (bar) =    ',num2str(pERD/1e5)])
-disp(['% P_d(0)(bar)=    ',num2str(P_d(1)/1e5)])
-disp(['% P_d(L)(bar)=    ',num2str(P_d(end)/1e5)])
+disp(['% f_1  =    ',num2str(f_1)])
+disp(['% f_2  =    ',num2str(f_2)])
+disp(['% pERD =    ',num2str(pERD)])
 
 
 

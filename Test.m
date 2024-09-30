@@ -34,8 +34,15 @@ disp(['% C (in ppm)  ',num2str(c1(4)),'    ',num2str(c2(4))])
 % C (in ppm)  70.5322    70.5317
 
 %% testing unscaled SWRO with ERD
-[a2,b2,c2]=fun_unscaled([55.81e5;54.72e5],.2,'fig',1e4,1e-3),
-
+clc
+[a3,b3,c3]=fun_unscaled([55.81e5;54.72e5],.2,'fig',1e4,1e-3);
+disp(' ')
+disp('simple RO')
+disp(a2)
+disp(b2)
+disp('SWRO+ERD')
+disp(a3)
+disp(b3)
 
 
 
@@ -94,10 +101,10 @@ disp('    0.2911    0.1295   44.5000   52.0000')
 
 
 %%
+system('git pull https://github.com/oliver-mx/GitMATLAB.git');
 
-
-
+%%
 system('git status');
 system('git add .');
-system('git commit -m "Weiter an ERD arbeiten :)"');
+system('git commit -m "Further work on ERD..."');
 system('git push https://github.com/oliver-mx/GitMATLAB.git');

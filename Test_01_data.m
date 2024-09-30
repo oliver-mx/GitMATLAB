@@ -115,7 +115,7 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     mix_M3 = 1;        % spliting rate at M3 (if 0 --> all to ERD2)
 
     %% display figures
-    fig = [1, 1, 0, 0]; % f(i) = 1 --> figure i will be displayed
+    fig = [0, 0, 0, 0]; % f(i) = 1 --> figure i will be displayed
 
     %% automatic changes:
     % co-current
