@@ -29,7 +29,7 @@ function [output1, output2, output3] = fun_unscaled(input,option_data,obj,option
 
 %% Read data
 %
-if option_data == 0; DATA = @(x)Test_01_data(input); end
+if option_data == .1; DATA = @(x)Test_01_data(input); end
 if option_data == .2; DATA = @(x)Test_02_data(input); end
 %
 if option_data == 1; DATA = @(x)Pareto_1_data(input); end
@@ -37,7 +37,7 @@ if option_data == 2; DATA = @(x)Pareto_2_data(input); end
 if option_data == 3; DATA = @(x)Pareto_3_data(input); end
 %
 
-[H,Z,swro_Z,ro_water,ro_salt,Mw,Ms,Rw,T0,eta,sigma,p_r,rho_r,C_r,swro_L,swro_alpha,swro_R,swro_KK,swro_x_r,swro_b1,swro_b2,J_r,swro_gamma,swro_gamma2,swro_W_r,L,alpha,R,KK,x_r,b1,b2,Q_r,gamma,gamma2,W_r,cE,pE,rho_E,J_sf_0,J_wf_0,Pd_0,Pd_L,Pf_L,Q_sf_0,pd_0,pf_0,pd_L,pf_L,HP_eff,LP_eff,T_eff,V_m,ERD_eff,ERD_fric,A_ERD,eta_ERD,mix_density,pw,pe,swro_beta_fix,beta_fix,mixer_ERD,version,fig,swro_KF,swro_KD, KF, KD] ...
+[H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_r, C_r, swro_L, swro_alpha, swro_KK, swro_x_r, swro_b1, swro_b2, J_r, swro_gamma, swro_gamma2, swro_W_r, L, alpha, KK, x_r, b1, b2, Q_r, gamma, gamma2, W_r, cE, pE, rho_E, J_sf_0, J_wf_0, Pd_0, Pd_L, Pf_L, Q_sf_0, pd_0, pf_0, pd_L, pf_L, HP_eff, LP_eff, T_eff, V_m, ERD_eff, ERD_fric, A_ERD, eta_ERD, mix_density, pw, pe, swro_beta_fix, beta_fix, mix_M1, mix_M3, version, fig, swro_KF, swro_KD, KF, KD]...
     = DATA(1);
 
 %% Set options
@@ -55,8 +55,8 @@ y_init = [cE; J_wd_0; J_sf_0; J_wf_0; Pd_0; Pf_0];
 solinit = bvpinit(x,y_init);
 
 %% Solve the BVP
-if version(6) == 0; sol = bvp5c(@(x,J_p)Unscaled_ODEsystem(x, J_p, DATA), @(ya,yb)Unscaled_Boundary2(ya,yb, DATA),solinit,ode_options); end
-if version(6) == 1; sol = bvp5c(@(x,J_p)Unscaled_ODEsystem(x, J_p, DATA), @(ya,yb)Unscaled_Boundary1(ya,yb, DATA),solinit,ode_options); end
+if version(6) == 0; sol = bvp5c(@(x,J_p)Unscaled_ODEsystem(x, J_p, DATA), @(ya,yb)Unscaled_Boundary1(ya,yb, DATA),solinit,ode_options); end
+if version(6) == 1; sol = bvp5c(@(x,J_p)Unscaled_ODEsystem(x, J_p, DATA), @(ya,yb)Unscaled_Boundary2(ya,yb, DATA),solinit,ode_options); end
 if version(6) > 1; fprintf(2,' \nERROR: Unscaled model only supports SWRO with/without ERD! \n'); end
 
 %% Evaluate the solution
@@ -65,11 +65,10 @@ if any([0,0,0,0] ~= fig)
 end
 x=linspace(0,swro_L,n);
 y = deval(sol,x); Y = y'; Y = real(Y);
-%display(Y(:,4)) 
+
 %% SWRO evaluation
 C_d = Y(:,1);
 C_f = Y(:,3)./Y(:,4);
-C_f(end)
 J_sd = Y(:,1).*Y(:,2);
 J_wd = Y(:,2); 
 J_d = Y(:,1).*Y(:,2)+Y(:,2);
@@ -122,13 +121,62 @@ SWRO_Recovery =(J_wf(end)./J_d(1))*100;     % SWRO freshwater recovery [%]
     end
 
 %% Output of System
-J_E = (C_d(1)*J_wd(1)+J_wd(1))/2; 
+% seawater enters the system
+J_E = J_d(1);
+J_wE = J_E/(C_E+1);
+J_sE = J_E-J_wERD;
+
 W_p1 = 1/HP_eff * (P_d(1)-1e5)*(J_E *swro_Z)/rho_E;
 W_p2 = 0; 
 
 %% Version(6)=0 -->  only SWRO (no ERD)
 W_p3=W_p1; W_p4=0; W_t=0; 
-    
+
+%% Version(6)=1 -->  only SWRO (with ERD)
+if version(6)==1
+    % flow from M1 to ERD1
+    J_M1 = J_E * (1*mix_M1);
+    J_w_M1 = J_M1/(C_E+1);
+    J_s_M1 = J_M1-J_w_M1;
+    % flow from ERD1 to RO
+    rho_ERD = V_m*(swro_local_ro_d(end) - rho_E)+rho_E;
+    C_ERD = -ro_salt*(rho_ERD-1)/(rho_ERD*ro_water-ro_salt);
+    J_ERD = J_M1;
+    J_wERD= J_ERD/(C_ERD+1);
+    J_sERD= J_ERD - J_wERD;
+    % flow from ERD1 to EXIT
+    Q_exit = J_d(end)*(1-eta_ERD);
+    c_exit = (C_d(end)*J_wd(end)*(1 - eta_ERD)+cE*J_wE-C_ERD*J_wERD)/(J_wd(end)*(1 - eta_ERD)+J_wE-J_wERD);
+    rho_exit= (ro_salt*(c_exit+1))/(c_exit*ro_water+ro_salt); p_exit=pE;
+    %...
+        
+        f_1= (Q_exit*swro_Z/rho_exit*mix_density*(J_E*swro_Z/rho_E/A_ERD)^2 );
+        f_2= (J_ERD*swro_Z/rho_ERD*mix_density*(J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end)/A_ERD)^2); 
+        f_ERD= ERD_fric*(ERD_eff*f_2 - f_1)/100;
+        pERD = rho_ERD*(ERD_eff*( P_d(end)*J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end) - p_exit*Q_exit*swro_Z/rho_exit ) +  pE*J_E*swro_Z/rho_E -f_ERD )/J_ERD/swro_Z;
+        pMax = rho_ERD*(ERD_eff*( P_d(end)*J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end) - p_exit*Q_exit*swro_Z/rho_exit ) +  pE*J_E*swro_Z/rho_E )/J_ERD/swro_Z;
+        pERD=min(pERD,pMax);
+        pERD=max(1,pERD); 
+
+        W_p1 = 1/HP_eff * (P_d(1)-1e5)*(J_E-J_M1 *swro_Z)/rho_E;
+        W_p3 = 1/HP_eff * (P_d(1)-XXX)*(J_ERD*swro_Z)/rho_ERD; 
+        W_p4=0; W_t=0;
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 %% final output:
 W_net= - W_p1 - W_p2 - W_p3 - W_p4 + W_t; % in [W]
 
@@ -161,7 +209,8 @@ plot(x, J_f,'Color', rc,'LineWidth',lw); ylabel('[kg/sm]','Fontsize',10); legend
 subplot(3,2,3);lc='#0072bD';rc='#77AC30';
 plot(x, 100*C_d*C_r,'Color', lc,'LineWidth',lw);xlabel('x [m]','Fontsize',10); ylabel('[%]','Fontsize',10); ay=gca; ay.YAxis.Exponent = 0;hold on
 yyaxis right; C_f=C_f(2:end);
-plot(x2, 100*C_f*C_r,'Color', rc,'LineWidth',lw); ylabel('[%]','Fontsize',10); legend('C_d^{RO}(x)','C_f^{RO}(x)','Location','best');xlim([0 swro_L]);ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc;
+%plot(x2, 100*C_f*C_r,'Color', rc,'LineWidth',lw); ylabel('[%]','Fontsize',10); legend('C_d^{RO}(x)','C_f^{RO}(x)','Location','best');xlim([0 swro_L]);ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc;
+plot(x2, 1e4*C_f*C_r,'Color', rc,'LineWidth',lw); ylabel('[ppm]','Fontsize',10); legend('C_d^{RO}(x)','C_f^{RO}(x)','Location','best');xlim([0 swro_L]);ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc;
 % Pressures
 subplot(3,2,5);lc='#0072bD';rc='#77AC30';
 plot(x, P_d,'Color', lc,'LineWidth',lw);xlabel('x [m]','Fontsize',10); ylabel('[Pa]','Fontsize',10); ay=gca; ay.YAxis.Exponent = 5; hold on
@@ -194,11 +243,12 @@ yyaxis right
 plot(x2, J_sin2, 'Color', rc, 'LineWidth',lw); ylabel('[kg/sm^2]','Fontsize',10); legend('J_{w,in}^{RO}(x)','J_{s,in}^{RO}(x)','Location','best');xlim([0 swro_L]);ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc;
 % Osmotic/ Hydraulic pressure difference
 subplot(2,2,3);lc='k';rc='#b81414'; osm_diff=swro_p_osm_d(2:end)-swro_p_osm_f(2:end); 
-plot(x, (P_d-P_f),'Color', lc,'LineWidth',lw);xlabel('x [m]','Fontsize',10); ylabel('[Pa]','Fontsize',10); ay=gca;hold on
+a=min([(P_d-P_f); osm_diff]);b=max([(P_d-P_f); osm_diff]);
+plot(x, (P_d-P_f),'Color', lc,'LineWidth',lw);xlabel('x [m]','Fontsize',10); ylabel('[Pa]','Fontsize',10); ay=gca;ylim([0.95*a 1.05*b]);hold on
 yyaxis right; 
-plot(x2, osm_diff,'Color', rc,'LineWidth',lw); ylabel('[Pa]','Fontsize',10); legend('\Delta P^{RO}(x)','\Delta \pi^{RO}(x)','Location','best');xlim([0 swro_L]);ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc;
-figure(1);
+plot(x2, osm_diff,'Color', rc,'LineWidth',lw); ylabel('[Pa]','Fontsize',10); legend('\Delta P^{RO}(x)','\Delta \pi^{RO}(x)','Location','best');xlim([0 swro_L]);ylim([0.95*a 1.05*b]);ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc;
 end
+
 end
 %x1=swro_Z*J_d(1)/swro_local_ro_d(1);
 %x2=swro_Z*J_f(end)/swro_local_ro_f(end);

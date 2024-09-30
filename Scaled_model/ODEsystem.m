@@ -10,7 +10,7 @@ function [dJ_dp] = ODEsystem(x, J_p, DATA)
     %       input2        -   x
 
     %% Read data
-[H,Z,swro_Z,ro_water,ro_salt,Mw,Ms,Rw,T0,eta,sigma,p_r,rho_r,C_r,swro_L,swro_alpha,swro_R,swro_KK,swro_x_r,swro_b1,swro_b2,J_r,swro_gamma,swro_gamma2,swro_W_r,L,alpha,R,KK,x_r,b1,b2,Q_r,gamma,gamma2,W_r,cE,pE,rho_E,J_sf_0,J_wf_0,Pd_0,Pd_L,Pf_L,Q_sf_0,pd_0,pf_0,pd_L,pf_L,HP_eff,LP_eff,T_eff,V_m,ERD_eff,ERD_fric,A_ERD,eta_ERD,mix_density,pw,pe,swro_beta_fix,beta_fix,mixer_ERD,version,fig,swro_KF,swro_KD,KF,KD] ...
+[H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_r, C_r, swro_L, swro_alpha, swro_KK, swro_x_r, swro_b1, swro_b2, J_r, swro_gamma, swro_gamma2, swro_W_r, L, alpha, KK, x_r, b1, b2, Q_r, gamma, gamma2, W_r, cE, pE, rho_E, J_sf_0, J_wf_0, Pd_0, Pd_L, Pf_L, Q_sf_0, pd_0, pf_0, pd_L, pf_L, HP_eff, LP_eff, T_eff, V_m, ERD_eff, ERD_fric, A_ERD, eta_ERD, mix_density, pw, pe, swro_beta_fix, beta_fix, mix_M1, mix_M3, version, fig, swro_KF, swro_KD, KF, KD]...
     = DATA(1);
 
 %% Define Vector for unknowns of the model
@@ -71,7 +71,7 @@ local_ro_f = (J_p(3+6) + J_p(4+6))./(ro_water*J_p(3+6)/ro_salt + J_p(4+6)); % lo
 p_osm_d = ro_water*Rw*T0*log(1 + 2*Mw*J_p(1+6)/Ms)/p_r;             % osmotic pressure in draw side
 p_osm_f = ro_water*Rw*T0*log(1 + 2*Mw*J_p(3+6)/Ms./J_p(4+6))/p_r;   % osmotic pressure in fresh side
 % B(from permeate salt flux)
-beta = (1 - R)*((p_osm_d - p_osm_f) - (J_p(5+6) - J_p(6+6)))./R;
+beta = (1 - .99)*((p_osm_d - p_osm_f) - (J_p(5+6) - J_p(6+6)))./.99;
 if version(3)==0; beta = beta_fix; end
 if version(5)==0; beta = 0; end
 % Difference in salt concentrations

@@ -4,8 +4,8 @@ addpath('Input_DATA','Scaled_model','Unscaled_model','Output_DATA')
 %% unscaeld test:
 clc,
 %
-[a1,b1,c1]=fun_scaled(  [55.81e5;54.72e5],.2,'fig',1e4,1e-3);
-%[a2,b2,c2]=fun_unscaled([55.81e5;54.72e5],.2,'fig',1e4,1e-3);
+[a1,b1,c1]=fun_scaled(  [55.81e5;54.72e5],.1,'fig',1e4,1e-3);
+[a2,b2,c2]=fun_unscaled([55.81e5;54.72e5],.1,'fig',1e4,1e-3);
 %
 disp('%             Scaled and unscaled')
 disp(['% SEC_net     ',num2str(round(1e4*a1(1))/1e4),'    ',num2str(round(1e4*a2(1))/1e4)])
@@ -33,6 +33,8 @@ disp(['% C (in ppm)  ',num2str(c1(4)),'    ',num2str(c2(4))])
 % REC         47.0657    47.0654
 % C (in ppm)  70.5322    70.5317
 
+%% testing unscaled SWRO with ERD
+[a2,b2,c2]=fun_unscaled([55.81e5;54.72e5],.2,'fig',1e4,1e-3),
 
 
 
@@ -95,3 +97,7 @@ disp('    0.2911    0.1295   44.5000   52.0000')
 
 
 
+system('git status');
+system('git add .');
+system('git commit -m "Weiter an ERD arbeiten :)"');
+system('git push https://github.com/oliver-mx/GitMATLAB.git');
