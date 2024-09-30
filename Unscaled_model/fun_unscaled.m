@@ -87,10 +87,8 @@ swro_local_ro_f = (Y(:,3) + Y(:,4))./(Y(:,3)./ro_salt + Y(:,4)./ro_water);
     % Salt permeability
     if version(4) == 0
         swro_beta = zeros(1,n);
-    elseif version(2) == 0
-        swro_beta = swro_beta_fix.*ones(n,1);
     else
-        swro_beta = (1 - swro_R) .* ((Y(:,5) - Y(:,6)) - sigma .* (swro_p_osm_d - swro_p_osm_f)) ./ swro_R;
+        swro_beta = swro_beta_fix.*ones(n,1);
     end
     % Water Permeate flux J_win(x)
     if version(4) == 0 % ideal

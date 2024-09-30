@@ -32,10 +32,8 @@ function [dJ_dp] = Unscaled_ODEsystem(x, J_p, DATA)
     % Salt permeability
     if version(4) == 0
         swro_beta = 0;
-    elseif version(2) == 0
-        swro_beta = swro_beta_fix;
     else
-        swro_beta = (1 - swro_R) * ((J_p(5) - J_p(6)) - sigma .* (swro_p_osm_d - swro_p_osm_f)) ./ swro_R;
+        swro_beta = swro_beta_fix;
     end
     % Water Permeate flux J_win(x)
     if version(4) == 0 % ideal
@@ -53,7 +51,7 @@ function [dJ_dp] = Unscaled_ODEsystem(x, J_p, DATA)
     end
     % Hydraulic diameter
     swro_DH_rect = 2 * (H * swro_Z) / (H + swro_Z);
-    
+
     %% derivatives of the SWRO flow model:
     dJ_dp(1) = (-J_sin + J_p(1) * J_cross) / J_p(2);  % C_d' 
     dJ_dp(2) = -(J_cross);                            % J_wd'

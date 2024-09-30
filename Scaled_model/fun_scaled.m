@@ -95,10 +95,8 @@ swro_local_ro_f = (Y(:,3) + Y(:,4))./(Y(:,3)./ro_salt + Y(:,4)./ro_water)/rho_r;
     % Salt permeability
     if version(4) == 0
         swro_beta = zeros(1,n);
-    elseif version(2) == 0
-        swro_beta = swro_beta_fix/p_r/swro_alpha.*ones(1,n);
     else
-        swro_beta = (1 - swro_R)*((Y(:,5) - Y(:,6)) - sigma.*(swro_p_osm_d - swro_p_osm_f))/swro_R;
+        swro_beta = swro_beta_fix/p_r/swro_alpha.*ones(1,n);
     end
     % Water Permeate flux J_win(x)
     if version(4) == 0 % ideal
@@ -106,11 +104,11 @@ swro_local_ro_f = (Y(:,3) + Y(:,4))./(Y(:,3)./ro_salt + Y(:,4)./ro_water)/rho_r;
     elseif version(7) == 0 % ICP
         J_cross = ((Y(:,5) - Y(:,6)) - sigma.*(swro_p_osm_d - swro_p_osm_f))./(1 + p_r*swro_alpha*swro_KK*sigma.*(swro_p_osm_d - swro_p_osm_f));
     else % ICP+ECP
-        J_cross = ((Y(:,5)-Y(:,6))-sigma.*(swro_p_osm_d - swro_p_osm_f) + swro_beta.*(Y(:,5)-Y(:,6)).*(swro_KK +1/swro_KD + 1/swro_KF)) ./ (1 + swro_alpha.*swro_beta.*(1/swro_KD + 1/swro_KF + swro_KK) + p_r*swro_alpha*sigma.*(-swro_p_osm_d./swro_KD -swro_p_osm_f.*(swro_KK + 1/swro_KF) ));
+        J_cross = ((Y(:,5) - Y(:,6)) .* (1 + swro_beta_fix.*ones(1,n) .* (1 / swro_KD + swro_KK + 1 / swro_KF)) - sigma .* (swro_p_osm_d - swro_p_osm_f)) ./ (1 + swro_beta_fix.*ones(1,n) .* (1 / swro_KD + swro_KK + 1 / swro_KF) - p_r .* swro_alpha .*sigma .* (swro_p_osm_d ./ swro_KD + swro_p_osm_f .* swro_KK + swro_p_osm_f ./ swro_KF));
     end
     % Salt Permeate J_sin(x)
     if version(7) == 1 % ICP+ECP
-        J_sin = swro_beta.*( swro_del_c-J_cross.*( Y(:,1)./(Y(:,1) + 1)./swro_KD +  Y(:,3)./(Y(:,3) + Y(:,4)).*(swro_KK+1/swro_KF)))./(1+swro_alpha.*swro_beta.*(swro_KK+1/swro_KF+1/swro_KD));
+        J_sin = swro_beta .* ((C_d - C_f) - C_d .* J_cross.*p_r.*swro_alpha ./ swro_KD - (C_f) .* J_cross.*p_r.*swro_alpha .* (swro_KK + 1 ./ swro_KF)) ./ (1 + swro_beta_fix.*ones(1,n) .* (1 / swro_KD + swro_KK + 1 / swro_KF));
     else
         J_sin=swro_beta_fix.*(C_d-C_f);
     end

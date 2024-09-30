@@ -14,7 +14,7 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     %% model versions
     version = zeros(1, 10);
     % version(1) = 0 if co-current, 1 otherwise
-    version(2) = 0;  % 0 = SWRO beta fixed
+    %version(2) = 0;  % 0 = SWRO beta fixed
     version(3) = 0;  % 0 = PRO beta fixed
     version(4) = 1;  % 0 = ideal SWRO
     version(5) = 0;  % 0 = ideal PRO
@@ -47,8 +47,8 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     swro_alpha = 5.0815e-9; % SWRO water permeability coefficient [s/m]
     swro_R = 0.96;          % SWRO salt rejection rate 
     swro_KK = 1e2;          % SWRO ICP mass transfer coefficient
-    swro_KD = 10/swro_KK;   % SWRO ECP draw side mass transfer coefficient
-    swro_KF = 10/swro_KK;   % SWRO ECP fresh side mass transfer coefficient
+    swro_KD = -0.01;   % SWRO ECP draw side mass transfer coefficient
+    swro_KF = -0.01;   % SWRO ECP fresh side mass transfer coefficient
     swro_x_r = swro_L;      % x_r = swro_L^2 since x = linspace(0,1,n) (if x = linspace(0,swro_L,n) then x_r=swro_L;)     
     swro_b1 = H / swro_x_r;                           % H/swro_L ratio
     swro_b2 = swro_Z / swro_x_r;                      % Z/swro_L ratio
