@@ -4,8 +4,8 @@ addpath('Input_DATA','Scaled_model','Unscaled_model','Output_DATA')
 %% unscaeld test:
 clc,
 %
-[a1,b1,c1]=fun_scaled([55.81e5;54.72e5],.1,'fig',1e4,1e-3);
-[a2,b2] =fun_unscaled([55.81e5;54.72e5],.1,'fig',1e4,1e-3);
+[a1,b1,c1]=fun_scaled([55.81e5;54.72e5],.2,'fig',1e4,1e-3);
+[a2,b2] =fun_unscaled([55.81e5;54.72e5],.2,'fig',1e4,1e-3);
 %
 disp('%             Scaled and unscaled')
 disp(['% SEC_net     ',num2str(round(1e4*a1(1))/1e4),'    ',num2str(a2(1))])

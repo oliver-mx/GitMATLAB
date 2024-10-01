@@ -62,19 +62,20 @@ if version(6) == 1; sol = bvp5c(@(x,J_p)Unscaled_ODEsystem(x, J_p, DATA), @(ya,y
 if version(6) > 1; fprintf(2,' \nERROR: Unscaled model only supports SWRO with/without ERD! \n'); end
 
 %% Evaluate the solution and calculate new mixing ratio
-y = deval(sol,x); Y = y'; Y = real(Y);
-mix_M1 = ((Y(end,1).*Y(end,2)+Y(end,2))*(1-eta_ERD))/(Y(1,1).*Y(1,2)+Y(1,2));  
+if version(6)>0
+    y = deval(sol,x); Y = y'; Y = real(Y);
+    mix_M1 = ((Y(end,1).*Y(end,2)+Y(end,2))*(1-eta_ERD))/(Y(1,1).*Y(1,2)+Y(1,2));  
+    % data with new mix_M1
+    if option_data == .1; DATA = @(x)Test_01_data(input); end
+    if option_data == .2; DATA = @(x)Test_02_data(input,mix_M1); end
+    if option_data == 1; DATA = @(x)Pareto_1_data(input); end
+    if option_data == 2; DATA = @(x)Pareto_2_data(input,mix_M1); end
+    if option_data == 3; DATA = @(x)Pareto_3_data(input,mix_M1); end
+    % solve with bvp
+    if version(6) == 0; sol = bvp5c(@(x,J_p)Unscaled_ODEsystem(x, J_p, DATA), @(ya,yb)Unscaled_Boundary1(ya,yb, DATA),solinit,ode_options); end
+    if version(6) == 1; sol = bvp5c(@(x,J_p)Unscaled_ODEsystem(x, J_p, DATA), @(ya,yb)Unscaled_Boundary2(ya,yb, DATA),solinit,ode_options); end
+end
 
-%% Solve the BVP again
-% data with new mix_M1
-if option_data == .1; DATA = @(x)Test_01_data(input); end
-if option_data == .2; DATA = @(x)Test_02_data(input,mix_M1); end
-if option_data == 1; DATA = @(x)Pareto_1_data(input); end
-if option_data == 2; DATA = @(x)Pareto_2_data(input,mix_M1); end
-if option_data == 3; DATA = @(x)Pareto_3_data(input,mix_M1); end
-% solve with bvp
-if version(6) == 0; sol = bvp5c(@(x,J_p)Unscaled_ODEsystem(x, J_p, DATA), @(ya,yb)Unscaled_Boundary1(ya,yb, DATA),solinit,ode_options); end
-if version(6) == 1; sol = bvp5c(@(x,J_p)Unscaled_ODEsystem(x, J_p, DATA), @(ya,yb)Unscaled_Boundary2(ya,yb, DATA),solinit,ode_options); end
 % Evaluate the solution
 if any([0,0,0,0] ~= fig)
     n=100; % higher resolution plots
@@ -151,18 +152,16 @@ if version(6)==1
     J_w_exit= J_exit/(c_exit+1);
     rho_exit = (J_exit)/(((c_exit*J_w_exit)/ro_salt)+(J_w_exit/ro_water)); 
     % energy balance
-    f_1 = ERD_fric * mix_density * (J_exit/rho_exit)*((J_M1*swro_Z)/(rho_E*A_ERD))^2; 
-    f_2 = ERD_fric * mix_density * (J_ERD/rho_ERD)*((J_d(end)*swro_Z)/(swro_local_ro_d(end)*A_ERD))^2;
+    f_1 = ERD_fric * rho_r*mix_density * (J_exit/rho_exit)*((J_M1*swro_Z)/(rho_E*A_ERD))^2; 
+    f_2 = ERD_fric * rho_r*mix_density * (J_ERD/rho_ERD)*((J_d(end)*swro_Z)/(swro_local_ro_d(end)*A_ERD))^2;
     pERD = rho_ERD*(ERD_eff*(P_d(end)*J_exit/swro_local_ro_d(end)-1e5*J_exit/rho_exit - f_2) + 1e5*J_E/rho_E - f_1)/J_ERD;
     %
     W_p1 = 1/HP_eff * (P_d(1)-1e5)*((J_E-J_M1) *swro_Z)/rho_E;
     W_p3 = 1/HP_eff * (P_d(1)-pERD)*(J_ERD*swro_Z)/rho_ERD; 
     W_p2 = 0; W_p4=0; W_t=0;
-%disp(['% f_1  =          ',num2str(f_1)])
-%disp(['% f_2  =          ',num2str(f_2)])
-%disp(['% pERD (bar) =    ',num2str(pERD/1e5)])
-%disp(['% P_d(0)(bar)=    ',num2str(P_d(1)/1e5)])
-%disp(['% P_d(L)(bar)=    ',num2str(P_d(end)/1e5)])
+disp(['% f_1  =          ',num2str(f_1)])
+disp(['% f_2  =          ',num2str(f_2)])
+disp(['% pERD (bar) =    ',num2str(pERD/1e5)])
 end
 
 %% Version(6)=2 or higher

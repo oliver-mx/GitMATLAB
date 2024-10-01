@@ -8,15 +8,15 @@ function [ res ] = Boundary2(ya, yb, DATA)
     = DATA(1);
  
 %% Mixing and Leak
-rho_d1= (yb(1) + 1)./(ro_water*yb(1)/ro_salt + 1);
+rho_d1= real((yb(1)+1)./(yb(1)/ro_salt + 1/ro_water));
 rho_ERD= V_m*(rho_d1 - rho_E)+rho_E;
-C_ERD= -ro_salt*(rho_ERD-1)/(rho_ERD*ro_water-ro_salt);
-J_E=(ya(1)*ya(2)+ya(2))/2;
-J_ERD = J_E;
+C_ERD= -ro_salt*(rho_ERD-ro_water)/(ro_water*(rho_ERD-ro_salt));
+J_E=(ya(1)*ya(2)+ya(2));
+J_ERD = J_E*(1-mix_M1);
 J_wE = J_E/(cE+1);
 J_wERD= J_ERD/(C_ERD+1);
-swroC_in = (cE*J_wE + C_ERD*J_wERD)/(J_wE+J_wERD);
- 
+swroC_in = (cE*J_wE*mix_M1 + C_ERD*J_wERD)/(J_wE*mix_M1+J_wERD);
+
 %% define vector for residual error
 res =   [ % SWRO part:
           ya(1)- swroC_in       % seawater concentration

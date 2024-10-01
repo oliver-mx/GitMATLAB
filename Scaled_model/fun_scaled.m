@@ -152,6 +152,50 @@ local_ro_f = (Y(:,3+6) + Y(:,4+6))./(Y(:,3+6)./ro_salt + Y(:,4+6)./ro_water)/rho
         Q_sin = beta_fix.*(c_d-c_f);
     end
 
+%% Output of System
+% seawater enters the system
+J_E = J_d(1);
+J_wE = J_E/(cE+1);
+J_sE = J_E-J_wE;
+
+%% Version(6)=0 -->  only SWRO (no ERD)
+if version(6)==0
+    W_p1 = 1/HP_eff * (P_d(1)-pE)*(J_d(1) *swro_Z)/rho_E; W_p1 = W_p1*swro_W_r;
+    W_p2 = 0; W_p3=0; W_p4=0; W_t=0;
+end
+
+%% Version(6)=1 -->  only SWRO (with ERD)
+if version(6)==1
+    % flow from M1 to ERD1
+    J_M1 = J_E * (1*mix_M1);
+    J_w_M1 = J_wE* (1*mix_M1);
+    J_s_M1 = J_sE* (1*mix_M1);
+    % flow from ERD1 to RO
+    rho_ERD= V_m*(swro_local_ro_d(end) - rho_E/rho_r)+rho_E/rho_r;
+    C_ERD= -ro_salt/rho_r*(rho_ERD-ro_water/rho_r)/(ro_water/rho_r*(rho_ERD-ro_salt/rho_r));
+    J_ERD = J_M1;
+    J_wERD= J_ERD/(C_ERD+1);
+    J_sERD= J_ERD - J_wERD;
+    % flow from ERD1 to EXIT
+    J_exit = J_d(end)*(1-eta_ERD);
+    c_exit= (J_s_M1 + J_sd(end)*(1-eta_ERD) - J_sERD)/(J_w_M1 + J_wd(end)*(1-eta_ERD) - J_wERD);
+    J_w_exit= J_exit/(c_exit+1);
+    rho_exit = (J_exit)/(((c_exit*J_w_exit)/ro_salt*rho_r)+(J_w_exit/ro_water*rho_r));
+    % energy balance
+    f_1 = ERD_fric * mix_density * (J_exit/rho_exit)*((J_M1*swro_b2)/(rho_E/rho_r*swro_b1*swro_b2))^2; 
+    f_2 = ERD_fric * mix_density * (J_ERD/rho_ERD)*((J_d(end)*swro_b2)/(swro_local_ro_d(end)*swro_b1*swro_b2))^2;
+    pERD = rho_ERD*(ERD_eff*(P_d(end)*J_exit/swro_local_ro_d(end)-pE*J_exit/rho_exit - f_2) + pE*J_E/rho_E*rho_r - f_1)/J_ERD;
+    W_p1 = 1/HP_eff * (P_d(1)-1e5)*((J_E-J_M1) *swro_Z)/rho_E;
+    W_p3 = 1/HP_eff * (P_d(1)-pERD)*(J_ERD*swro_Z)/rho_ERD; 
+    W_p2 = 0; W_p4=0; W_t=0;
+disp(['% f_1  =          ',num2str(f_1)])
+disp(['% f_2  =          ',num2str(f_2)])
+disp(['% pERD (bar) =    ',num2str(pERD/1e5)])
+end
+
+
+
+
 %% Freswater production and recovery rates
 Freshwater = J_wf(end)*J_r; %in [kg/s] 
 FW = (Freshwater*swro_Z/(swro_local_ro_f(end)*rho_r))*3600; %in [m^3/h] 
@@ -177,17 +221,8 @@ PRO_Recovery = (1- Q_f(end)./Q_f(1))*100;  % PRO recovery rate [%]
         end
     end
 
-%% Output of System
-% seawater enters the system
-J_E = J_d(1);
-J_wE = J_E/(cE+1);
-J_sE = J_E-J_wE;
  
-%% Version(6)=0 -->  only SWRO (no ERD)
-if version(6)==0
-    W_p1 = 1/HP_eff * (P_d(1)-pE)*(J_d(1) *swro_Z)/rho_E; W_p1 = W_p1*swro_W_r;
-    W_p2 = 0; W_p3=0; W_p4=0; W_t=0;
-end 
+
 
     %% Version(6)=1 -->  only SWRO (with ERD)
     if version(6)==1
