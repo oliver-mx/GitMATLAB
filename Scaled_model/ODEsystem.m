@@ -37,7 +37,7 @@ swro_p_osm_f = ro_water*Rw*T0*log(1 + 2*Mw*J_p(3)/Ms./J_p(4))/p_r; % osmotic pre
     end
     % Water Permeate flux J_win(x)
     if version(4) == 0 % ideal
-        J_cross =((J_p(5) - J_p(6)) - sigma.*(swro_p_osm_d - swro_p_osm_f));
+        J_cross = ((J_p(5) - J_p(6)) - sigma.*(swro_p_osm_d - swro_p_osm_f));
     elseif version(7) == 0 % ICP
         J_cross = ((J_p(5) - J_p(6)) - sigma.*(swro_p_osm_d - swro_p_osm_f)) ./   (1 + p_r*swro_alpha*swro_KK*sigma.*(swro_p_osm_d - swro_p_osm_f));
     else % ICP+ECP
@@ -58,34 +58,40 @@ if version(1)==0
 ReH_d = (Q_r) *((J_p(2+6).*J_p(1+6)) + J_p(2+6))/2/eta;   % Reynolds number for draw side
 ReH_f = (Q_r) *(J_p(3+6) + J_p(4+6))/2/eta ;              % Reynolds number for fresh side
 else
-ReH_d =(Q_r)*abs((J_p(2+6).*J_p(1+6)) + J_p(2+6))/2/eta;    % for draw side
-ReH_f =(Q_r)*abs(J_p(3+6) + J_p(4+6))/2/eta;              % for fresh side
+ReH_d =(Q_r)*(abs((J_p(2+6).*J_p(1+6)))+abs(J_p(2+6)))/2/eta; % for draw side
+ReH_f =(Q_r)*(abs(J_p(3+6)) + abs(J_p(4+6)))/2/eta;           % for fresh side
 end
 % Function f_mix(x)
 fmix_d = 96/ReH_d*(4.86 + 0.65*sqrt(ReH_d));              % f_mix,d(x)
 fmix_f = 96/ReH_f*(4.86 + 0.65*sqrt(ReH_f));              % f_mix,f(x)
 % Local densitys
-local_ro_d = (J_p(1+6) + 1)./(ro_water*J_p(1+6)/ro_salt + 1);            	% local density of draw side
-local_ro_f = (J_p(3+6) + J_p(4+6))./(ro_water*J_p(3+6)/ro_salt + J_p(4+6)); % local density of fresh side
+local_ro_d = (J_p(1+6) + 1) ./ (J_p(1+6) / ro_salt + 1 / ro_water);               % local density of draw side
+local_ro_f = (J_p(3+6) + J_p(4+6)) ./ (J_p(3+6) / ro_salt + J_p(4+6) / ro_water); % local density of fresh side
 % Osmotic pressure
 p_osm_d = ro_water*Rw*T0*log(1 + 2*Mw*J_p(1+6)/Ms)/p_r;             % osmotic pressure in draw side
 p_osm_f = ro_water*Rw*T0*log(1 + 2*Mw*J_p(3+6)/Ms./J_p(4+6))/p_r;   % osmotic pressure in fresh side
-% B(from permeate salt flux)
-beta = (1 - .99)*((p_osm_d - p_osm_f) - (J_p(5+6) - J_p(6+6)))./.99;
-if version(3)==0; beta = beta_fix; end
-if version(5)==0; beta = 0; end
-% Difference in salt concentrations
-del_c = J_p(1+6)./(J_p(1+6) + 1) - J_p(3+6)./(J_p(3+6) + J_p(4+6)); % delta c_salt
-% Permeate flux Q_win(x)
-Q_cross = ((p_osm_d - p_osm_f) - (J_p(5+6) - J_p(6+6)) - (J_p(5+6) - J_p(6+6))*beta*KK*alpha*p_r)./(1 + KK*alpha*p_r*(beta +p_osm_f));
-if version(5)==0; Q_cross = ((p_osm_d - p_osm_f) - (J_p(5+6) - J_p(6+6))) ; end 
-Q_sin = beta*del_c;
-if version(8)==1 && version(4)>0
-    Q_cross=((p_osm_d - p_osm_f) - (J_p(5+6) - J_p(6+6)) - (J_p(5+6) - J_p(6+6))*beta*(KK+1/KF+1/KD)*p_r*alpha)./(1 +alpha* beta*(KK+1/KF+1/KD) + alpha*p_r*(p_osm_f*(KK+1/KF) + p_osm_d/KD));
-    Q_sin=beta*( del_c-Q_cross*( J_p(1+6)./(J_p(1+6) + 1)./KD +  J_p(3+6)./(J_p(3+6) + J_p(4+6))*(KK+1/KF)))/(1+alpha*beta*(KK+1/KF+1/KD));
-end
-% Hydraulic diameter
-DH_rect = 2*(b2*b1)/(b2+b1);
+% Salt permeability
+    if version(5) == 0
+        beta = 0;
+    else
+        beta = beta_fix / p_r/ alpha;
+    end
+    % Water Permeate flux Q_win(x)
+    if version(4) == 0 % ideal
+        Q_cross = ((p_osm_d - p_osm_f) - (J_p(5+6) - J_p(6+6)));
+    elseif version(7) == 0 % ICP
+        Q_cross = ( -(J_p(5+6) - J_p(6+6)) +(p_osm_d - p_osm_f)) ./   (1 + p_r*alpha*KK*sigma.*(p_osm_d - p_osm_f));
+    else % ICP+ECP
+        Q_cross= ((p_osm_d - p_osm_f) - (J_p(5+6) - J_p(6+6)) * (1 + beta_fix * (1 / KD + KK + 1 / KF))) / (1 + beta_fix * (1 / KD + KK + 1 / KF) + p_r * alpha * (p_osm_d / KD + p_osm_f * KK + p_osm_f / KF));
+    end
+    % Salt Permeate Q_sin(x)
+    if version(7) == 1 % ICP+ECP
+        Q_sin = beta*((J_p(1+6) - J_p(3+6) / J_p(4+6)) - J_p(1+6) * Q_cross*p_r*alpha / KD - (J_p(3+6) / J_p(4+6)) * Q_cross*p_r*alpha * (KK + 1 / KF)) / (1 + beta_fix * (1 / KD + KK + 1 / KF));
+    else
+        Q_sin = beta*(J_p(1+6) - J_p(3+6) / J_p(4+6));
+    end
+    % Hydraulic diameter
+    DH_rect = 2*(b2*b1)/(b2+b1);
 
 %% derivatives of the SWRO flow model:
 dJ_dp(1) =  +swro_gamma*(-J_sin+J_p(1)*J_cross)/J_p(2);   %C_d' 

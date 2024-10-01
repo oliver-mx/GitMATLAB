@@ -4,14 +4,20 @@ addpath('Input_DATA','Scaled_model','Unscaled_model','Output_DATA')
 %% unscaeld test:
 clc,
 %
-[a1,b1,c1]=fun_scaled(  [55.81e5;54.72e5],.2,'fig',1e4,1e-3);
-[a2,b2,c2]=fun_unscaled([55.81e5;54.72e5],.2,'fig',1e4,1e-3);
+%[a1,b1,c1]=fun_scaled(  [55.81e5;54.72e5],.1,'fig',1e4,1e-3);
+[a2,b2]=fun_unscaled([55.81e5;54.72e5],.1,'fig',1e4,1e-3);
 %
 disp('%             Scaled and unscaled')
-disp(['% SEC_net     ',num2str(round(1e4*a1(1))/1e4),'    ',num2str(round(1e4*a2(1))/1e4)])
-disp(['% FW           ',num2str(round(1e4*a1(2))/1e4),'     ',num2str(round(1e4*a2(2))/1e4)])
-disp(['% REC         ',num2str(round(1e4*a1(4))/1e4),'    ',num2str(round(1e4*a2(4))/1e4)])
-disp(['% C (in ppm)  ',num2str(c1(4)),'    ',num2str(c2(4))])
+disp(['% SEC_net     ',num2str(round(1e4*a1(1))/1e4),'    ',num2str(a2(1))])
+disp(['% FW           ',num2str(round(1e4*a1(2))/1e4),'     ',num2str(a2(2))])
+disp(['% REC         ',num2str(round(1e4*a1(4))/1e4),'    ',num2str(a2(4))])
+disp(['% C (in ppm)  ',num2str(c1(4)),'    ',num2str(a2(9))])
+
+%% 
+clc
+[a,b]=fun_unscaled([55.81e5;54.72e5],.1,'sol',1e4,1e-3);
+disp(a)
+disp(b)
 
 %% ideal
 %             Scaled and unscaled
@@ -28,13 +34,21 @@ disp(['% C (in ppm)  ',num2str(c1(4)),'    ',num2str(c2(4))])
 % C (in ppm)  51.9032    51.9027
 
 %% ICP+ECP (fixed beta)
-%             Scaled and unscaled
-% SEC_net      NaN      -3.5228
-% FW           NaN       0.6615
-% REC          NaN      47.0654
-% C (in ppm)   NaN      70.5317
+% SEC_net     -3.5228    -3.5228
+% FW           0.6615     0.6615
+% REC         47.0657    47.0654
+% C (in ppm)  70.5322    70.5317
 
-
+%% testing unscaled SWRO with ERD
+clc
+[a3,b3,c3]=fun_unscaled([55.81e5;54.72e5],.2,'fig',1e4,1e-3);
+disp(' ')
+disp('simple RO')
+disp(a2)
+disp(b2)
+disp('SWRO+ERD')
+disp(a3)
+disp(b3)
 
 
 
@@ -93,6 +107,10 @@ disp('    0.2911    0.1295   44.5000   52.0000')
 
 
 %%
+system('git pull https://github.com/oliver-mx/GitMATLAB.git');
 
-
-
+%%
+system('git status');
+system('git add .');
+system('git commit -m "Further work on ERD..."');
+system('git push https://github.com/oliver-mx/GitMATLAB.git');

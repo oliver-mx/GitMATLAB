@@ -23,7 +23,7 @@ function [output1, output2, output3] = fun_scaled(input,option_data,obj,option_m
 %       x0=[55.81e5;54.72e5];       
 %       data=.11;      
 %       obj='sol';  
-%       mesh=1e4;
+%       mesh=e4;
 %       tol=1e-4;  
 %       [a,b]=fun_unscaled(x0,data,obj,mesh,tol);
 %

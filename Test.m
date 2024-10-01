@@ -4,14 +4,14 @@ addpath('Input_DATA','Scaled_model','Unscaled_model','Output_DATA')
 %% unscaeld test:
 clc,
 %
-[a1,b1,c1]=fun_scaled(  [55.81e5;54.72e5],.1,'fig',1e4,1e-3);
-[a2,b2,c2]=fun_unscaled([55.81e5;54.72e5],.1,'fig',1e4,1e-3);
+[a1,b1,c1]=fun_scaled([55.81e5;54.72e5],.1,'fig',1e4,1e-3);
+[a2,b2] =fun_unscaled([55.81e5;54.72e5],.1,'fig',1e4,1e-3);
 %
 disp('%             Scaled and unscaled')
-disp(['% SEC_net     ',num2str(round(1e4*a1(1))/1e4),'    ',num2str(round(1e4*a2(1))/1e4)])
-disp(['% FW           ',num2str(round(1e4*a1(2))/1e4),'     ',num2str(round(1e4*a2(2))/1e4)])
-disp(['% REC         ',num2str(round(1e4*a1(4))/1e4),'    ',num2str(round(1e4*a2(4))/1e4)])
-disp(['% C (in ppm)  ',num2str(c1(4)),'    ',num2str(c2(4))])
+disp(['% SEC_net     ',num2str(round(1e4*a1(1))/1e4),'    ',num2str(a2(1))])
+disp(['% FW           ',num2str(round(1e4*a1(2))/1e4),'     ',num2str(a2(2))])
+disp(['% REC         ',num2str(round(1e4*a1(4))/1e4),'    ',num2str(a2(4))])
+disp(['% C (in ppm)  ',num2str(c1(4)),'    ',num2str(a2(9))])
 
 %% ideal
 %             Scaled and unscaled
@@ -35,42 +35,48 @@ disp(['% C (in ppm)  ',num2str(c1(4)),'    ',num2str(c2(4))])
 
 %% testing unscaled SWRO with ERD
 clc
-[a3,b3,c3]=fun_unscaled([55.81e5;54.72e5],.2,'fig',1e4,1e-3);
-disp(' ')
-disp('simple RO')
-disp(a2)
-disp(b2)
-disp('SWRO+ERD')
-disp(a3)
-disp(b3)
+[a1,b1,c1]=fun_scaled([45.81e5;44.72e5],.1,'fig',1e4,1e-4);
+[a2,b2] =fun_unscaled([45.81e5;44.72e5],.1,'fig',1e4,1e-3);
+[a,b]=fun_unscaled([45.81e5;44.72e5],.2,'fig',1e4,1e-4);
+disp('%             Scaled and unscaled')
+disp(['% SEC_net     ',num2str(round(1e4*a1(1))/1e4),'    ',num2str(a2(1)),'    ',num2str(a(1))])
+disp(['% FW           ',num2str(round(1e4*a1(2))/1e4),'     ',num2str(a2(2)),'     ',num2str(a(2))])
+disp(['% REC         ',num2str(round(1e4*a1(4))/1e4),'    ',num2str(a2(4)),'    ',num2str(a2(4))])
+disp(['% C (in ppm)  ',num2str(c1(4)),'    ',num2str(a2(9)),'    ',num2str(a2(9))])
+[a3,b3]=fun_scaled([45.81e5;44.72e5],.2,'fig',1e4,1e-4);
+round(1e4*a3(1))/1e4,
+round(1e4*a3(2))/1e4,
+round(1e4*a3(4))/1e4,
+c4(4),
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-%%
-a2=[NaN, NaN, NaN, NaN];
-c2=[NaN, NaN, NaN, NaN];
-%disp('Senthil (with ERD):')
-%disp('   -2.2000  419.0400')
-%disp('    0.2910    0.1160   39.6000   49.0000')
-
-% 0.291 feed flow rate
-% 55bar inlet pressure
+%simple RO
+%   -3.5228    0.6615    0.6239   47.0654
 %
-% 46g/m^3 product water concentration
-% product water flow rate > 0.1164 m^3/s
+%SWRO+ERD
+%   -1.7865    0.6467    0.9468   46.3180
 %
+%SWRO+ERD with new mixing ratio:
+%   -1.7898    0.6475    0.9474   46.3603
+%
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 %% Senthil experimental data
 clc,

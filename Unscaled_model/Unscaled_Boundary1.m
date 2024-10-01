@@ -15,8 +15,4 @@ res =   [ % SWRO part:
           yb(5)- Pd_L*1e5       % pressure draw side at L
           yb(6)- Pf_L*1e5];     % pressure fresh side at L
 
-if Pd_L == 0
-    res(5) = swro_Z*(ya(1)*ya(2)+ya(2))/((yb(1) + 1)./(yb(1)/ro_salt + 1/ro_water)) - 0.291;
-end
-
 end
