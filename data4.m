@@ -1,11 +1,11 @@
-function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_r, C_r, swro_L, swro_alpha, swro_KK, swro_x_r, swro_b1, swro_b2, J_r, swro_gamma, swro_gamma2, swro_W_r, L, alpha, KK, x_r, b1, b2, Q_r, gamma, gamma2, W_r, cE, pE, rho_E, J_sf_0, J_wf_0, Pd_0, Pd_L, Pf_L, Q_sf_0, pd_0, pf_0, pd_L, pf_L, HP_eff, LP_eff, T_eff, V_m, ERD_eff, ERD_fric, A_ERD, eta_ERD, mix_density, pw, pe, swro_beta_fix, beta_fix, mix_M1, mix_M3, version, fig, swro_KF, swro_KD, KF, KD] = Test_01_data(input1, input2)
-    %%  Test_01_data(input)
+function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_r, C_r, swro_L, swro_alpha, swro_KK, swro_x_r, swro_b1, swro_b2, J_r, swro_gamma, swro_gamma2, swro_W_r, L, alpha, KK, x_r, b1, b2, Q_r, gamma, gamma2, W_r, cE, pE, rho_E, J_sf_0, J_wf_0, Pd_0, Pd_L, Pf_L, Q_sf_0, pd_0, pf_0, pd_L, pf_L, HP_eff, LP_eff, T_eff, V_m, ERD_eff, ERD_fric, A_ERD, eta_ERD, mix_density, pw, pe, swro_beta_fix, beta_fix, mix_M1, mix_M3, version, fig, swro_KF, swro_KD, KF, KD] = data4(input1, input2)
+    %%  data1(input)
     %
     %   Data for Test zwischen dem skalierten und unskalierten ODE system
     %
     %   only supports singleSWRO and SWRO+ERD
     %
-    %   option_data = 0.2
+    %   option_data = -.1
     %
     %   Input:
     %       input1        -   [Pd_0, Pd_L]
@@ -20,16 +20,16 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     % version(1) = 0 if co-current, 1 otherwise
     %version(2) = 0;  % 0 = SWRO beta fixed
     version(3) = 0;  % 0 = PRO beta fixed
-    version(4) = 1;  % 0 = ideal SWRO
+    version(4) = 0;  % 0 = ideal SWRO
     version(5) = 0;  % 0 = ideal PRO
     % configuration:
-    version(6) = 0;
+    version(6) = 1;
     % version(6) = 0 --> only SWRO (no ERD)
     % version(6) = 1 --> only SWRO (with ERD)
     % version(6) = 2 --> only PRO
     % version(6) = 3 --> SWRO-PRO hybrid system (with one ERD)
     % version(6) = 4 --> SWRO-PRO hybrid system (with two ERDs) 
-    version(7) = 1; % 1 = ICP and ECP for SWRO enabled
+    version(7) = 0; % 1 = ICP and ECP for SWRO enabled
     version(8) = 0; % 1 = ICP and ECP for PRO enabled
 
     %% Membrane unit properties
@@ -115,7 +115,7 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     mix_M3 = 1;        % spliting rate at M3 (if 0 --> all to ERD2)
 
     %% display figures
-    fig = [1, 1, 0, 0]; % f(i) = 1 --> figure i will be displayed
+    fig = [0, 0, 0, 0]; % f(i) = 1 --> figure i will be displayed
 
     %% automatic changes:
     % co-current

@@ -2,6 +2,62 @@
 % press [ctrl]+[enter] to run code sections
 addpath('Input_DATA','Scaled_model','Unscaled_model','Output_DATA')
 
+%% test random data
+X0=zeros(2,10000);
+for i=1:10000
+    X0(1,i)= 31+39*rand();
+    X0(2,i)= X0(1,i) - .1 - 3.3*rand();
+end
+Y1=zeros(10000,18);Y2=zeros(10000,18);Y3=zeros(10000,18);Y4=zeros(10000,18);Y5=zeros(10000,18);Y6=zeros(10000,18);
+save TEST_if_it_works X0 Y1 Y2 Y3 Y4 Y5 Y6
+%%
+parfor i=1:10000
+    Y1(i,:)=fun_scaled(X0(:,i),-.1,'sol',1e4,1e-3);
+    Y2(i,:)=fun_scaled(X0(:,i),-.2,'sol',1e4,1e-3);
+    Y3(i,:)=fun_scaled(X0(:,i),-.3,'sol',1e4,1e-3);
+    Y4(i,:)=fun_scaled(X0(:,i),-.4,'sol',1e4,1e-3);
+    Y5(i,:)=fun_scaled(X0(:,i),-.5,'sol',1e4,1e-3);
+    Y6(i,:)=fun_scaled(X0(:,i),-.6,'sol',1e4,1e-3);
+end
+save TEST_if_it_works X0 Y1 Y2 Y3 Y4 Y5 Y6
+
+system('git status');
+system('git add .');
+system('git commit -m "Testing case1+case2"');
+system('git push https://github.com/oliver-mx/GitMATLAB.git');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 %% plot of the Pareto fronts
 close all;
 load("DATA_case1.mat")
@@ -25,13 +81,13 @@ ylabel('FW [m^3/h]','FontSize',16);xlabel('SEC_{net} [kWh/m^3]','FontSize',16);
 load("Output_DATA/DATA_Case_1.mat"); 
 rng default; 
 startTime=datetime("now");
-A= [-1 1; 1 -1]; b= [0; 3.4e5]; Aeq=[]; beq=[]; lb = [30e5;30e5]; ub = [70e5;70e5];
+A= [-1 1; 1 -1]; b= [0; 3.4]; Aeq=[]; beq=[]; lb = [30;30]; ub = [70;70];
 option_mesh = 1e4; option_BVP = 1e-3; option_data = 1;
 % initial data
 X_init = [linspace(60.5e5,69.5e5,200);linspace(58.5e5,68.5e5,200)]';
 % paretosearch
 options = optimoptions('paretosearch','ParetoSetSize',200, 'InitialPoints',X_init,'Display','iter', 'MaxFunctionEvaluations',10000, 'ParetoSetChangeTolerance',1e-5,'UseParallel', true);
-X = paretosearch(@(x)fun_unscaled(x,option_data,'Pareto',option_mesh,option_BVP),2,A,b,Aeq,beq,lb,ub,[],options); %@(x)nonlcon(x,'default') 
+X = paretosearch(@(x)fun_scaled(x,option_data,'Pareto',option_mesh,option_BVP),2,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'default'),options);
 % evaluate optimal points
 parfor i=1:200
     X1_pareto(:,i)=X(i,:)

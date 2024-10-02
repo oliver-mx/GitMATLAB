@@ -4,15 +4,17 @@ addpath('Input_DATA','Scaled_model','Unscaled_model','Output_DATA')
 %% unscaeld test:
 clc,
 %
-[a1,b1,c1]=fun_scaled([55.81e5;54.72e5],.2,'fig',1e4,1e-3);
-[a2,b2] =fun_unscaled([55.81e5;54.72e5],.2,'fig',1e4,1e-3);
+[a1,b1]=fun_scaled([55.81;54.72],.2,'fig',1e4,1e-3);
+%[a2,b2] =fun_unscaled([55.81;54.72],.2,'fig',1e4,1e-3);
+ev(a1,1:4)
+ev(a2,1:4)
 %
-disp('%             Scaled and unscaled')
-disp(['% SEC_net     ',num2str(round(1e4*a1(1))/1e4),'    ',num2str(a2(1))])
-disp(['% FW           ',num2str(round(1e4*a1(2))/1e4),'     ',num2str(a2(2))])
-disp(['% REC         ',num2str(round(1e4*a1(4))/1e4),'    ',num2str(a2(4))])
-disp(['% C (in ppm)  ',num2str(c1(4)),'    ',num2str(a2(9))])
+%% PRO
+clc
+[a1,b1]=fun_scaled([14;11],.3,'fig',1e4,1e-3);
+ev(a1,1:40)
 
+%____________SWRO_comparison_____________________________________PRO_comparison________________
 %% ideal
 %             Scaled and unscaled
 % SEC_net     -3.4004    -3.4

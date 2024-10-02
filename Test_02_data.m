@@ -88,16 +88,16 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     J_wf_0 = 0;              % water flux in fresh side at L               
     Pf_L = pE;               % pressure fresh side at L
 
-    Pd_0 =  input1(1) / p_r; % pressure draw side at 0
-    Pd_L =  input1(2) / p_r; % pressure draw side at L (not needed in the hybrid system)
+    Pd_0 =  input1(1); % pressure draw side at 0
+    Pd_L =  input1(2); % pressure draw side at L (not needed in the hybrid system)
 
     %% PRO operation conditions 
     Q_sf_0 = 0;              % salt flux in fresh side at 0
     pf_L = pE;               % pressure of fresh side at L
 
-    pd_0 = 14e5 / p_r;       % pressure draw side at 0
-    pd_L = 13.8e5 / p_r;     % pressure of fresh side at 0
-    pf_0 = 1.01e5 / p_r;      % pressure draw side at L 
+    pd_0 = 14;       % pressure draw side at 0
+    pd_L = 13.8;     % pressure of fresh side at 0
+    pf_0 = 1.01;      % pressure draw side at L 
 
     %% ERD/Turbine/Pump parameters
     T_eff  = .95;               % turbine efficiency

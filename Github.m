@@ -1,6 +1,6 @@
 %% git pull
-addpath('Input_DATA','Scaled_model','Unscaled_model','Output_DATA')
 system('git pull https://github.com/oliver-mx/GitMATLAB.git');
+addpath('Input_DATA','Scaled_model','Unscaled_model','Output_DATA')
 
 %% git push
 msg = input('Please enter a commit message: ', 's');

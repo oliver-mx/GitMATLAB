@@ -15,7 +15,7 @@ function [output1, output2] = fun_unscaled(input,option_data,obj,option_mesh,opt
 %
 %   Output (using 'sol', or 'fig'):
 %       output1 = [SEC_net, FW, Rev, SWRO_Rec, PRO_Rec, ...
-%                  RO_inflow, Permeate_outflow, Wastewater_inflow, C_permeate, C_brine, C_dilluted...
+%                  RO_inflow, Permeate_outflow, Wastewater_inflow, C_permeate, C_brine, C_dilluted, mix_M1...
 %                  W_net, -W_p1, -W_p2,  -W_p3, -W_p4, W_t];
 %       output2 = sol.stats;
 %
@@ -32,6 +32,9 @@ function [output1, output2] = fun_unscaled(input,option_data,obj,option_mesh,opt
 %
 if option_data == .1; DATA = @(x)Test_01_data(input); end
 if option_data == .2; DATA = @(x)Test_02_data(input); end
+if option_data == .3; DATA = @(x)Test_03_data(input); end
+if option_data == .4; DATA = @(x)Test_04_data(input); end
+if option_data == .5; DATA = @(x)Test_05_data(input); end
 %
 if option_data == 1; DATA = @(x)Pareto_1_data(input); end
 if option_data == 2; DATA = @(x)Pareto_2_data(input); end
@@ -68,6 +71,9 @@ if version(6)>0
     % data with new mix_M1
     if option_data == .1; DATA = @(x)Test_01_data(input); end
     if option_data == .2; DATA = @(x)Test_02_data(input,mix_M1); end
+    if option_data == .3; DATA = @(x)Test_03_data(input,mix_M1); end
+    if option_data == .4; DATA = @(x)Test_04_data(input,mix_M1); end
+    if option_data == .5; DATA = @(x)Test_05_data(input,mix_M1); end
     if option_data == 1; DATA = @(x)Pareto_1_data(input); end
     if option_data == 2; DATA = @(x)Pareto_2_data(input,mix_M1); end
     if option_data == 3; DATA = @(x)Pareto_3_data(input,mix_M1); end
@@ -130,7 +136,7 @@ J_sE = J_E-J_wE;
  
 %% Version(6)=0 -->  only SWRO (no ERD)
 if version(6)==0
-    W_p1 = 1/HP_eff * (P_d(1)-1e5)*(J_E *swro_Z)/rho_E;
+    W_p1 = 1/HP_eff * (1e5 - P_d(1))*(J_E *swro_Z)/rho_E;
     W_p2 = 0; W_p3=0; W_p4=0; W_t=0;
 end 
 
@@ -152,23 +158,25 @@ if version(6)==1
     J_w_exit= J_exit/(c_exit+1);
     rho_exit = (J_exit)/(((c_exit*J_w_exit)/ro_salt)+(J_w_exit/ro_water)); 
     % energy balance
-    f_1 = ERD_fric * rho_r*mix_density * (J_exit/rho_exit)*((J_M1*swro_Z)/(rho_E*A_ERD))^2; 
-    f_2 = ERD_fric * rho_r*mix_density * (J_ERD/rho_ERD)*((J_d(end)*swro_Z)/(swro_local_ro_d(end)*A_ERD))^2;
-    pERD = rho_ERD*(ERD_eff*(P_d(end)*J_exit/swro_local_ro_d(end)-1e5*J_exit/rho_exit - f_2) + 1e5*J_E/rho_E - f_1)/J_ERD;
-    %
-    W_p1 = 1/HP_eff * (P_d(1)-1e5)*((J_E-J_M1) *swro_Z)/rho_E;
-    W_p3 = 1/HP_eff * (P_d(1)-pERD)*(J_ERD*swro_Z)/rho_ERD; 
+    f_1 = ERD_fric * rho_r*mix_density * (J_exit*swro_Z/rho_exit)*((J_M1*swro_Z)/(rho_E*A_ERD))^2; 
+    f_2 = ERD_fric * rho_r*mix_density * (J_ERD*swro_Z/rho_ERD)*((J_d(end)*swro_Z)/(swro_local_ro_d(end)*A_ERD))^2;
+    pERD = rho_ERD*(ERD_eff*(P_d(end)*J_d(end)*(1-eta_ERD)*swro_Z/swro_local_ro_d(end)-1e5*J_exit*swro_Z/rho_exit - f_2) + 1e5*J_M1*swro_Z/rho_E + f_1)/J_ERD/swro_Z;
+    % pumps
+    W_p1 = 1/HP_eff * (1e5 - P_d(1))*((J_E-J_M1)*swro_Z)/rho_E;
+    W_p3 = 1/HP_eff * (pERD - P_d(1))*(J_ERD*swro_Z)/rho_ERD; 
     W_p2 = 0; W_p4=0; W_t=0;
-disp(['% f_1  =          ',num2str(f_1)])
-disp(['% f_2  =          ',num2str(f_2)])
-disp(['% pERD (bar) =    ',num2str(pERD/1e5)])
 end
+
+
+
+
+
 
 %% Version(6)=2 or higher
 if version(6) > 1; fprintf(2,' \nERROR: Unscaled model only supports SWRO with/without ERD! \n'); end
 
 %% final output:
-W_net= - W_p1 - W_p2 - W_p3 - W_p4 + W_t; % in [W]
+W_net= W_p1 + W_p2 + W_p3 + W_p4 + W_t; % in [W]
 
 %% Calculate the final output
 SEC_net = W_net*(swro_local_ro_f(end))./(J_f(end)*swro_Z)/1000/3600; % in [kWh/m^3]  
@@ -197,7 +205,7 @@ C_dilluted = NaN; % in [%]
 
 output1 = [SEC_net, FW, Rev, SWRO_Recovery, PRO_Recovery, ...
            RO_inflow, Permeate_outflow, Wastewater_inflow, C_permeate, C_brine, C_dilluted, mix_M1...
-           W_net, -W_p1, -W_p2,  -W_p3, -W_p4, W_t]; % length(output1) = 5+7+6 = 18
+           W_net, W_p1, W_p2,  W_p3, W_p4, W_t]; % length(output1) = 5+7+6 = 18
 
 %% output, if BVP-solver fails
 catch

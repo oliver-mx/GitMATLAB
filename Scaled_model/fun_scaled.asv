@@ -1,4 +1,4 @@
-function [output1, output2, output3] = fun_scaled(input,option_data,obj,option_mesh,option_BVP)
+function [output1, output2] = fun_scaled(input,option_data,obj,option_mesh,option_BVP)
 %%  fun   Solves BVP for SWRO-PRO hybrid system using bvp5c
 %
 %       fun(input,option_data,obj,option_mesh,option_BVP) will solve the
@@ -15,7 +15,7 @@ function [output1, output2, output3] = fun_scaled(input,option_data,obj,option_m
 %
 %   Output (using 'sol', or 'fig'):
 %       output1 = [SEC_net, FW, Rev, SWRO_Rec, PRO_Rec, ...
-%                  RO_inflow, Permeate_outflow, Wastewater_inflow, C_permeate, C_brine, C_dilluted...
+%                  RO_inflow, Permeate_outflow, Wastewater_inflow, C_permeate, C_brine, C_dilluted, mix_M1...
 %                  W_net, -W_p1, -W_p2,  -W_p3, -W_p4, W_t];
 %       output2 = sol.stats;
 %
@@ -35,6 +35,9 @@ end
 %% Read data
 if option_data == .1; DATA = @(x)Test_01_data(input); end
 if option_data == .2; DATA = @(x)Test_02_data(input); end
+if option_data == .3; DATA = @(x)Test_03_data(input); end
+if option_data == .4; DATA = @(x)Test_04_data(input); end
+if option_data == .5; DATA = @(x)Test_05_data(input); end
 %
 if option_data == 1; DATA = @(x)Case_1_data(input); end
 if option_data == 2; DATA = @(x)Case_2_data(input); end
@@ -47,7 +50,6 @@ if option_data == 3; DATA = @(x)Case_3_data(input); end
 %% Set options
 ode_options = bvpset('Stats','off','NMax', option_mesh, 'RelTol', option_BVP);      
 
-try
 n=25;
 x = linspace(0,1,n);    
   
@@ -62,14 +64,36 @@ if version(1)==0; y_init = [cE; J_wd_0; J_sf_0; J_wf_0; Pd_0; Pf_0; cE;  Q_wd_0;
 if version(1)==1; y_init = [cE; J_wd_0; J_sf_0; J_wf_0; Pd_0; Pf_0; cE; -Q_wd_0; Q_sf_0; Q_wf_0; pd_0; pf_0]; end
 solinit = bvpinit(x,y_init);
 
+try
 %% Solve the BVP
 if version(6) == 0; sol = bvp5c(@(x,J_p)ODEsystem(x, J_p, DATA), @(ya,yb)Boundary1(ya,yb, DATA),solinit,ode_options); end
 if version(6) == 1; sol = bvp5c(@(x,J_p)ODEsystem(x, J_p, DATA), @(ya,yb)Boundary2(ya,yb, DATA),solinit,ode_options); end
 if version(6) == 2; sol = bvp5c(@(x,J_p)ODEsystem(x, J_p, DATA), @(ya,yb)Boundary1(ya,yb, DATA),solinit,ode_options); end
 if version(6) == 3; sol = bvp5c(@(x,J_p)ODEsystem(x, J_p, DATA), @(ya,yb)Boundary3(ya,yb, DATA),solinit,ode_options); end       
 if version(6) == 4; sol = bvp5c(@(x,J_p)ODEsystem(x, J_p, DATA), @(ya,yb)Boundary4(ya,yb, DATA),solinit,ode_options); end   
-    
-%% Evaluate the solution
+
+if version(6)>0
+    y = deval(sol,x); Y = y'; Y = real(Y);
+    mix_M1 = ((Y(end,1).*Y(end,2)+Y(end,2))*(1-eta_ERD))/(Y(1,1).*Y(1,2)+Y(1,2));  
+    % data with new mix_M1
+    if option_data == .1; DATA = @(x)Test_01_data(input,mix_M1); end
+    if option_data == .2; DATA = @(x)Test_02_data(input,mix_M1); end
+    if option_data == .3; DATA = @(x)Test_03_data(input,mix_M1); end
+    if option_data == .4; DATA = @(x)Test_04_data(input,mix_M1); end
+    if option_data == .5; DATA = @(x)Test_05_data(input,mix_M1); end
+    %
+    if option_data == 1; DATA = @(x)Case_1_data(input,mix_M1); end
+    if option_data == 2; DATA = @(x)Case_2_data(input,mix_M1); end
+    if option_data == 3; DATA = @(x)Case_3_data(input,mix_M1); end
+    % solve with bvp
+    if version(6) == 0; sol = bvp5c(@(x,J_p)ODEsystem(x, J_p, DATA), @(ya,yb)Boundary1(ya,yb, DATA),solinit,ode_options); end
+    if version(6) == 1; sol = bvp5c(@(x,J_p)ODEsystem(x, J_p, DATA), @(ya,yb)Boundary2(ya,yb, DATA),solinit,ode_options); end
+    if version(6) == 2; sol = bvp5c(@(x,J_p)ODEsystem(x, J_p, DATA), @(ya,yb)Boundary1(ya,yb, DATA),solinit,ode_options); end
+    if version(6) == 3; sol = bvp5c(@(x,J_p)ODEsystem(x, J_p, DATA), @(ya,yb)Boundary3(ya,yb, DATA),solinit,ode_options); end       
+    if version(6) == 4; sol = bvp5c(@(x,J_p)ODEsystem(x, J_p, DATA), @(ya,yb)Boundary4(ya,yb, DATA),solinit,ode_options); end
+end
+
+% Evaluate the solution
 if any([0,0,0,0] ~= fig)
     n=100; % higher resolution plots
 end
@@ -160,7 +184,7 @@ J_sE = J_E-J_wE;
 
 %% Version(6)=0 -->  only SWRO (no ERD)
 if version(6)==0
-    W_p1 = 1/HP_eff * (P_d(1)-pE)*(J_d(1) *swro_Z)/rho_E; W_p1 = W_p1*swro_W_r;
+    W_p1 = 1/HP_eff * (pE - P_d(1))*(J_d(1) *swro_Z)/rho_E; W_p1 = W_p1*swro_W_r;
     W_p2 = 0; W_p3=0; W_p4=0; W_t=0;
 end
 
@@ -182,84 +206,32 @@ if version(6)==1
     J_w_exit= J_exit/(c_exit+1);
     rho_exit = (J_exit)/(((c_exit*J_w_exit)/ro_salt*rho_r)+(J_w_exit/ro_water*rho_r));
     % energy balance
-    f_1 = ERD_fric * mix_density * (J_exit/rho_exit)*((J_M1*swro_b2)/(rho_E/rho_r*swro_b1*swro_b2))^2; 
-    f_2 = ERD_fric * mix_density * (J_ERD/rho_ERD)*((J_d(end)*swro_b2)/(swro_local_ro_d(end)*swro_b1*swro_b2))^2;
-    pERD = rho_ERD*(ERD_eff*(P_d(end)*J_exit/swro_local_ro_d(end)-pE*J_exit/rho_exit - f_2) + pE*J_E/rho_E*rho_r - f_1)/J_ERD;
-
-    disp(rho_ERD)
-    disp(P_d(end))
-    disp(J_exit)
-    disp(swro_local_ro_d(end))
-    disp(pE)
-    disp(J_exit/rho_exit)
-    disp()
-
-    W_p1 = 1/HP_eff * (P_d(1)-1e5)*((J_E-J_M1) *swro_Z)/rho_E;
-    W_p3 = 1/HP_eff * (P_d(1)-pERD)*(J_ERD*swro_Z)/rho_ERD; 
+    f_1 = ERD_fric * mix_density * (J_exit*swro_b2/rho_exit)*((J_M1*swro_b2)/(rho_E/rho_r*swro_b1*swro_b2))^2; 
+    f_2 = ERD_fric * mix_density * (J_ERD*swro_b2/rho_ERD)*((J_d(end)*swro_b2)/(swro_local_ro_d(end)*swro_b1*swro_b2))^2;
+    f_r= (J_r*p_r*swro_x_r/rho_r) / (J_r^3/rho_r^2/swro_x_r); % scaling factor between f and P*J*Z/rho
+    pERD = rho_ERD*(ERD_eff*(P_d(end)*J_d(end)*swro_b2*(1-eta_ERD)/swro_local_ro_d(end)-pE*J_exit*swro_b2/rho_exit - f_2/f_r) + pE*J_M1*swro_b2/rho_E*rho_r + f_1/f_r)/J_ERD/swro_b2;
+    % pumps
+    W_p1 = 1/HP_eff * (pE - P_d(1))*((J_E-J_M1) *swro_Z)/rho_E; W_p1 = W_p1*swro_W_r;
+    W_p3 = 1/HP_eff * (pERD - P_d(1))*(J_ERD*swro_Z)/rho_ERD/rho_r; W_p3 = W_p3*swro_W_r;
     W_p2 = 0; W_p4=0; W_t=0;
-disp(['% f_1  =          ',num2str(f_1)])
-disp(['% f_2  =          ',num2str(f_2)])
-disp(['% pERD (bar) =    ',num2str(pERD/1e5)])
 end
 
 
 
 
-%% Freswater production and recovery rates
-Freshwater = J_wf(end)*J_r; %in [kg/s] 
-FW = (Freshwater*swro_Z/(swro_local_ro_f(end)*rho_r))*3600; %in [m^3/h] 
-SWRO_Recovery =(J_wf(end)./J_d(1))*100;     % SWRO freshwater recovery [%]
-PRO_Recovery = (1- Q_f(end)./Q_f(1))*100;  % PRO recovery rate [%]
+%% Version(6)=2 --> only PRO
+if version(6)==2
+    if version(1) ==0
+        W_p2= 1/LP_eff * (pE - p_d(1))*(Q_d(1)*Z)./local_ro_d(1); W_p2 = W_p2*W_r;
+        W_t = T_eff * (p_d(end)-pE)*(Q_d(end)*Z)/local_ro_d(end); W_t = W_t*W_r;
+    else
+        W_p2= 1/LP_eff * (pE - p_d(end))*(abs(Q_d(end))*Z)./local_ro_d(end); W_p2 = W_p2*W_r;
+        W_t = T_eff * (p_d(end)-pE)*(abs(Q_d(1))*Z)/local_ro_d(1); W_t = W_t*W_r;
+    end
+    W_p4 = 1/LP_eff * (pE - p_f(1))*(Q_f(1) *Z)./local_ro_f(1); W_p4 = W_p4*W_r;
+    W_p1=0; W_p3=0; W_t=W_t*W_r;
+end
 
-% warning flags:
-    if FW < 0 && strcmp(obj,'sol')==1
-        fprintf(2,' \nERROR: Waring: Freshwater production is negative! \n');
-    end
-    if SWRO_Recovery > 100 && strcmp(obj,'sol')==1
-        fprintf(2,' \nERROR: Waring: SWRO recovery is greater than 100 %% \n');
-    end
-    if SWRO_Recovery < 0 && strcmp(obj,'sol')==1
-        fprintf(2,' \nERROR: Waring: SWRO recovery is negative! \n');
-    end
-    if version(6)>1
-        if PRO_Recovery > 100 && strcmp(obj,'sol')==1 
-            fprintf(2,' \nERROR: Waring: PRO recovery is greater than 100 %% \n');
-        end
-        if PRO_Recovery < 0 && strcmp(obj,'sol')==1
-            fprintf(2,' \nERROR: Waring: PRO recovery is negative! \n');
-        end
-    end
-
- 
-
-
-    %% Version(6)=1 -->  only SWRO (with ERD)
-    if version(6)==1
-        rho_ERD = V_m*(swro_local_ro_d(end) - rho_E)+rho_E;
-        C_ERD = -ro_salt*(rho_ERD-1)/(rho_ERD*ro_water-ro_salt);
-        J_wERD = J_E/(C_ERD+1);
-        Q_exit = J_d(end)*(1-eta_ERD);
-        c_exit = (C_d(end)*J_wd(end)*(1 - eta_ERD)+cE*J_wE-C_ERD*J_wERD)/(J_wd(end)*(1 - eta_ERD)+J_wE-J_wERD);
-        rho_exit= (ro_salt*(c_exit+1))/(c_exit*ro_water+ro_salt); p_exit=pE;
-        f_1= (Q_exit*swro_Z/rho_exit*mix_density*(J_E*swro_Z/rho_E/A_ERD)^2 );
-        f_2= (J_ERD*swro_Z/rho_ERD*mix_density*(J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end)/A_ERD)^2); 
-        f_ERD= ERD_fric*(ERD_eff*f_2 - f_1)/100;
-        pERD = rho_ERD*(ERD_eff*( P_d(end)*J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end) - p_exit*Q_exit*swro_Z/rho_exit ) +  pE*J_E*swro_Z/rho_E -f_ERD )/J_ERD/swro_Z;
-        pMax = rho_ERD*(ERD_eff*( P_d(end)*J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end) - p_exit*Q_exit*swro_Z/rho_exit ) +  pE*J_E*swro_Z/rho_E )/J_ERD/swro_Z;
-        pERD=min(pERD,pMax);
-        pERD=max(1,pERD); 
-        W_p3 = 1/HP_eff * (P_d(1)-pERD)*(J_ERD*swro_Z)/rho_ERD; W_p3=W_p3*swro_W_r; W_p4=0; W_t=0;
-    end
-    %% Version(6)=2 --> only PRO
-    if version(6)==2
-        if version(1) ==0; W_t = T_eff * (p_d(end)-pE)*(Q_d(end)*Z)/local_ro_d(end); end
-        if version(1) ==1; W_t = T_eff * (p_d(1)-pE)*(abs(Q_d(1))*Z)/local_ro_d(1); end
-        W_p1=0; W_p3=0; W_t=W_t*W_r;
-        if version(1) ==0; W_p2= 1/LP_eff * (p_d(1)-pE)*(Q_d(1)*Z)./local_ro_d(1); end 
-        if version(1) ==1; W_p2= 1/LP_eff * (p_d(end)-pE)*(abs(Q_d(end))*Z)./local_ro_d(end); end 
-        W_p2 = W_p2*W_r;
-    end
-%W_p4 = 1/LP_eff * (p_f(1)-pE)*(Q_f(1)*Z)./local_ro_f(1); W_p4 = W_p4*W_r;
 
     %% Version(6)=3 --> SWRO-PRO hybrid system (with one ERD)
     if version(6)==3
@@ -351,38 +323,91 @@ PRO_Recovery = (1- Q_f(end)./Q_f(1))*100;  % PRO recovery rate [%]
     W_p1 = 1/HP_eff * (P_d(1)-pERD2)*(J_E *swro_Z)/rho_ERD2; W_p1 = W_p1*swro_W_r;
     end
     
-%% final output:
-W_net= - W_p1 - W_p2 - W_p3 - W_p4 + W_t; % in [W]
 
-if version(6)>1
-PD_net = W_net./(Z*L); %in [W/m^2]   
-    if version(1)==0 
-        SE_net = W_net./(Q_f(1)*Q_r*Z/(rho_r*local_ro_f(1)) + Q_d(1)*Q_r*Z/(rho_r*local_ro_d(1)))/1000/3600; %in [kWh/m^3] 
-        SE_f   = W_net./(Q_f(1)*Q_r*Z/(rho_r*local_ro_f(1)))/1000/3600; %in [kWh/m^3]
-    else 
-        SE_net = W_net./(Q_f(1)*Q_r*Z/(rho_r*local_ro_f(1)) + abs(Q_d(end))*Q_r*Z/(rho_r*local_ro_d(end)))/1000/3600; %in [kWh/m^3] 
-        SE_f   = W_net./(Q_f(1)*Q_r*Z/(rho_r*local_ro_f(1)))/1000/3600; %in [kWh/m^3]
-    end 
-end
-SEC_net = W_net*(swro_local_ro_f(end)*rho_r)./(J_f(end)*J_r*swro_Z)/1000/3600; %in [kWh/m^3]  
+
+
+
+
+
+
+
+
+
+
+%% final output:
+W_net= W_p1 + W_p2 + W_p3 + W_p4 + W_t; % in [W]
+
+%% Calculate the final output
+SEC_net = W_net*(swro_local_ro_f(end)*rho_r)./(J_f(end)*J_r*swro_Z)/1000/3600; % in [kWh/m^3]  
     if SEC_net > 0 && strcmp(obj,'sol')==1
-        fprintf(2,' \nERROR: Waring: SEC_net is positive! \n');
+        fprintf(2,' \nWaring: SEC_net is positive! \n');
+    end
+FW = (J_wf(end)*J_r*swro_Z/(swro_local_ro_f(end)*rho_r))*3600; % in [m^3/h] 
+    if FW < 0 && strcmp(obj,'sol')==1
+        fprintf(2,' \nWaring: Freshwater production is negative! \n');
     end
 Rev= pw*FW + pe*SEC_net*FW; %in [$/h]
-if nargout>2
-    output3=toc;
+SWRO_Recovery =(J_wf(end)./J_d(1))*100;     % in [%]
+    if SWRO_Recovery > 100 && strcmp(obj,'sol')==1
+        fprintf(2,' \nWaring: SWRO recovery is greater than 100 %% \n');
+    end
+    if SWRO_Recovery < 0 && strcmp(obj,'sol')==1
+        fprintf(2,' \nWaring: SWRO recovery is negative! \n');
+    end
+PRO_Recovery = NaN; % in [%]
+    if version(6) > 1
+        PRO_Recovery = (1-Q_f(1)/Q_f(end));
+        if PRO_Recovery > 100 && strcmp(obj,'sol')==1
+            fprintf(2,' \nWaring: PRO recovery is greater than 100 %% \n');
+        end
+        if PRO_Recovery < 0 && strcmp(obj,'sol')==1
+            fprintf(2,' \nWaring: PRO recovery is negative! \n');
+        end
+    end
+RO_inflow = swro_Z*J_d(1)*J_r/swro_local_ro_d(1)/rho_r; % in [m^3/s]
+Permeate_outflow = swro_Z*J_f(end)*J_r/swro_local_ro_f(end)/rho_r; % in [m^3/s]
+Wastewater_inflow = NaN; % in [m^3/s]
+C_permeate = 10000*C_f(end); % in [ppm]
+C_brine = 100*C_d(end); % in [%]
+C_dilluted = NaN; % in [%]
+    if version(6) > 1
+        if version(1)==1
+            C_dilluted =c_d(1);
+        else
+            C_dilluted =c_d(end)
+        end
+    end
+
+if version(6)==2
+    SEC_net=NaN;FW=NaN;Rev=NaN;SWRO_Recovery=NaN;RO_inflow=NaN;Permeate_outflow=NaN;C_permeate=NaN;C_brine=NaN;mix_M1=NaN;
 end
 
-%% if BVP-solver failed
+output1 = [SEC_net, FW, Rev, SWRO_Recovery, PRO_Recovery, ...
+           RO_inflow, Permeate_outflow, Wastewater_inflow, C_permeate, C_brine, C_dilluted, mix_M1...
+           W_net, W_p1, W_p2,  W_p3, W_p4, W_t]; % length(output1) = 5+7+6 = 18
+
+%PD_net = W_net./(Z*L); %in [W/m^2]   
+%    if version(1)==0 
+%        SE_net = W_net./(Q_f(1)*Q_r*Z/(rho_r*local_ro_f(1)) + Q_d(1)*Q_r*Z/(rho_r*local_ro_d(1)))/1000/3600; %in [kWh/m^3] 
+%        SE_f   = W_net./(Q_f(1)*Q_r*Z/(rho_r*local_ro_f(1)))/1000/3600; %in [kWh/m^3]
+%    else 
+%        SE_net = W_net./(Q_f(1)*Q_r*Z/(rho_r*local_ro_f(1)) + abs(Q_d(end))*Q_r*Z/(rho_r*local_ro_d(end)))/1000/3600; %in [kWh/m^3] 
+%        SE_f   = W_net./(Q_f(1)*Q_r*Z/(rho_r*local_ro_f(1)))/1000/3600; %in [kWh/m^3]
+%    end 
+%end
+
+%% output, if BVP-solver fails
 catch
-    sol.stats.maxerr =1000;
+    fprintf(2,' \nERROR: bvp5c failed! \n');
+    sol.stats=struct('nmeshpoints', NaN, 'maxerr', 1e20, 'nODEevals', NaN, 'nBCevals', NaN);
 end
+output2 = sol.stats;
 
 %% Output of objective function
 switch (obj)
         case 'SEC' % for SEC_net maximization  -->  output1 = -SEC_net
             if sol.stats.maxerr > option_BVP
-            output1 = 20; % using NaN causes "fmincon" to stop prematurely --> alternative "patternsearch"
+            output1 = 20;
             else; output1 = -SEC_net;
             end 
         case 'FW' % for FW maximization  -->  output1 = -FW
@@ -397,51 +422,17 @@ switch (obj)
             end
         case 'Pareto' % SEC_net and FW maximization  -->  output1 = [-SEC_net, -FW]
             if sol.stats.maxerr > option_BVP    
-            output1 = [NaN, NaN]; %[20, 20]
+            output1 = NaN(1,2); 
             else; output1 = [-SEC_net, -FW];
             end 
-        case 'PD_net' 
-            if sol.stats.maxerr > option_BVP
-            output1 = 0;
-            else; output1 = -PD_net;
-            end
-        case 'SE_net' 
-            if sol.stats.maxerr > option_BVP
-            output1 = 0;
-            else; output1 = -SE_net;
-            end
-        case 'SE_f' 
-            if sol.stats.maxerr > option_BVP
-            output1 = 0;
-            else; output1 = -SE_f;
-            end    
         case 'sol' 
             if sol.stats.maxerr > option_BVP
-            output1 = [NaN, NaN, NaN, NaN, NaN];
-            output2 = [NaN, NaN, NaN, NaN, NaN, NaN];
-            output3 = NaN;
-            else
-            if version(6) == 0; output1=[SEC_net, FW, Rev, SWRO_Recovery, NaN]; end
-            if version(6) == 1; output1=[SEC_net, FW, Rev, SWRO_Recovery, NaN]; end
-            if version(6) == 2; output1=[PRO_Recovery, PD_net, SE_net, SE_f, NaN]; end
-            if version(6) == 3; output1=[SEC_net, FW, Rev, SWRO_Recovery, PRO_Recovery]; end
-            if version(6) == 4; output1=[SEC_net, FW, Rev, SWRO_Recovery, PRO_Recovery]; end
-            output2=[W_net, -W_p1, -W_p2,  -W_p3, -W_p4, W_t];
+            output1 = NaN(1,17);
             end
-        case 'fig' 
+    case 'fig' % case ends after the figures
             if sol.stats.maxerr > option_BVP
-            output1 = [NaN, NaN, NaN, NaN, NaN];
-            output2 = [NaN, NaN, NaN, NaN, NaN, NaN];
-            output3 = [NaN, NaN, NaN, NaN];
+            output1 = NaN(1,17);
             else
-            if version(6) == 0; output1=[SEC_net, FW, Rev, SWRO_Recovery, NaN]; end
-            if version(6) == 1; output1=[SEC_net, FW, Rev, SWRO_Recovery, NaN]; end
-            if version(6) == 2; output1=[PRO_Recovery, PD_net, SE_net, SE_f, NaN]; end
-            if version(6) == 3; output1=[SEC_net, FW, Rev, SWRO_Recovery, PRO_Recovery]; end
-            if version(6) == 4; output1=[SEC_net, FW, Rev, SWRO_Recovery, PRO_Recovery]; end
-            output2=[W_net, -W_p1, -W_p2,  -W_p3, -W_p4, W_t];
-            output3=[swro_Z*J_d(1)*J_r/swro_local_ro_d(1)/rho_r, swro_Z*J_f(end)*J_r/swro_local_ro_f(end)/rho_r, SWRO_Recovery, 10000*C_f(end)];
-            end
 
 %% figure 1
 if sol.stats.maxerr ==1000
@@ -452,7 +443,7 @@ lw=1.5; %Linewidth for all figures
 if fig(1) == 1
 f=figure(1); %
 f.Position = [277.6667 275 1100 1000];
-x2=x(2:end);
+x2=x(2:end); x3=x(2:end-1);
 % total mass flows
 subplot(3,2,1);lc='#0072bD';rc='#77AC30';
 plot(x*swro_L, J_d*J_r,'Color', lc,'LineWidth',lw);xlabel('x [m]','Fontsize',10); ylabel('[kg/sm]','Fontsize',10); ay=gca; ay.YAxis.Exponent = 0;xlim([0 swro_L]); hold on
@@ -501,51 +492,57 @@ plot(x*swro_L, (P_d-P_f)*p_r,'Color', lc,'LineWidth',lw);xlabel('x [m]','Fontsiz
 yyaxis right; 
 plot(x2*swro_L, osm_diff*p_r,'Color', rc,'LineWidth',lw);ylim([0.95*a 1.05*b]); ylabel('[Pa]','Fontsize',10); legend('\Delta P^{RO}(x)','\Delta \pi^{RO}(x)','Location','best');xlim([0 swro_L]);ay=gca;ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc;hold on
 % Permeate flows 
-Q_sin=Q_sin+abs(min(Q_sin)).*ones(length(Q_sin),1);
-subplot(2,2,2); lc='k';rc='#b81414'; Q_cross2=Q_cross(2:end-2);Q_sin2=Q_sin(2:end-2);x3=x(2:end-2);
-plot(x3*L, -Q_cross2*Q_r/x_r, 'Color', lc, 'LineWidth',lw);xlabel('x [m]','Fontsize',10);  ylabel('[kg/sm^2]','Fontsize',10);ay=gca; ay.YAxis.Exponent = 0; hold on
+subplot(2,2,2); lc='k';rc='#b81414'; Q_cross2=Q_cross(2:end-1);Q_sin2=Q_sin(2:end-1);
+plot(x3*L, -Q_cross2*p_r*alpha, 'Color', lc, 'LineWidth',lw);xlabel('x [m]','Fontsize',10);  ylabel('[kg/sm^2]','Fontsize',10);ay=gca; hold on
 yyaxis right
-plot(x3*L, Q_sin2*Q_r/x_r, 'Color', rc, 'LineWidth',lw); ylabel('[kg/sm^2]','Fontsize',10); legend('J_{w,in}^{PRO}(x)','J_{s,in}^{PRO}(x)','Location','West');xlim([0 L]);ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc;
+plot(x3*L, Q_sin2*p_r*alpha, 'Color', rc, 'LineWidth',lw); ylabel('[kg/sm^2]','Fontsize',10); legend('J_{w,in}^{PRO}(x)','J_{s,in}^{PRO}(x)','Location','West');xlim([0 L]);ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc;
 % Osmotic/ Hydraulic pressure difference
 subplot(2,2,4);lc='k';rc='#b81414';osm_diff=p_osm_d(2:end)-p_osm_f(2:end);
-plot(x*L, (p_d-p_f)*p_r,'Color', lc,'LineWidth',lw);xlabel('x [m]','Fontsize',10); ylabel('[Pa]','Fontsize',10); ay=gca;ay.YAxis.Exponent = 5; hold on; %ylim([a b]); 
+a=min([(p_d-p_f).*p_r; osm_diff.*p_r]);b=max([(p_d-p_f).*p_r; osm_diff.*p_r]);
+plot(x*L, (p_d-p_f)*p_r,'Color', lc,'LineWidth',lw);xlabel('x [m]','Fontsize',10); ylabel('[Pa]','Fontsize',10); ay=gca; ay.YAxis.Exponent = 6;ylim([0.95*a 1.05*b]);hold on
 yyaxis right; 
-plot(x2*L, osm_diff*p_r,'Color', rc,'LineWidth',lw); ylabel('[Pa]','Fontsize',10); legend('\Delta P^{PRO}(x)','\Delta \pi^{PRO}(x)','Location','SouthEast');xlim([0 L]); ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc; %ylim([a b]);
+plot(x2*L, osm_diff*p_r,'Color', rc,'LineWidth',lw); ylabel('[Pa]','Fontsize',10); legend('\Delta P^{PRO}(x)','\Delta \pi^{PRO}(x)','Location','SouthEast');xlim([0 L]); ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc; hold on
 end
 
 %% figure 3
 if fig(3) == 1 && version(6) > 0
 f=figure(3);  % ERD quantities
 f.Position = [637.6667 210.3333 900 347.3334]; tiledlayout(1,4); 
-rot=0; rx=0; %rotation and shift of texts
-vals1 = [pE*p_r; pERD*p_r; 0; P_d(end)*p_r; p_d(end)*p_r];
-vals2 = 100*[cE; C_ERD; 0; C_d(end); c_d(1)];
-vals3 = [J_E*J_r; J_ERD*J_r; 0; J_d(end)*J_r; Q_d(1)*Q_r];
+rx=0; %rotation and shift of texts
+if version(6) == 1
+vals1 = [pE*p_r; pERD*p_r; 0; P_d(end)*p_r; pE*p_r];
+vals2 = 100*[cE; C_ERD; 0; C_d(end); c_exit];
+vals3 = [J_M1*J_r; J_ERD*J_r; 0; J_d(end)*J_r; J_exit*J_r];
+end
+
+%vals1 = [pE*p_r; pERD*p_r; 0; P_d(end)*p_r; p_d(end)*p_r];
+%vals2 = 100*[cE; C_ERD; 0; C_d(end); c_d(1)];
+%vals3 = [J_E*J_r; J_ERD*J_r; 0; J_d(end)*J_r; Q_d(1)*Q_r];
 %adjust for counter current / SWRO+ERD / 2ERDs
-if version(1)==1; vals2(5) = 100*c_d(end); vals3(5) =-Q_d(end)*Q_r;end
-if version(6)==1; vals1(5) = p_exit*p_r; vals2(5) = 100*c_exit; vals3(5) = Q_exit*J_r; end
-if version(6)==4; vals1(1)= pERD2*p_r; vals2(1)=100*C_ERD2; end
+%if version(1)==1; vals2(5) = 100*c_d(end); vals3(5) =-Q_d(end)*Q_r;end
+%if version(6)==1; vals1(5) = p_exit*p_r; vals2(5) = 100*c_exit; vals3(5) = Q_exit*J_r; end
+%if version(6)==4; vals1(1)= pERD2*p_r; vals2(1)=100*C_ERD2; end
 nexttile
 b = bar(1,vals1, 'FaceColor', 'b'); b(4).FaceColor = "#77AC30"; b(5).FaceColor = [.2 .6 .5]; b(1).FaceColor = '#0072bD';
 xticklabels({'[Pa]'}); ylim([0 1.1*max(vals1)]);ay=gca;ay.YAxis(1).Exponent=5;
-t=text(b(1).XEndPoints,b(1).YEndPoints,"P_{s}^{1;in} ",'HorizontalAlignment','center','VerticalAlignment','bottom');
-t=text(b(2).XEndPoints+rx ,b(2).YEndPoints,"P_{s}^{1;out}",'HorizontalAlignment','center','VerticalAlignment','bottom'); 
-t=text(b(4).XEndPoints,b(4).YEndPoints,"P_{b}^{1;in}",'HorizontalAlignment','center','VerticalAlignment','bottom'); 
-t=text(b(5).XEndPoints,b(5).YEndPoints,"   P_{b}^{1;out}",'HorizontalAlignment','center','VerticalAlignment','bottom'); 
+text(b(1).XEndPoints,b(1).YEndPoints,"P_{s}^{1;in} ",'HorizontalAlignment','center','VerticalAlignment','bottom');
+text(b(2).XEndPoints+rx ,b(2).YEndPoints,"P_{s}^{1;out}",'HorizontalAlignment','center','VerticalAlignment','bottom'); 
+text(b(4).XEndPoints,b(4).YEndPoints,"P_{b}^{1;in}",'HorizontalAlignment','center','VerticalAlignment','bottom'); 
+text(b(5).XEndPoints,b(5).YEndPoints,"   P_{b}^{1;out}",'HorizontalAlignment','center','VerticalAlignment','bottom'); 
 nexttile
 b = bar(1,vals2, 'FaceColor', 'b'); b(4).FaceColor = "#77AC30"; b(5).FaceColor = [.2 .6 .5]; b(1).FaceColor = '#0072bD';
 xticklabels({'[%]'}); ylim([0 1.12*max(vals2)]);ay=gca;ay.YAxis(1).Exponent=0;
-t= text(b(1).XEndPoints,b(1).YEndPoints,"C_{s}^{1;in}  ",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
-t=text(b(2).XEndPoints+rx ,b(2).YEndPoints,"   C_{s}^{1;out}",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
-t=text(b(4).XEndPoints,b(4).YEndPoints,"C_b^{1;in}  ",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
-t=text(b(5).XEndPoints,b(5).YEndPoints,"  C_{b}^{1;out}",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
+text(b(1).XEndPoints,b(1).YEndPoints,"C_{s}^{1;in}  ",'HorizontalAlignment','center','VerticalAlignment','bottom');
+text(b(2).XEndPoints+rx ,b(2).YEndPoints,"   C_{s}^{1;out}",'HorizontalAlignment','center','VerticalAlignment','bottom');
+text(b(4).XEndPoints,b(4).YEndPoints,"C_b^{1;in}  ",'HorizontalAlignment','center','VerticalAlignment','bottom');
+text(b(5).XEndPoints,b(5).YEndPoints,"  C_{b}^{1;out}",'HorizontalAlignment','center','VerticalAlignment','bottom');
 nexttile
 b = bar(1,vals3, 'FaceColor', 'b'); b(4).FaceColor = "#77AC30"; b(5).FaceColor = [.2 .6 .5]; b(1).FaceColor = '#0072bD';
 xticklabels({'[kg/ms]'}); ylim([0 1.1*max(vals3)]);ay=gca;ay.YAxis(1).Exponent=0;
-t=text(b(1).XEndPoints,b(1).YEndPoints,"J_{s}^{1;in} ",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
-t=text(b(2).XEndPoints+rx ,b(2).YEndPoints," J_{s}^{1;out}",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
-t=text(b(4).XEndPoints ,b(4).YEndPoints,"J_{b}^{1;in} ",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot;
-t=text(b(5).XEndPoints,b(5).YEndPoints," J_{b}^{1;out}",'HorizontalAlignment','center','VerticalAlignment','bottom'); t.Rotation = rot ;
+text(b(1).XEndPoints,b(1).YEndPoints,"J_{s}^{1;in} ",'HorizontalAlignment','center','VerticalAlignment','bottom');
+text(b(2).XEndPoints+rx ,b(2).YEndPoints," J_{s}^{1;out}",'HorizontalAlignment','center','VerticalAlignment','bottom'); 
+text(b(4).XEndPoints ,b(4).YEndPoints,"J_{b}^{1;in} ",'HorizontalAlignment','center','VerticalAlignment','bottom'); 
+text(b(5).XEndPoints,b(5).YEndPoints," J_{b}^{1;out}",'HorizontalAlignment','center','VerticalAlignment','bottom');
 nexttile
 lgd = legend([b(1) b(2) b(5) b(4)],'Seawater inlet','Seawater outlet','Brine inlet','Brine outlet' , 'Location', 'EastOutside');
 lgd.Layout.Tile = 4; axis off ; 
