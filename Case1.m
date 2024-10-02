@@ -21,16 +21,44 @@ parfor i=1:10000
 end
 save TEST_if_it_works X0 Y1 Y2 Y3 Y4 Y5 Y6
 
-system('git status');
-system('git add .');
-system('git commit -m "Testing case1+case2"');
-system('git push https://github.com/oliver-mx/GitMATLAB.git');
-
-
-
-
-
-
+%% evaluate the tests 
+load("TEST_if_it_works.mat")
+close all; clc
+% see what we can display:
+ev(Y1(1,:))
+userNumber = input('Please enter a number of the set {1,2,3,...,18}: ');
+% create meshgrid for X0
+xq = linspace(min(X0(1,:)), max(X0(1,:)), 100); % Create a query grid for x
+yq = linspace(min(X0(2,:)), max(X0(2,:)), 100); % Create a query grid for y
+[X, Y] = meshgrid(xq, yq);
+% Optional: Visualize the scattered points and the meshgrid
+f=figure(1);
+f.Position= [117.6667 334.3333 1.4200e+03 999.3334];
+tiledlayout(2,3);
+% same colorbar
+all_vectors = [Y1(:,userNumber); Y2(:,userNumber); Y3(:,userNumber); Y4(:,userNumber); Y5(:,userNumber); Y6(:,userNumber)];
+cmap = jet(256); % Use the 'jet' colormap with 256 colors
+cmin = min(all_vectors(:));
+cmax = max(all_vectors(:));
+%
+nexttile
+scatter3(X0(1,:), 10*(X0(1,:)-X0(2,:)),Y1(:,userNumber),1.5,Y1(:,userNumber),'filled');hold on; title('simple SWRO (ideal)'); xlabel('Seawater inlet pressure'); ylabel('Pressure drop'); axis equal;view(2); grid on;colormap(cmap);colorbar
+xlim([30.5 70]);ylim([1 33]);yticks(10:10:30);
+nexttile
+scatter3(X0(1,:), 10*(X0(1,:)-X0(2,:)),Y2(:,userNumber),1.5,Y2(:,userNumber),'filled');hold on; title('simple SWRO (with ICP)'); xlabel('Seawater inlet pressure'); ylabel('Pressure drop'); axis equal;view(2); grid on;colormap(cmap);colorbar
+xlim([30.5 70]);ylim([1 33]);yticks(10:10:30);
+nexttile
+scatter3(X0(1,:), 10*(X0(1,:)-X0(2,:)),Y3(:,userNumber),1.5,Y3(:,userNumber),'filled');hold on; title('simple SWRO (ICP+ECP)'); xlabel('Seawater inlet pressure'); ylabel('Pressure drop'); axis equal;view(2); grid on;colormap(cmap);colorbar
+xlim([30.5 70]);ylim([1 33]);yticks(10:10:30);
+nexttile
+scatter3(X0(1,:), 10*(X0(1,:)-X0(2,:)),Y4(:,userNumber),1,Y4(:,userNumber),'filled');hold on; title('SWRO+ERD (ideal)'); xlabel('Seawater inlet pressure'); ylabel('Pressure drop'); axis equal;view(2); grid on;colormap(cmap);colorbar
+xlim([30.5 70]);ylim([1 33]);yticks(10:10:30);
+nexttile
+scatter3(X0(1,:), 10*(X0(1,:)-X0(2,:)),Y5(:,userNumber),1,Y5(:,userNumber),'filled');hold on; title('SWRO+ERD (with ICP)'); xlabel('Seawater inlet pressure'); ylabel('Pressure drop'); axis equal;view(2); grid on;colormap(cmap);colorbar
+xlim([30.5 70]);ylim([1 33]);yticks(10:10:30);
+nexttile
+scatter3(X0(1,:), 10*(X0(1,:)-X0(2,:)),Y6(:,userNumber),1,Y6(:,userNumber),'filled');hold on; title('SWRO+ERD (ICP+ECP)'); xlabel('Seawater inlet pressure'); ylabel('Pressure drop'); axis equal;view(2); grid on;colormap(cmap);colorbar
+xlim([30.5 70]);ylim([1 33]);yticks(10:10:30);
 
 
 
