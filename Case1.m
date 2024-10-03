@@ -60,13 +60,45 @@ nexttile
 scatter3(X0(1,:), 10*(X0(1,:)-X0(2,:)),Y6(:,userNumber),1,Y6(:,userNumber),'filled');hold on; title('SWRO+ERD (ICP+ECP)'); xlabel('Seawater inlet pressure'); ylabel('Pressure drop'); axis equal;view(2); grid on;colormap(cmap);colorbar
 xlim([30.5 70]);ylim([1 33]);yticks(10:10:30);
 
+%% evalue pareto plot
+load("TEST_if_it_works.mat")
+close all; clc
+for i=1:10000
+    if X0(1,i)-X0(2,i)>4
+        Y1(i,1)=-1;Y1(i,2)=-1;
+        Y2(i,1)=-1;Y2(i,2)=-1;
+        Y3(i,1)=-1;Y3(i,2)=-1;
+        Y4(i,1)=-1;Y4(i,2)=-1;
+        Y5(i,1)=-1;Y5(i,2)=-1;
+        Y6(i,1)=-1;Y6(i,2)=-1;
+    end
+end
+% see what we can display:
+f=figure(1);
+f.Position= [578.3333 778.3333 1.5567e+03 487.3333];
+tiledlayout(1,3);
+% same colorbar
+nexttile
+scatter(Y1(:,1),Y1(:,2),'r');hold on; title('simple SWRO (ideal)'); xlabel('SEC_{net} [kWh/m^3]'); ylabel('FW [m^3/h]');
+scatter(Y4(:,1),Y4(:,2),'b');hold on;grid on;
+xlim([-10 0]);ylim([0 2.2]);
+nexttile
+scatter(Y2(:,1),Y2(:,2),'r');hold on; title('simple SWRO (ICP)'); xlabel('SEC_{net} [kWh/m^3]'); ylabel('FW [m^3/h]');
+scatter(Y5(:,1),Y5(:,2),'b');hold on;grid on;
+xlim([-10 0]);ylim([0 2.2]);
+nexttile
+scatter(Y3(:,1),Y3(:,2),'r');hold on; title('simple SWRO (ICP+ECP)'); xlabel('SEC_{net} [kWh/m^3]'); ylabel('FW [m^3/h]');
+scatter(Y6(:,1),Y6(:,2),'b');hold on;grid on;
+xlim([-10 0]);ylim([0 2.2]);
 
-
-
-
-
-
-
+%% plan:
+%
+% check PRO ideal-ICP-ECP
+%
+% code Pareto optimization with paretosearch
+%
+% check constraint restricitons
+%
 
 
 
@@ -112,9 +144,9 @@ startTime=datetime("now");
 A= [-1 1; 1 -1]; b= [0; 3.4]; Aeq=[]; beq=[]; lb = [30;30]; ub = [70;70];
 option_mesh = 1e4; option_BVP = 1e-3; option_data = 1;
 % initial data
-X_init = [linspace(60.5e5,69.5e5,200);linspace(58.5e5,68.5e5,200)]';
+X_init = X0(:,1:1:200);
 % paretosearch
-options = optimoptions('paretosearch','ParetoSetSize',200, 'InitialPoints',X_init,'Display','iter', 'MaxFunctionEvaluations',10000, 'ParetoSetChangeTolerance',1e-5,'UseParallel', true);
+options = optimoptions('paretosearch','ParetoSetSize',200, 'InitialPoints',X0','Display','iter', 'MaxFunctionEvaluations',10000, 'ParetoSetChangeTolerance',1e-5,'UseParallel', true);
 X = paretosearch(@(x)fun_scaled(x,option_data,'Pareto',option_mesh,option_BVP),2,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'default'),options);
 % evaluate optimal points
 parfor i=1:200
