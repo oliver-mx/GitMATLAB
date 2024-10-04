@@ -236,16 +236,15 @@ end
 %% Version(6)=2 --> only PRO
 if version(6)==2
     if version(1) ==0
-        W_p2= 1/LP_eff * (pE - p_d(1))*(Q_d(1)*Z)./local_ro_d(1); W_p2 = W_p2*W_r;
-        W_t = T_eff * (p_d(end)-pE)*(Q_d(end)*Z)/local_ro_d(end); W_t = W_t*W_r;
+        W_p2= 1/LP_eff * (pE - p_d(1))*(Q_d(1)*Z)./local_ro_d(1)/rho_r; W_p2 = W_p2*W_r;
+        W_t = T_eff * (p_d(end)-pE)*(Q_d(end)*Z)/local_ro_d(end)/rho_r; W_t = W_t*W_r;
     else
-        W_p2= 1/LP_eff * (pE - p_d(end))*(abs(Q_d(end))*Z)./local_ro_d(end); W_p2 = W_p2*W_r;
-        W_t = T_eff * (p_d(end)-pE)*(abs(Q_d(1))*Z)/local_ro_d(1); W_t = W_t*W_r;
+        W_p2= 1/LP_eff * (pE - p_d(end))*(abs(Q_d(end))*Z)./local_ro_d(end)/rho_r; W_p2 = W_p2*W_r;
+        W_t = T_eff * (p_d(end)-pE)*(abs(Q_d(1))*Z)/local_ro_d(1)/rho_r; W_t = W_t*W_r;
     end
-    W_p4 = 1/LP_eff * (pE - p_f(1))*(Q_f(1) *Z)./local_ro_f(1); W_p4 = W_p4*W_r;
-    W_p1=0; W_p3=0; W_t=W_t*W_r;
+    W_p4 = 1/LP_eff * (pE - p_f(1))*(Q_f(1) *Z)./rho_E; W_p4 = W_p4*W_r;
+    W_p1=0; W_p3=0;
 end
-
 
     %% Version(6)=3 --> SWRO-PRO hybrid system (with one ERD)
     if version(6)==3
@@ -353,28 +352,28 @@ W_net= W_p1 + W_p2 + W_p3 + W_p4 + W_t; % in [W]
 
 %% Calculate the final output
 SEC_net = W_net*(swro_local_ro_f(end)*rho_r)./(J_f(end)*J_r*swro_Z)/1000/3600; % in [kWh/m^3]  
-    if SEC_net > 0 && strcmp(obj,'sol')==1
+    if SEC_net > 0 && contains('solfig',obj)==1 && version(6)~=2
         fprintf(2,' \nWaring: SEC_net is positive! \n');
     end
 FW = (J_wf(end)*J_r*swro_Z/(swro_local_ro_f(end)*rho_r))*3600; % in [m^3/h] 
-    if FW < 0 && strcmp(obj,'sol')==1
+    if FW < 0 && contains('solfig',obj)==1
         fprintf(2,' \nWaring: Freshwater production is negative! \n');
     end
 Rev= pw*FW + pe*SEC_net*FW; %in [$/h]
 SWRO_Recovery =(J_wf(end)./J_d(1))*100;     % in [%]
-    if SWRO_Recovery > 100 && strcmp(obj,'sol')==1
+    if SWRO_Recovery > 100 && contains('solfig',obj)==1
         fprintf(2,' \nWaring: SWRO recovery is greater than 100 %% \n');
     end
-    if SWRO_Recovery < 0 && strcmp(obj,'sol')==1
+    if SWRO_Recovery < 0 && contains('solfig',obj)==1
         fprintf(2,' \nWaring: SWRO recovery is negative! \n');
     end
 PRO_Recovery = NaN; % in [%]
     if version(6) > 1
-        PRO_Recovery = (1-Q_f(1)/Q_f(end));
-        if PRO_Recovery > 100 && strcmp(obj,'sol')==1
+        PRO_Recovery = (1-Q_f(end)/Q_f(1))*100;
+        if PRO_Recovery > 100 && contains('solfig',obj)==1
             fprintf(2,' \nWaring: PRO recovery is greater than 100 %% \n');
         end
-        if PRO_Recovery < 0 && strcmp(obj,'sol')==1
+        if PRO_Recovery < 0 && contains('solfig',obj)==1
             fprintf(2,' \nWaring: PRO recovery is negative! \n');
         end
     end
@@ -403,7 +402,9 @@ output1 = [SEC_net, FW, Rev, SWRO_Recovery, PRO_Recovery, ...
            RO_inflow, Permeate_outflow, Wastewater_inflow, C_permeate, C_brine, C_dilluted, mix_M1...
            W_net, W_p1, W_p2,  W_p3, W_p4, W_t]; % length(output1) = 5+7+6 = 18
 
-%PD_net = W_net./(Z*L); %in [W/m^2]   
+if version(6)==2
+    PD_net = W_net./(Z*L); %in [W/m^2]
+    disp(['PD_net     = ', num2str(PD_net), ' [kWh/m^2]'])
 %    if version(1)==0 
 %        SE_net = W_net./(Q_f(1)*Q_r*Z/(rho_r*local_ro_f(1)) + Q_d(1)*Q_r*Z/(rho_r*local_ro_d(1)))/1000/3600; %in [kWh/m^3] 
 %        SE_f   = W_net./(Q_f(1)*Q_r*Z/(rho_r*local_ro_f(1)))/1000/3600; %in [kWh/m^3]
@@ -411,7 +412,8 @@ output1 = [SEC_net, FW, Rev, SWRO_Recovery, PRO_Recovery, ...
 %        SE_net = W_net./(Q_f(1)*Q_r*Z/(rho_r*local_ro_f(1)) + abs(Q_d(end))*Q_r*Z/(rho_r*local_ro_d(end)))/1000/3600; %in [kWh/m^3] 
 %        SE_f   = W_net./(Q_f(1)*Q_r*Z/(rho_r*local_ro_f(1)))/1000/3600; %in [kWh/m^3]
 %    end 
-%end
+end
+
 
 %% output, if BVP-solver fails
 catch

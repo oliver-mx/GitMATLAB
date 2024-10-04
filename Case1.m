@@ -2,122 +2,6 @@
 % press [ctrl]+[enter] to run code sections
 addpath('Input_DATA','Scaled_model','Unscaled_model','Output_DATA')
 
-%% test random data
-X0=zeros(2,10000);
-for i=1:10000
-    X0(1,i)= 31+39*rand();
-    X0(2,i)= X0(1,i) - .1 - 3.3*rand();
-end
-Y1=zeros(10000,18);Y2=zeros(10000,18);Y3=zeros(10000,18);Y4=zeros(10000,18);Y5=zeros(10000,18);Y6=zeros(10000,18);
-save TEST_if_it_works X0 Y1 Y2 Y3 Y4 Y5 Y6
-%%
-parfor i=1:10000
-    Y1(i,:)=fun_scaled(X0(:,i),-.1,'sol',1e4,1e-3);
-    Y2(i,:)=fun_scaled(X0(:,i),-.2,'sol',1e4,1e-3);
-    Y3(i,:)=fun_scaled(X0(:,i),-.3,'sol',1e4,1e-3);
-    Y4(i,:)=fun_scaled(X0(:,i),-.4,'sol',1e4,1e-3);
-    Y5(i,:)=fun_scaled(X0(:,i),-.5,'sol',1e4,1e-3);
-    Y6(i,:)=fun_scaled(X0(:,i),-.6,'sol',1e4,1e-3);
-end
-save TEST_if_it_works X0 Y1 Y2 Y3 Y4 Y5 Y6
-
-%% evaluate the tests 
-load("TEST_if_it_works.mat")
-close all; clc
-% see what we can display:
-ev(Y1(1,:))
-userNumber = input('Please enter a number of the set {1,2,3,...,18}: ');
-% create meshgrid for X0
-xq = linspace(min(X0(1,:)), max(X0(1,:)), 100); % Create a query grid for x
-yq = linspace(min(X0(2,:)), max(X0(2,:)), 100); % Create a query grid for y
-[X, Y] = meshgrid(xq, yq);
-% Optional: Visualize the scattered points and the meshgrid
-f=figure(1);
-f.Position= [117.6667 334.3333 1.4200e+03 999.3334];
-tiledlayout(2,3);
-% same colorbar
-all_vectors = [Y1(:,userNumber); Y2(:,userNumber); Y3(:,userNumber); Y4(:,userNumber); Y5(:,userNumber); Y6(:,userNumber)];
-cmap = jet(256); % Use the 'jet' colormap with 256 colors
-cmin = min(all_vectors(:));
-cmax = max(all_vectors(:));
-%
-nexttile
-scatter3(X0(1,:), 10*(X0(1,:)-X0(2,:)),Y1(:,userNumber),1.5,Y1(:,userNumber),'filled');hold on; title('simple SWRO (ideal)'); xlabel('Seawater inlet pressure'); ylabel('Pressure drop'); axis equal;view(2); grid on;colormap(cmap);colorbar
-xlim([30.5 70]);ylim([1 33]);yticks(10:10:30);
-nexttile
-scatter3(X0(1,:), 10*(X0(1,:)-X0(2,:)),Y2(:,userNumber),1.5,Y2(:,userNumber),'filled');hold on; title('simple SWRO (with ICP)'); xlabel('Seawater inlet pressure'); ylabel('Pressure drop'); axis equal;view(2); grid on;colormap(cmap);colorbar
-xlim([30.5 70]);ylim([1 33]);yticks(10:10:30);
-nexttile
-scatter3(X0(1,:), 10*(X0(1,:)-X0(2,:)),Y3(:,userNumber),1.5,Y3(:,userNumber),'filled');hold on; title('simple SWRO (ICP+ECP)'); xlabel('Seawater inlet pressure'); ylabel('Pressure drop'); axis equal;view(2); grid on;colormap(cmap);colorbar
-xlim([30.5 70]);ylim([1 33]);yticks(10:10:30);
-nexttile
-scatter3(X0(1,:), 10*(X0(1,:)-X0(2,:)),Y4(:,userNumber),1,Y4(:,userNumber),'filled');hold on; title('SWRO+ERD (ideal)'); xlabel('Seawater inlet pressure'); ylabel('Pressure drop'); axis equal;view(2); grid on;colormap(cmap);colorbar
-xlim([30.5 70]);ylim([1 33]);yticks(10:10:30);
-nexttile
-scatter3(X0(1,:), 10*(X0(1,:)-X0(2,:)),Y5(:,userNumber),1,Y5(:,userNumber),'filled');hold on; title('SWRO+ERD (with ICP)'); xlabel('Seawater inlet pressure'); ylabel('Pressure drop'); axis equal;view(2); grid on;colormap(cmap);colorbar
-xlim([30.5 70]);ylim([1 33]);yticks(10:10:30);
-nexttile
-scatter3(X0(1,:), 10*(X0(1,:)-X0(2,:)),Y6(:,userNumber),1,Y6(:,userNumber),'filled');hold on; title('SWRO+ERD (ICP+ECP)'); xlabel('Seawater inlet pressure'); ylabel('Pressure drop'); axis equal;view(2); grid on;colormap(cmap);colorbar
-xlim([30.5 70]);ylim([1 33]);yticks(10:10:30);
-
-%% evalue pareto plot
-load("TEST_if_it_works.mat")
-close all; clc
-for i=1:10000
-    if X0(1,i)-X0(2,i)>4
-        Y1(i,1)=-1;Y1(i,2)=-1;
-        Y2(i,1)=-1;Y2(i,2)=-1;
-        Y3(i,1)=-1;Y3(i,2)=-1;
-        Y4(i,1)=-1;Y4(i,2)=-1;
-        Y5(i,1)=-1;Y5(i,2)=-1;
-        Y6(i,1)=-1;Y6(i,2)=-1;
-    end
-end
-% see what we can display:
-f=figure(1);
-f.Position= [578.3333 778.3333 1.5567e+03 487.3333];
-tiledlayout(1,3);
-% same colorbar
-nexttile
-scatter(Y1(:,1),Y1(:,2),'r');hold on; title('simple SWRO (ideal)'); xlabel('SEC_{net} [kWh/m^3]'); ylabel('FW [m^3/h]');
-scatter(Y4(:,1),Y4(:,2),'b');hold on;grid on;
-xlim([-10 0]);ylim([0 2.2]);
-nexttile
-scatter(Y2(:,1),Y2(:,2),'r');hold on; title('simple SWRO (ICP)'); xlabel('SEC_{net} [kWh/m^3]'); ylabel('FW [m^3/h]');
-scatter(Y5(:,1),Y5(:,2),'b');hold on;grid on;
-xlim([-10 0]);ylim([0 2.2]);
-nexttile
-scatter(Y3(:,1),Y3(:,2),'r');hold on; title('simple SWRO (ICP+ECP)'); xlabel('SEC_{net} [kWh/m^3]'); ylabel('FW [m^3/h]');
-scatter(Y6(:,1),Y6(:,2),'b');hold on;grid on;
-xlim([-10 0]);ylim([0 2.2]);
-
-%% plan:
-%
-% check PRO ideal-ICP-ECP
-%
-% code Pareto optimization with paretosearch
-%
-% check constraint restricitons
-%
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 %% plot of the Pareto fronts
 close all;
 load("DATA_case1.mat")
@@ -142,7 +26,7 @@ load("Output_DATA/DATA_Case_1.mat");
 rng default; 
 startTime=datetime("now");
 A= [-1 1; 1 -1]; b= [0; 3.4]; Aeq=[]; beq=[]; lb = [30;30]; ub = [70;70];
-option_mesh = 1e4; option_BVP = 1e-3; option_data = 1;
+option_mesh = 1e4; option_BVP = 1e-3; option_data = -.3;
 % initial data
 X_init = X0(:,1:1:200);
 % paretosearch

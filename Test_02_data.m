@@ -63,8 +63,8 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     swro_beta_fix = 4.43e-4;                          % value for fixed SWRO beta [kg/sm^2]
 
     %% PRO
-    Z = 1;             % width of the PRO membrane [m]
-    L = 1;            % length of the PRO membrane [m]      
+    Z = 7.7210;         % width of the PRO membrane [m]
+    L = 5 * 0.9626;     % length of the PRO membrane [m]   
     alpha = 5.47e-9;    % water permeability coefficient [s/m]
     KK = 7.13e2;        % mass transfer coefficient [sm^2/kg]
     KD = 1 / KK;        % PRO ECP draw side mass transfer coefficient [sm^2/kg]

@@ -180,19 +180,19 @@ W_net= W_p1 + W_p2 + W_p3 + W_p4 + W_t; % in [W]
 
 %% Calculate the final output
 SEC_net = W_net*(swro_local_ro_f(end))./(J_f(end)*swro_Z)/1000/3600; % in [kWh/m^3]  
-    if SEC_net > 0 && strcmp(obj,'sol')==1
+    if SEC_net > 0 && contains('solfig',obj)==1
         fprintf(2,' \nWaring: SEC_net is positive! \n');
     end
 FW = (J_wf(end)*swro_Z/(swro_local_ro_f(end)))*3600; % in [m^3/h] 
-    if FW < 0 && strcmp(obj,'sol')==1
+    if FW < 0 && contains('solfig',obj)==1
         fprintf(2,' \nWaring: Freshwater production is negative! \n');
     end
 Rev= pw*FW + pe*SEC_net*FW; %in [$/h]
 SWRO_Recovery =(J_wf(end)./J_d(1))*100;     % in [%]
-    if SWRO_Recovery > 100 && strcmp(obj,'sol')==1
+    if SWRO_Recovery > 100 && contains('solfig',obj)==1
         fprintf(2,' \nWaring: SWRO recovery is greater than 100 %% \n');
     end
-    if SWRO_Recovery < 0 && strcmp(obj,'sol')==1
+    if SWRO_Recovery < 0 && contains('solfig',obj)==1
         fprintf(2,' \nWaring: SWRO recovery is negative! \n');
     end
 PRO_Recovery = NaN; % in [%]

@@ -64,7 +64,7 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
 
     %% PRO
     Z = 7.7210;         % width of the PRO membrane [m]
-    L = 7 * 0.9626;     % length of the PRO membrane [m]      
+    L = 5 * 0.9626;     % length of the PRO membrane [m]      
     alpha = 5.47e-9;    % water permeability coefficient [s/m]
     KK = 7.13e2;        % mass transfer coefficient [sm^2/kg]
     KD = -1 / KK;       % PRO ECP draw side mass transfer coefficient [sm^2/kg]
@@ -97,7 +97,7 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
 
     pd_0 = input1(1);     % pressure draw side at 0
     pd_L = input1(2);     % pressure of fresh side at 0
-    pf_0 = input1(1);     % pressure draw side at L 
+    pf_0 = input1(3);     % pressure draw side at L 
 
     %% ERD/Turbine/Pump parameters
     T_eff  = .95;               % turbine efficiency
