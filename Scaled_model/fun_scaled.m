@@ -45,6 +45,9 @@ if option_data == -.3; DATA = @(x)data3(input); end
 if option_data == -.4; DATA = @(x)data4(input); end
 if option_data == -.5; DATA = @(x)data5(input); end
 if option_data == -.6; DATA = @(x)data6(input); end
+if option_data == -.7; DATA = @(x)data7(input); end
+if option_data == -.8; DATA = @(x)data8(input); end
+if option_data == -.9; DATA = @(x)data9(input); end
 %
 if option_data == 1; DATA = @(x)Case_1_data(input); end
 if option_data == 2; DATA = @(x)Case_2_data(input); end
@@ -95,6 +98,9 @@ if version(6)>0
     if option_data == -.4; DATA = @(x)data4(input,mix_M1); end
     if option_data == -.5; DATA = @(x)data5(input,mix_M1); end
     if option_data == -.6; DATA = @(x)data6(input,mix_M1); end
+    if option_data == -.7; DATA = @(x)data7(input,mix_M1); end
+    if option_data == -.8; DATA = @(x)data8(input,mix_M1); end
+    if option_data == -.9; DATA = @(x)data9(input,mix_M1); end
     %
     if option_data == 1; DATA = @(x)Case_1_data(input,mix_M1); end
     if option_data == 2; DATA = @(x)Case_2_data(input,mix_M1); end
@@ -230,9 +236,6 @@ if version(6)==1
     W_p2 = 0; W_p4=0; W_t=0;
 end
 
-
-
-
 %% Version(6)=2 --> only PRO
 if version(6)==2
     if version(1) ==0
@@ -246,33 +249,37 @@ if version(6)==2
     W_p1=0; W_p3=0;
 end
 
-    %% Version(6)=3 --> SWRO-PRO hybrid system (with one ERD)
-    if version(6)==3
-        rho_ERD = V_m*(swro_local_ro_d(end) - rho_E)+rho_E;
-        C_ERD = -ro_salt*(rho_ERD-1)/(rho_ERD*ro_water-ro_salt);  
-        qq=Q_r/J_r;
-            if version(1) == 0 %co-current
-                f_1= qq*Q_d(1)*Z/local_ro_d(1)*mix_density*(J_E*swro_Z/rho_E/A_ERD)^2;  
-                f_2= J_ERD*swro_Z/rho_ERD*mix_density*(J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end)/A_ERD)^2;  
-                f_ERD= ERD_fric*(ERD_eff*f_2 - f_1)/100;
-                pERD = rho_ERD*(ERD_eff*( P_d(end)*J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end) - p_d(1)*qq*Q_d(1)*Z/local_ro_d(1) ) +  pE*J_E*swro_Z/rho_E -f_ERD )/J_ERD/swro_Z;
-                pMax=rho_ERD*(ERD_eff*( P_d(end)*J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end) - p_d(1)*qq*Q_d(1)*Z/local_ro_d(1) ) +  pE*J_E*swro_Z/rho_E )/J_ERD/swro_Z;
-                if pERD > pMax; pERD=pMax; end
-                W_p3 = 1/HP_eff * (P_d(1)-pERD)*(J_ERD*swro_Z)/rho_ERD;
-                W_t = T_eff * (p_d(end)-pE)*(Q_d(end)*Z)/local_ro_d(end); 
-            end
-            if version (1) == 1 %counter-current   
-                f_1= abs(qq*Q_d(end))*Z/local_ro_d(end)*mix_density*(J_E*swro_Z/rho_E/A_ERD)^2  ;
-                f_2= J_ERD*swro_Z/rho_ERD*mix_density*(J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end)/A_ERD)^2  ;
-                f_ERD= ERD_fric*(ERD_eff*f_2 - f_1)/100;
-                pERD = rho_ERD*(ERD_eff*( P_d(end)*J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end) - p_d(end)*abs(qq*Q_d(end))*Z/local_ro_d(end) ) +  pE*J_E*swro_Z/rho_E -f_ERD )/J_ERD/swro_Z;     
-                pMax=rho_ERD*(ERD_eff*( P_d(end)*J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end) - p_d(end)*abs(qq*Q_d(end))*Z/local_ro_d(end) ) +  pE*J_E*swro_Z/rho_E )/J_ERD/swro_Z;       
-                if pERD > pMax; pERD=pMax; end    
-                W_p3 = 1/HP_eff * (P_d(1)-pERD)*(J_ERD*swro_Z)/rho_ERD;
-                W_t = T_eff * (p_d(1)-pE)*(abs(Q_d(1))*Z)/local_ro_d(1);
-            end
-        W_p3=W_p3*swro_W_r; W_t=W_t*W_r;
+%% Version(6)=3 --> SWRO-PRO hybrid system (with one ERD)
+if version(6)==3
+    % flow from M1 to ERD1
+    J_M1 = J_E * (1*mix_M1);
+    J_w_M1 = J_wE* (1*mix_M1);
+    J_s_M1 = J_sE* (1*mix_M1);
+    % flow from ERD1 to RO
+    rho_ERD= V_m*(swro_local_ro_d(end) - rho_E/rho_r)+rho_E/rho_r;
+    C_ERD= -ro_salt/rho_r*(rho_ERD-ro_water/rho_r)/(ro_water/rho_r*(rho_ERD-ro_salt/rho_r));
+    J_ERD = J_M1;
+    J_wERD= J_ERD/(C_ERD+1);
+    J_sERD= J_ERD - J_wERD;
+    qq=Q_r/J_r;
+    % not affected by co / counter
+    f_2 = ERD_fric * mix_density * (J_ERD*swro_b2/rho_ERD)*((J_d(end)*swro_b2)/(swro_local_ro_d(end)*swro_b1*swro_b2))^2;
+    f_r= (J_r*p_r*swro_x_r/rho_r) / (J_r^3/rho_r^2/swro_x_r); % scaling factor between f and P*J*Z/rho  
+    W_p1 = 1/HP_eff * (pE - P_d(1))*((J_E-J_M1) *swro_Z)/rho_E; W_p1 = W_p1*swro_W_r;
+    W_p3 = 1/HP_eff * (pERD - P_d(1))*(J_ERD*swro_Z)/rho_ERD/rho_r; W_p3 = W_p3*swro_W_r;
+    W_p2 = 0;    
+    if version(6) == 0 % co-current
+        f_1 = ERD_fric * mix_density * (qq*Q_d(1)*b2/local_ro_d(1))*((J_M1*swro_b2)/(rho_E/rho_r*swro_b1*swro_b2))^2; 
+        pERD = rho_ERD*(ERD_eff*(P_d(end)*J_d(end)*swro_b2*(1-eta_ERD)/swro_local_ro_d(end)-p_d(1)*qq*Q_d(1)*b2/local_ro_d(1) - f_2/f_r) + pE*J_M1*swro_b2/rho_E*rho_r + f_1/f_r)/J_ERD/swro_b2;
+        W_p4= 1/LP_eff * (pE - p_d(1))*(Q_d(1)*Z)./local_ro_d(1)/rho_r; W_p4 = W_p4*W_r;
+        W_t = T_eff * (p_d(end)-pE)*(Q_d(end)*Z)/local_ro_d(end)/rho_r; W_t = W_t*W_r;
+    else % counter-current
+        f_1 = ERD_fric * mix_density * (qq*abs(Q_d(end))*b2/local_ro_d(end))*((J_M1*swro_b2)/(rho_E/rho_r*swro_b1*swro_b2))^2; 
+        pERD = rho_ERD*(ERD_eff*(P_d(end)*J_d(end)*swro_b2*(1-eta_ERD)/swro_local_ro_d(end)-p_d(end)*qq*abs(Q_d(end))*b2/local_ro_d(end) - f_2/f_r) + pE*J_M1*swro_b2/rho_E*rho_r + f_1/f_r)/J_ERD/swro_b2;
+        W_p4= 1/LP_eff * (pE - p_d(end))*(abs(Q_d(end))*Z)./local_ro_d(end)/rho_r; W_p4 = W_p4*W_r;
+        W_t = T_eff * (p_d(end)-pE)*(Q_d(end)*Z)/local_ro_d(end)/rho_r; W_t = W_t*W_r;
     end
+end
 
     %% Version(6)=4 --> SWRO-PRO hybrid system (with two ERDs)
     if version(6)==4 
@@ -533,7 +540,11 @@ vals1 = [pE*p_r; pERD*p_r; 0; P_d(end)*p_r; pE*p_r];
 vals2 = 100*[cE; C_ERD; 0; C_d(end); c_exit];
 vals3 = [J_M1*J_r; J_ERD*J_r; 0; J_d(end)*J_r; J_exit*J_r];
 end
-
+if version(6) > 2
+vals1 = [pE*p_r; pERD*p_r; 0; P_d(end)*p_r; max(p_d(1),p_d(end))*p_r];
+vals2 = 100*[cE; C_ERD; 0; C_d(end); max(c_d(1),c_d(end))];
+vals3 = [J_M1*J_r; J_ERD*J_r; 0; J_d(end)*J_r; min(Q_d(1)*Q_r, abs(Q_d(end))*Q_r)];
+end
 %vals1 = [pE*p_r; pERD*p_r; 0; P_d(end)*p_r; p_d(end)*p_r];
 %vals2 = 100*[cE; C_ERD; 0; C_d(end); c_d(1)];
 %vals3 = [J_E*J_r; J_ERD*J_r; 0; J_d(end)*J_r; Q_d(1)*Q_r];

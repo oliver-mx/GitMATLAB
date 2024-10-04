@@ -23,6 +23,12 @@ close all; clc;
 ev(Y1(1,:)); userNumber = input('Please enter a number of the set {1,2,3,...,18}: ');
 f=figure(1);
 f.Position= [117.6667 334.3333 1.4200e+03 999.3334];tiledlayout(2,3);
+% same colorbar
+all_vectors = [Y1(:,userNumber); Y2(:,userNumber); Y3(:,userNumber); Y4(:,userNumber); Y5(:,userNumber); Y6(:,userNumber)];
+cmap = jet(256); % Use the 'jet' colormap with 256 colors
+cmin = min(all_vectors(:));
+cmax = max(all_vectors(:));
+%
 nexttile
 scatter3(X0(1,:), 10*(X0(1,:)-X0(2,:)),Y1(:,userNumber),1.5,Y1(:,userNumber),'filled');hold on; title('simple SWRO (ideal)'); xlabel('Seawater inlet pressure [bar]'); ylabel('Pressure drop [bar]'); axis equal;view(2); grid on;colormap(cmap);colorbar
 xlim([30.5 70]);ylim([1 33]);yticks(10:10:30);yticklabels({'\Delta P = 1','\Delta P = 2','\Delta P = 3'})

@@ -17,10 +17,12 @@ else
 %% with Mixing i.e. V_m > 0
 rho_d1= (yb(1) + 1)./(ro_water*yb(1)/ro_salt + 1);
 rho_ERD= V_m*(rho_d1 - rho_E)+rho_E;
-C_ERD= -ro_salt*(rho_ERD-1)/(rho_ERD*ro_water-ro_salt);
-J_E=(ya(1)*ya(2)+ya(2))/2; J_ERD = J_E;
-J_wE = J_E/(cE+1); J_wERD = J_ERD/(C_ERD+1);
-swroC_in = (cE*J_wE + C_ERD*J_wERD)/(J_wE+J_wERD);
+C_ERD= -ro_salt*(rho_ERD-ro_water)/(ro_water*(rho_ERD-ro_salt));
+J_E=(ya(1)*ya(2)+ya(2));
+J_ERD = J_E*(1-mix_M1);
+J_wE = J_E/(cE+1);
+J_wERD= J_ERD/(C_ERD+1);
+swroC_in = (cE*J_wE*mix_M1 + C_ERD*J_wERD)/(J_wE*mix_M1+J_wERD);
 if version(1) ==0 % co-current
 c_in = -(C_ERD * J_wERD * swro_Z * J_r + J_r * J_wE * yb(1) * swro_Z - cE * J_wE * swro_Z * J_r - J_r * J_wERD * yb(1) * swro_Z - ya(8) * yb(1) * Q_r * Z) / Z / Q_r / ya(8);
 J_wd_out = (swro_Z*J_wERD+Z*Q_r/J_r*ya(2+6)-swro_Z*J_wE)/((1-eta_ERD)*swro_Z);
@@ -37,19 +39,19 @@ res =   [ % SWRO part:
           ya(3)- J_sf_0         % salt flux in fresh side at 0
           ya(4)- J_wf_0         % water flux in fresh side at L 
           ya(5)- Pd_0           % pressure draw side at 0
-          %yb(5)- Pd_L          % pressure draw side at 0
+          yb(5)- Pd_L          % pressure draw side at L
           yb(2)- J_wd_out       % CORRECT MASS FLOWS BETWEEN SWRO AND PRO
           yb(6)- Pf_L           % pressure fresh side at L
 
           % PRO part:
           ya(7)-  c_in          % INCOMMING CONZENTRATION FROM ERD TO PRO
           ya(9)-  Q_sf_0       	% salt flux in fresh side at 0
-          ya(11)- pd_0      	% pressure draw side at 0
+          %ya(11)- pd_0      	% pressure draw side at 0
           ya(12)- pf_0      	% pressure of fresh side at 0
           yb(11)- pd_L          % pressure draw side at L 
           yb(12)- pf_L];    	% pressure of fresh side at L
 	
-%% counter current    
-if version(1) ==1; res(7)=yb(7) - c_in; end 
+%% counter current (just that PRO model wont break)  
+if version(1) ==1; res(7)=yb(7) - cE; end 
 
 end
