@@ -41,8 +41,8 @@ t1_pareto = endTime - startTime;
 save Output_DATA/DATA_Case_1.mat X1_init X1_pareto Y1_pareto t1_pareto
 disp('Finished calculating the Pareto front for the single SWRO unit.')
 disp('_______________________________________________________________')
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 %% Paretosearch - Case2
 load("Output_DATA/DATA_Case_2.mat");clc
 disp('Starting Pareto front calculation for the SWRO unit with ERD.')
@@ -77,7 +77,9 @@ close all;
 load("Output_DATA/DATA_Case_1.mat");
 f=figure(1); f.Position = [1200 500 800 500];
 %
-scatter(Y1_pareto(:,1),Y1_pareto(:,2),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
+scatter(Y1a_pareto(:,1),Y1a_pareto(:,2),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','#880808'); hold on
+scatter(Y1b_pareto(:,1),Y1b_pareto(:,2),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','#EE4B2B'); hold on
+scatter(Y1c_pareto(:,1),Y1c_pareto(:,2),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r'); hold on
 grid on; xlim([-4.4 -.5]); ylim([0 2.2]);view(2);
 %%
 scatter(Y2a_pareto(:,1),Y2a_pareto(:,2),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','#00008B'); hold on

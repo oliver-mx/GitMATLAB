@@ -23,7 +23,7 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     version(4) = 0;  % 0 = ideal SWRO
     version(5) = 0;  % 0 = ideal PRO
     % configuration:
-    version(6) = 3;
+    version(6) = 2;
     % version(6) = 0 --> only SWRO (no ERD)
     % version(6) = 1 --> only SWRO (with ERD)
     % version(6) = 2 --> only PRO
