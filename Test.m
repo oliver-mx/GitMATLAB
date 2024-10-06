@@ -9,21 +9,27 @@ clc,
 ev(a1,1:4)
 ev(a2,1:4)
 %
-%% PRO
-clc
-[a1,b1]=fun_scaled([9.005;9;1.0004],.3,'fig',1e4,1e-3);
-[a2,b2]=fun_scaled([9;9.005;1.0004],.3,'fig',1e4,1e-3);
-ev(a1,[5 8 11])
-ev(a2,[5 8 11])
+%% PRO                                                  % ________________                     % ________________                     % ________________
+clc                                                     % PD_net     = 2.4286 [kWh/m^2]        % PD_net     = -4.1977 [kWh/m^2]       % PD_net     = -4.3313 [kWh/m^2]
+disp('________________')                                % REC_PRO =  66.4329 [%]               % REC_PRO =  9.2603 [%]                % REC_PRO =  7.5794 [%]
+[a1,b1]=fun_scaled([9.01;9;1.001],.3,'sol',1e4,1e-3);   % Wastewater_in = 0.00051111 [m^3/s]   % Wastewater_in = 0.00035743 [m^3/s]   % Wastewater_in = 0.00035438 [m^3/s]
+ev(a1,[5 8 11])                                         % ________________                     % ________________                     % ________________
+disp('________________')                                % PD_net     = 2.4785 [kWh/m^2]        % PD_net     = -4.1413 [kWh/m^2]       % PD_net     = -4.2751 [kWh/m^2]
+[a2,b2]=fun_scaled([9;9.01;1.001],.3,'sol',1e4,1e-3);   % REC_PRO =  67.706 [%]                % REC_PRO =  9.2621 [%]                % REC_PRO =  7.5807 [%]
+ev(a2,[5 8 11])                                         % Wastewater_in = 0.00050087 [m^3/s]   % Wastewater_in = 0.0003574 [m^3/s]    % Wastewater_in = 0.00035435 [m^3/s]
+disp('________________')                                % ________________                     % ________________                     % ________________
 
 %% hybrid system
 clc
-[a,b]=fun_scaled([55.81;54.72;11;1.001],-.7,'fig',1e4,1e-3);
-[a,b]=fun_scaled([55.81;54.72;11;1.01],-.7,'fig',1e4,1e-3);
-[a,b]=fun_scaled([55.81;54.72;11;1.1],-.7,'fig',1e4,1e-3);
-[a,b]=fun_scaled([55.81;54.72;11;1.5],-.7,'fig',1e4,1e-3);
-%ev(a,1:40)
-
+n=200; rng default
+P1=5*ones(1,n) + 10.*rand(1,n);
+P2=1*ones(1,n) + 0.01.*rand(1,n);
+parfor i=1:n
+a(i,:)=fun_scaled([55.81;54.72;P1(i);P2(i)],.4,'sol',1e4,1e-3);
+end
+[a1, b1] = max(a(:,5))
+ev(a1(b1,:))
+beep
 
 
 

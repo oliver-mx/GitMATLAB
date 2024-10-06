@@ -176,21 +176,21 @@ p_osm_f = ro_water*Rw*T0*log(1 + 2*Mw*Y(:,3+6)/Ms./Y(:,4+6))/p_r;
 local_ro_d = (Y(:,1+6) + 1)./(Y(:,1+6)./ro_salt + ones(n,1)./ro_water)/rho_r;
 local_ro_f = (Y(:,3+6) + Y(:,4+6))./(Y(:,3+6)./ro_salt + Y(:,4+6)./ro_water)/rho_r;
     % Salt permeability
-    if version(4) == 0
+    if version(5) == 0
         beta = zeros(n,1);
     else
         beta = beta_fix/p_r/alpha.*ones(n,1);
     end
     % Water Permeate flux Q_win(x)
-    if version(4) == 0 % ideal
+    if version(5) == 0 % ideal
         Q_cross = ((p_osm_d - p_osm_f) - (Y(:,5) - Y(:,6)));
-    elseif version(7) == 0 % ICP
+    elseif version(8) == 0 % ICP
         Q_cross = ( -(Y(:,5+6) - Y(:,6+6)) +(p_osm_d - p_osm_f))./(1 + p_r*alpha*KK*sigma.*(p_osm_d - p_osm_f));
     else % ICP+ECP
         Q_cross = ((p_osm_d - p_osm_f) - (Y(:,5+6) - Y(:,6+6)) .* (ones(n,1) + beta_fix.*ones(n,1).* (1 ./ KD + 1.*KK + 1 ./ KF))) ./ (ones(n,1) + beta_fix.*ones(n,1) .* (1 / KD + KK + 1 / KF) + p_r .* alpha .* (p_osm_d ./ KD + p_osm_f .* KK + p_osm_f ./ KF));
     end
     % Salt Permeate Q_sin(x)
-    if version(7) == 1 % ICP+ECP
+    if version(8) == 1 % ICP+ECP
         Q_sin = beta .* ((c_d - c_f) - c_d .* Q_cross.*p_r.*alpha ./ KD - (c_f) .* Q_cross.*p_r.*alpha .* (KK + ones(n,1) ./ KF)) ./ (ones(n,1) + beta_fix.*ones(n,1) .* (1 ./ KD + KK + 1 ./ KF));
     else
         Q_sin = beta_fix.*(c_d-c_f);
@@ -457,11 +457,11 @@ switch (obj)
             end 
         case 'sol' 
             if sol.stats.maxerr > option_BVP
-            output1 = NaN(1,17);
+            output1 = NaN(1,18);
             end
     case 'fig' % case ends after the figures
             if sol.stats.maxerr > option_BVP
-            output1 = NaN(1,17);
+            output1 = NaN(1,18);
             else
 
 %% figure 1

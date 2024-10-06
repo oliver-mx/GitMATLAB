@@ -77,15 +77,15 @@ p_osm_f = ro_water*Rw*T0*log(1 + 2*Mw*J_p(3+6)/Ms./J_p(4+6))/p_r;   % osmotic pr
         beta = beta_fix / p_r/ alpha;
     end
     % Water Permeate flux Q_win(x)
-    if version(4) == 0 % ideal
+    if version(5) == 0 % ideal
         Q_cross = ((p_osm_d - p_osm_f) - (J_p(5+6) - J_p(6+6)));
-    elseif version(7) == 0 % ICP
+    elseif version(8) == 0 % ICP
         Q_cross = ( -(J_p(5+6) - J_p(6+6)) +(p_osm_d - p_osm_f)) ./   (1 + p_r*alpha*KK*sigma.*(p_osm_d - p_osm_f));
     else % ICP+ECP
         Q_cross= ((p_osm_d - p_osm_f) - (J_p(5+6) - J_p(6+6)) * (1 + beta_fix * (1 / KD + KK + 1 / KF))) / (1 + beta_fix * (1 / KD + KK + 1 / KF) + p_r * alpha * (p_osm_d / KD + p_osm_f * KK + p_osm_f / KF));
     end
     % Salt Permeate Q_sin(x)
-    if version(7) == 1 % ICP+ECP
+    if version(8) == 1 % ICP+ECP
         Q_sin = beta*((J_p(1+6) - J_p(3+6) / J_p(4+6)) - J_p(1+6) * Q_cross*p_r*alpha / KD - (J_p(3+6) / J_p(4+6)) * Q_cross*p_r*alpha * (KK + 1 / KF)) / (1 + beta_fix * (1 / KD + KK + 1 / KF));
     else
         Q_sin = beta*(J_p(1+6) - J_p(3+6) / J_p(4+6));

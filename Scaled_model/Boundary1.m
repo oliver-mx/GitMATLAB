@@ -10,6 +10,8 @@ function [ res ] = Boundary1(ya, yb, DATA)
 [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_r, C_r, swro_L, swro_alpha, swro_KK, swro_x_r, swro_b1, swro_b2, J_r, swro_gamma, swro_gamma2, swro_W_r, L, alpha, KK, x_r, b1, b2, Q_r, gamma, gamma2, W_r, cE, pE, rho_E, J_sf_0, J_wf_0, Pd_0, Pd_L, Pf_L, Q_sf_0, pd_0, pf_0, pd_L, pf_L, HP_eff, LP_eff, T_eff, V_m, ERD_eff, ERD_fric, A_ERD, eta_ERD, mix_density, pw, pe, swro_beta_fix, beta_fix, mix_M1, mix_M3, version, fig, swro_KF, swro_KD, KF, KD]...
     = DATA(1);
 
+pro_draw_inlet_flowrate = pd_0/Q_r; % scaled from [kg/sm] to [1]
+
 %% define vector for residual error
 res =   [ % SWRO part:
           ya(1)- cE             % seawater concentration
@@ -19,19 +21,12 @@ res =   [ % SWRO part:
           yb(5)- Pd_L           % pressure draw side at L
           yb(6)- Pf_L           % pressure fresh side at L
 
-          % PRO part:
-          ya(7)-  cE            % seawater concentration
+          % PRO part: % only counter current 
+          yb(7)-  cE            % seawater concentration
           ya(9)-  Q_sf_0       	% salt flux in fresh side at 0
-          ya(11)- pd_0      	% pressure draw side at 0
+          yb(7)*yb(8)+yb(8)-pro_draw_inlet_flowrate % inlet flow rate
           ya(12)- pf_0      	% pressure of fresh side at 0
           yb(11)- pd_L          % pressure draw side at L 
           yb(12)- pf_L];    	% pressure of fresh side at L
-
-if Pd_L == 0
-    res(5) = swro_Z*(ya(1)*ya(2)+ya(2))*J_r/((yb(1) + 1)./(yb(1)/ro_salt + 1/ro_water))/rho_r - 0.291;
-end
-
-%% counter current    
-if version(1) ==1; res(7)=yb(7) - cE; end 
 
 end
