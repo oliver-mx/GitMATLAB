@@ -25,4 +25,8 @@ res =   [ % SWRO part:
           yb(5)- Pd_L*1e5       % pressure draw side at L
           yb(6)- Pf_L*1e5];     % pressure fresh side at L
 
+% set flow rate instead of Pd_L
+if version(2) > 0
+    res(5)= ya(1)*ya(2) + ya(2) - version(2);
+end
 end

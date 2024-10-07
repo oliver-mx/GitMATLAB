@@ -39,13 +39,14 @@ res =   [ % SWRO part:
           ya(3)- J_sf_0         % salt flux in fresh side at 0
           ya(4)- J_wf_0         % water flux in fresh side at L 
           ya(5)- Pd_0           % pressure draw side at 0
-          yb(5)- Pd_L           % pressure draw side at L
+          yb(5)- Pd_L          % pressure draw side at L
           yb(6)- Pf_L           % pressure fresh side at L
 
           % PRO part:
           ya(7)-  c_in          % INCOMMING CONZENTRATION FROM ERD TO PRO
-          abs(yb(6+1)*yb(6+2)+yb(6+2) - (1-eta_ERD)*J_r/Q_r*(yb(1)*yb(2)+yb(2)))+abs(max([ya(6+5) yb(6+5)])-yb(6+5))
+          yb(6+1)*yb(6+2)+yb(6+2) - (yb(1)*yb(2)+yb(2))
           ya(9)-  Q_sf_0       	% salt flux in fresh side at 0
+          %ya(11)- pd_0      	% pressure draw side at 0
           ya(12)- pf_0      	% pressure of fresh side at 0
           yb(11)- pd_L          % pressure draw side at L 
           yb(12)- pf_L];    	% pressure of fresh side at L

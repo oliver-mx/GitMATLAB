@@ -18,7 +18,7 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     %% model versions
     version = zeros(1, 10);
     % version(1) = 0 if co-current, 1 otherwise
-    %version(2) = 0;  % 0 = SWRO beta fixed
+    %version(2) = 0;  % <-- unscaled RO feed massflow rate 
     version(3) = 0;  % 0 = PRO beta fixed
     version(4) = 1;  % 0 = ideal SWRO
     version(5) = 0;  % 0 = ideal PRO

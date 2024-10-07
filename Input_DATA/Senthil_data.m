@@ -1,14 +1,14 @@
-function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_r, C_r, swro_L, swro_alpha, swro_KK, swro_x_r, swro_b1, swro_b2, J_r, swro_gamma, swro_gamma2, swro_W_r, L, alpha, KK, x_r, b1, b2, Q_r, gamma, gamma2, W_r, cE, pE, rho_E, J_sf_0, J_wf_0, Pd_0, Pd_L, Pf_L, Q_sf_0, pd_0, pf_0, pd_L, pf_L, HP_eff, LP_eff, T_eff, V_m, ERD_eff, ERD_fric, A_ERD, eta_ERD, mix_density, pw, pe, swro_beta_fix, beta_fix, mix_M1, mix_M3, version, fig, swro_KF, swro_KD, KF, KD] = Test_03_data(input1, input2)
-    %%  Test_03_data(input)
+function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_r, C_r, swro_L, swro_alpha, swro_KK, swro_x_r, swro_b1, swro_b2, J_r, swro_gamma, swro_gamma2, swro_W_r, L, alpha, KK, x_r, b1, b2, Q_r, gamma, gamma2, W_r, cE, pE, rho_E, J_sf_0, J_wf_0, Pd_0, Pd_L, Pf_L, Q_sf_0, pd_0, pf_0, pd_L, pf_L, HP_eff, LP_eff, T_eff, V_m, ERD_eff, ERD_fric, A_ERD, eta_ERD, mix_density, pw, pe, swro_beta_fix, beta_fix, mix_M1, mix_M3, version, fig, swro_KF, swro_KD, KF, KD] = Senthil_data(input1, input2)
+    %%  Senthil_data(input)
     %
     %   Data for Test zwischen dem skalierten und unskalierten ODE system
     %
     %   only supports singleSWRO and SWRO+ERD
     %
-    %   option_data = 0.3
+    %   option_data = -.3
     %
     %   Input:
-    %       input1        -   [flow_d_in, flow_f_in, P_d_in, P_f_in, P_d_out]
+    %       input1        -   [FlowRate, Pd_0, Pd_L] (if FlowRate==0 --> PD_L can be set)
     %       input2        -    mix_M1
 
     if nargin == 1
@@ -18,19 +18,19 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     %% model versions
     version = zeros(1, 10);
     % version(1) = 0 if co-current, 1 otherwise
-    version(2) = input1(1);  % set PRO draw flow rate
-    version(3) = input1(2);  % set PRO fresh flow rate
+    version(2) = input1(1);  % <-- unscaled RO feed massflow rate 
+    version(3) = 0;  % 0 = PRO beta fixed
     version(4) = 1;  % 0 = ideal SWRO
-    version(5) = 1;  % 0 = ideal PRO
+    version(5) = 0;  % 0 = ideal PRO
     % configuration:
-    version(6) = 2;
+    version(6) = 1;
     % version(6) = 0 --> only SWRO (no ERD)
     % version(6) = 1 --> only SWRO (with ERD)
     % version(6) = 2 --> only PRO
     % version(6) = 3 --> SWRO-PRO hybrid system (with one ERD)
     % version(6) = 4 --> SWRO-PRO hybrid system (with two ERDs) 
     version(7) = 1; % 1 = ICP and ECP for SWRO enabled
-    version(8) = 1; % 1 = ICP and ECP for PRO enabled
+    version(8) = 0; % 1 = ICP and ECP for PRO enabled
 
     %% Membrane unit properties
     H = 1e-3;           % height of the membrane [m]
@@ -49,9 +49,9 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     swro_Z = 7.7210;        % width of SWRO membrane [m]
     swro_L = 7 * 0.9626;    % length of SWRO membrane [m]
     swro_alpha = 5.0815e-9; % SWRO water permeability coefficient [s/m]
-    swro_KK = 1e2;          % SWRO ICP mass transfer coefficient
+    swro_KK = 1e2;          % 40.5
     swro_KD = -1/swro_KK;   % SWRO ECP draw side mass transfer coefficient
-    swro_KF = -1/swro_KK;   % SWRO ECP fresh side mass transfer coefficient
+    swro_KF = 1/swro_KK;   % SWRO ECP fresh side mass transfer coefficient
     swro_x_r = swro_L;      % x_r = swro_L^2 since x = linspace(0,1,n) (if x = linspace(0,swro_L,n) then x_r=swro_L;)     
     swro_b1 = H / swro_x_r;                           % H/swro_L ratio
     swro_b2 = swro_Z / swro_x_r;                      % Z/swro_L ratio
@@ -64,11 +64,11 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
 
     %% PRO
     Z = 7.7210;         % width of the PRO membrane [m]
-    L = 5 * 0.9626;     % length of the PRO membrane [m]      
+    L = 7 * 0.9626;     % length of the PRO membrane [m]      
     alpha = 5.47e-9;    % water permeability coefficient [s/m]
     KK = 7.13e2;        % mass transfer coefficient [sm^2/kg]
-    KD = 1 / KK;        % PRO ECP draw side mass transfer coefficient [sm^2/kg]
-    KF = 1 / KK;        % PRO ECP fresh side mass transfer coefficient [sm^2/kg]
+    KD = -1 / KK;       % PRO ECP draw side mass transfer coefficient [sm^2/kg]
+    KF = -1 / KK;       % PRO ECP fresh side mass transfer coefficient [sm^2/kg]
     x_r = L;            % x_r = L^2 since x = linspace(0,1,n) (if x = linspace(0,L,n) then x_r=L;)              
     b1 = H / x_r;       % H/L ratio
     b2 = Z / x_r;       % Z/L ratio
@@ -79,7 +79,7 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     beta_fix = 1.71e-4;                        % value for fixed PRO beta [kg/sm^2]
 
     %% Sea Water
-    cE = 0.0558582;                                   % salt concentration in seawater
+    cE = 0.031007751937984;%0.032 / C_r;                                 % salt concentration in seawater
     pE = 1e5 / p_r;                                   % external pressure
     rho_E = (cE + 1) / (cE / ro_salt + 1 / ro_water); % density of incoming seawater
 
@@ -88,16 +88,16 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     J_wf_0 = 0;              % water flux in fresh side at L               
     Pf_L = pE;               % pressure fresh side at L
 
-    Pd_0 =  55; % pressure draw side at 0
-    Pd_L =  54; % pressure draw side at L (not needed in the hybrid system)
+    Pd_0 =  input1(2); % pressure draw side at 0
+    Pd_L =  input1(3); % pressure draw side at L (not needed in the hybrid system)
 
     %% PRO operation conditions 
     Q_sf_0 = 0;              % salt flux in fresh side at 0
     pf_L = pE;               % pressure of fresh side at L
 
-    pd_0 = input1(5);     % pressure draw side at 0
-    pd_L = input1(3);     % pressure of fresh side at 0
-    pf_0 = input1(4);     % pressure draw side at L 
+    pd_0 = 14;       % pressure draw side at 0
+    pd_L = 13.8;     % pressure of fresh side at 0
+    pf_0 = 1.01;      % pressure draw side at L 
 
     %% ERD/Turbine/Pump parameters
     T_eff  = .95;               % turbine efficiency
@@ -115,7 +115,7 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     mix_M3 = 1;        % spliting rate at M3 (if 0 --> all to ERD2)
 
     %% display figures
-    fig = [1, 1, 0, 0]; % f(i) = 1 --> figure i will be displayed
+    fig = [0, 0, 0, 0]; % f(i) = 1 --> figure i will be displayed
 
     %% automatic changes:
     % co-current
@@ -126,8 +126,9 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     end            
     % no SWRO needed (--> use trivial data)
     if version(6) == 2
-        Pd_0 = 55;
-        Pd_L = 54;
+        version(4) = 0;
+        Pd_0 = 40;
+        Pd_L = 35;
     end
     
 end

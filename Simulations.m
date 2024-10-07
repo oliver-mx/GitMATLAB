@@ -23,6 +23,30 @@ close all; clc;
 ev(Y1(1,:)); userNumber = input('Please enter a number of the set {1,2,3,...,18}: ');
 f=figure(1);
 f.Position= [117.6667 334.3333 1.4200e+03 999.3334];tiledlayout(2,3);
+% introduce minimum pressure drop
+delta_p_min=1; % 0.1 default
+for i=1:10000
+    if X0(1,i)-X0(2,i)<delta_p_min
+            Y1(i,:)=NaN(1,18);Y2(i,:)=NaN(1,18);Y3(i,:)=NaN(1,18);Y4(i,:)=NaN(1,18);Y5(i,:)=NaN(1,18);Y6(i,:)=NaN(1,18);
+    end
+end
+% draw level lines for 4e-4, 5e-4, 6e-4, 7e-4, 8e-4.
+A1=zeros(2,1);A2=A1;A3=A1;A4=A1;A5=A1;tol=5e-6;
+B1=zeros(2,1);B2=B1;B3=B1;B4=B1;B5=B1;
+if 1==0
+    for j=1:10000
+        if Y3(j,6) > 4e-4-tol && Y3(j,6) < 4e-4+tol; A1(:,j)=X0(:,j); end
+        if Y3(j,6) > 5e-4-tol && Y3(j,6) < 5e-4+tol; A2(:,j)=X0(:,j); end
+        if Y3(j,6) > 6e-4-tol && Y3(j,6) < 6e-4+tol; A3(:,j)=X0(:,j); end
+        if Y3(j,6) > 7e-4-tol && Y3(j,6) < 7e-4+tol; A4(:,j)=X0(:,j); end
+        if Y3(j,6) > 8e-4-tol && Y3(j,6) < 8e-4+tol; A5(:,j)=X0(:,j); end
+        if Y6(j,6) > 4e-4-tol && Y6(j,6) < 4e-4+tol; B1(:,j)=X0(:,j); end
+        if Y6(j,6) > 5e-4-tol && Y6(j,6) < 5e-4+tol; B2(:,j)=X0(:,j); end
+        if Y6(j,6) > 6e-4-tol && Y6(j,6) < 6e-4+tol; B3(:,j)=X0(:,j); end
+        if Y6(j,6) > 7e-4-tol && Y6(j,6) < 7e-4+tol; B4(:,j)=X0(:,j); end
+        if Y6(j,6) > 8e-4-tol && Y6(j,6) < 8e-4+tol; B5(:,j)=X0(:,j); end
+    end
+end
 % same colorbar
 all_vectors = [Y1(:,userNumber); Y2(:,userNumber); Y3(:,userNumber); Y4(:,userNumber); Y5(:,userNumber); Y6(:,userNumber)];
 cmap = jet(256); % Use the 'jet' colormap with 256 colors
@@ -31,31 +55,33 @@ cmax = max(all_vectors(:));
 %
 nexttile
 scatter3(X0(1,:), 10*(X0(1,:)-X0(2,:)),Y1(:,userNumber),1.5,Y1(:,userNumber),'filled');hold on; title('simple SWRO (ideal)'); xlabel('Seawater inlet pressure [bar]'); ylabel('Pressure drop [bar]'); axis equal;view(2); grid on;colormap(cmap);colorbar
-xlim([30.5 70]);ylim([1 33]);yticks(10:10:30);yticklabels({'\Delta P = 1','\Delta P = 2','\Delta P = 3'})
+xlim([30.5 70]);ylim([10*delta_p_min 33]);yticks(10:10:30);yticklabels({'\Delta P = 1','\Delta P = 2','\Delta P = 3'})
 nexttile
 scatter3(X0(1,:), 10*(X0(1,:)-X0(2,:)),Y2(:,userNumber),1.5,Y2(:,userNumber),'filled');hold on; title('simple SWRO (with ICP)'); xlabel('Seawater inlet pressure [bar]'); ylabel('Pressure drop [bar]'); axis equal;view(2); grid on;colormap(cmap);colorbar
-xlim([30.5 70]);ylim([1 33]);yticks(10:10:30);yticklabels({'\Delta P = 1','\Delta P = 2','\Delta P = 3'})
+xlim([30.5 70]);ylim([10*delta_p_min 33]);yticks(10:10:30);yticklabels({'\Delta P = 1','\Delta P = 2','\Delta P = 3'})
 nexttile
 scatter3(X0(1,:), 10*(X0(1,:)-X0(2,:)),Y3(:,userNumber),1.5,Y3(:,userNumber),'filled');hold on; title('simple SWRO (ICP+ECP)'); xlabel('Seawater inlet pressure [bar]'); ylabel('Pressure drop [bar]'); axis equal;view(2); grid on;colormap(cmap);colorbar
-xlim([30.5 70]);ylim([1 33]);yticks(10:10:30);yticklabels({'\Delta P = 1','\Delta P = 2','\Delta P = 3'})
+xlim([30.5 70]);ylim([10*delta_p_min 33]);yticks(10:10:30);yticklabels({'\Delta P = 1','\Delta P = 2','\Delta P = 3'})
+scatter([A1(1,:) A2(1,:) A3(1,:) A4(1,:) A5(1,:)], 10.*[(A1(1,:)-A1(2,:)) (A2(1,:)-A2(2,:)) (A3(1,:)-A3(2,:)) (A4(1,:)-A4(2,:)) (A5(1,:)-A5(2,:)) ],5,'k');hold on
 nexttile
 scatter3(X0(1,:), 10*(X0(1,:)-X0(2,:)),Y4(:,userNumber),1,Y4(:,userNumber),'filled');hold on; title('SWRO+ERD (ideal)'); xlabel('Seawater inlet pressure [bar]'); ylabel('Pressure drop [bar]'); axis equal;view(2); grid on;colormap(cmap);colorbar
-xlim([30.5 70]);ylim([1 33]);yticks(10:10:30);yticklabels({'\Delta P = 1','\Delta P = 2','\Delta P = 3'})
+xlim([30.5 70]);ylim([10*delta_p_min 33]);yticks(10:10:30);yticklabels({'\Delta P = 1','\Delta P = 2','\Delta P = 3'})
 nexttile
 scatter3(X0(1,:), 10*(X0(1,:)-X0(2,:)),Y5(:,userNumber),1,Y5(:,userNumber),'filled');hold on; title('SWRO+ERD (with ICP)'); xlabel('Seawater inlet pressure [bar]'); ylabel('Pressure drop [bar]'); axis equal;view(2); grid on;colormap(cmap);colorbar
-xlim([30.5 70]);ylim([1 33]);yticks(10:10:30);yticklabels({'\Delta P = 1','\Delta P = 2','\Delta P = 3'})
+xlim([30.5 70]);ylim([10*delta_p_min 33]);yticks(10:10:30);yticklabels({'\Delta P = 1','\Delta P = 2','\Delta P = 3'})
 nexttile
 scatter3(X0(1,:), 10*(X0(1,:)-X0(2,:)),Y6(:,userNumber),1,Y6(:,userNumber),'filled');hold on; title('SWRO+ERD (ICP+ECP)'); xlabel('Seawater inlet pressure [bar]'); ylabel('Pressure drop [bar]'); axis equal;view(2); grid on;colormap(cmap);colorbar
-xlim([30.5 70]);ylim([1 33]);yticks(10:10:30);yticklabels({'\Delta P = 1','\Delta P = 2','\Delta P = 3'})
+xlim([30.5 70]);ylim([10*delta_p_min 33]);yticks(10:10:30);yticklabels({'\Delta P = 1','\Delta P = 2','\Delta P = 3'})
+scatter([B1(1,:) B2(1,:) B3(1,:) B4(1,:) B5(1,:)], 10.*[(B1(1,:)-B1(2,:)) (B2(1,:)-B2(2,:)) (B3(1,:)-B3(2,:)) (B4(1,:)-B4(2,:)) (B5(1,:)-B5(2,:)) ],5,'k');hold on
 %nexttile
 %scatter3(X0(1,:), 10*(X0(1,:)-X0(2,:)),Y7(:,userNumber),1,Y7(:,userNumber),'filled');hold on; title('Hybrid (ideal)'); xlabel('Seawater inlet pressure [bar]'); ylabel('Pressure drop [bar]'); axis equal;view(2); grid on;colormap(cmap);colorbar
-%xlim([30.5 70]);ylim([1 33]);yticks(10:10:30);yticklabels({'\Delta P = 1','\Delta P = 2','\Delta P = 3'})
+%xlim([30.5 70]);ylim([10*delta_p_min 33]);yticks(10:10:30);yticklabels({'\Delta P = 1','\Delta P = 2','\Delta P = 3'})
 %nexttile
 %scatter3(X0(1,:), 10*(X0(1,:)-X0(2,:)),Y8(:,userNumber),1,Y8(:,userNumber),'filled');hold on; title('Hybrid (with ICP)'); xlabel('Seawater inlet pressure [bar]'); ylabel('Pressure drop [bar]'); axis equal;view(2); grid on;colormap(cmap);colorbar
-%xlim([30.5 70]);ylim([1 33]);yticks(10:10:30);yticklabels({'\Delta P = 1','\Delta P = 2','\Delta P = 3'})
+%xlim([30.5 70]);ylim([10*delta_p_min 33]);yticks(10:10:30);yticklabels({'\Delta P = 1','\Delta P = 2','\Delta P = 3'})
 %nexttile
 %scatter3(X0(1,:), 10*(X0(1,:)-X0(2,:)),Y9(:,userNumber),1,Y9(:,userNumber),'filled');hold on; title('Hybrid (ICP+ECP)'); xlabel('Seawater inlet pressure [bar]'); ylabel('Pressure drop [bar]'); axis equal;view(2); grid on;colormap(cmap);colorbar
-%xlim([30.5 70]);ylim([1 33]);yticks(10:10:30);yticklabels({'\Delta P = 1','\Delta P = 2','\Delta P = 3'})
+%xlim([30.5 70]);ylim([10*delta_p_min 33]);yticks(10:10:30);yticklabels({'\Delta P = 1','\Delta P = 2','\Delta P = 3'})
 
 %% evalue pareto plot
 load("Output_DATA/Simulation_output.mat")

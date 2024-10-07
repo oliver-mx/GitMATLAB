@@ -46,6 +46,7 @@ if option_data == -.7; DATA = @(x)data7(input); end
 if option_data == -.8; DATA = @(x)data8(input); end
 if option_data == -.9; DATA = @(x)data9(input); end
 %
+if option_data == 0; DATA = @(x)Senthil_data(input);end
 if option_data == 1; DATA = @(x)Case_1_data(input); end
 if option_data == 2; DATA = @(x)Case_2_data(input); end
 if option_data == 3; DATA = @(x)Case_3_data(input); end
@@ -95,6 +96,7 @@ if version(6)>0
     if option_data == -.8; DATA = @(x)data8(input,mix_M1); end
     if option_data == -.9; DATA = @(x)data9(input,mix_M1); end
     %
+    if option_data == 0; DATA = @(x)Senthil_data(input,mix_M1);end
     if option_data == 1; DATA = @(x)Case_1_data(input,mix_M1); end
     if option_data == 2; DATA = @(x)Case_2_data(input,mix_M1); end
     if option_data == 3; DATA = @(x)Case_3_data(input,mix_M1); end

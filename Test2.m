@@ -10,29 +10,39 @@ ev(a1,[1 2 3 4 6 7 9 10 12])
 %
 
 %% test only (counter-current) PRO:
-clc;[a2,b2]=fun_scaled([-0.0266213;15;1.001],.3,'fig',1e4,1e-3);
-ev(a2,[5 8 11])
+%clc;[a2,b2]=fun_scaled([-0.0266213; 0 ; 5.4 ; 1.00002; 14.99],.3,'fig',1e4,1e-3);
+% --> problem with wrong pressure in draw
+clc;[a2,b2]=fun_scaled([0; 0 ; 5.4 ; 1.00003; 5.39942],.3,'fig',1e4,1e-3);
+ev(a2,5)
+%
+% draw_in_flow       = -0.0266213 [kg/sm]
+% draw concentration =  0.0509729 [1]
+%
 
-%% find good PRO operating for the hybrid 
-clc;rng default;n=5000;a=zeros(n,18);
-PD_in = 5.*ones(1,n) + 15.*rand(1,n);
-PF_in = 1.00001*ones(1,n) + 0.001.*rand(1,n);
-parfor i=1:n
-a(i,:)=fun_scaled([-0.0266213;PD_in(i);PF_in(i)],.3,'sol',1e4,1e-3);
-end
-beep; clc,[t2, t3]=max(a(:,5));format long
-disp(['% Draw_in_pressure =  ',num2str(PD_in(t3)), ' [bar]'])
-disp(['% Fresh_in_pressure = ',num2str(PF_in(t3)), ' [bar]'])
-format short
-disp(['% PRO_Recovery:   ',num2str(t2), ' [%]'])
-% Draw_in_pressure =  5.485 [bar]   % 5.485
-% Fresh_in_pressure = 1 [bar]       % 1.000029760646511
-% PRO_Recovery:   91.5352 [%]       % 
+%% hybrid system mit same data:
+clc,
+output=fun_scaled([55.81,54.72,5.485,1.00002],.4,'fig',1e4,1e-3);
+ev(output)
 
-%% PRO with good operating conditions:
-clc
-output1=fun_scaled([-0.0266213;5.485;1.000029760646511],.3,'fig',1e4,1e-3);
-ev(output1,[5 8 11])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 %% test hybrid system
 clc,
