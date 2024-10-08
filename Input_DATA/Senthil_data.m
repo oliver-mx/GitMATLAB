@@ -5,10 +5,10 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     %
     %   only supports singleSWRO and SWRO+ERD
     %
-    %   option_data = -.3
+    %   option_data = 0
     %
     %   Input:
-    %       input1        -   [FlowRate, Pd_0, Pd_L] (if FlowRate==0 --> PD_L can be set)
+    %       input1        -   [FlowRate, Pd_0, Pd_L] (if FlowRate==0 --> Pd_L can be set)
     %       input2        -    mix_M1
 
     if nargin == 1
@@ -17,9 +17,9 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
 
     %% model versions
     version = zeros(1, 10);
-    % version(1) = 0 if co-current, 1 otherwise
+    % version(1) = 0 if co-current PRO, 1 otherwise
     version(2) = input1(1);  % <-- unscaled RO feed massflow rate 
-    version(3) = 0;  % 0 = PRO beta fixed
+    version(3) = 0;  % -----------
     version(4) = 1;  % 0 = ideal SWRO
     version(5) = 0;  % 0 = ideal PRO
     % configuration:
@@ -36,10 +36,10 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     H = 1e-3;           % height of the membrane [m]
     ro_water = 1000;    % mass density of water  [kg/m^3] 
     ro_salt = 2165;     % mass density of salt [kg/m^3] 
-    Mw = 1000 * 18;     % molecular weight of water [kg/kmol]
-    Ms = 1000 * 58.44;  % molecular weight of salt  [kg/kmol]
+    Mw = 18;            % molecular weight of water [kg/kmol]
+    Ms = 58.44;         % molecular weight of salt  [kg/kmol]
     Rw = 462;           % gas constant of water  [J/(kg K)] 
-    T0 = 297;           % temperature [K] 
+    T0 = 298;           % temperature [K] (i.e. 24.85°C) 
     eta = 1.3e-3;       % seawater viscosity [kg/(m s)]
     p_r = 1e5;          % pressure [Pa]=[kg/ms^2]
     rho_r = 1e3;        % density [kg/m^3]
@@ -49,16 +49,16 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     swro_Z = 7.7210;        % width of SWRO membrane [m]
     swro_L = 7 * 0.9626;    % length of SWRO membrane [m]
     swro_alpha = 5.0815e-9; % SWRO water permeability coefficient [s/m]
-    swro_KK = 1e2;          % 40.5
-    swro_KD = -1/swro_KK;   % SWRO ECP draw side mass transfer coefficient
-    swro_KF = 1/swro_KK;   % SWRO ECP fresh side mass transfer coefficient
+    swro_KK = 1e2;          % 
+    swro_KD = 1/swro_KK;    % SWRO ECP draw side mass transfer coefficient
+    swro_KF = 1/swro_KK;    % SWRO ECP fresh side mass transfer coefficient
     swro_x_r = swro_L;      % x_r = swro_L^2 since x = linspace(0,1,n) (if x = linspace(0,swro_L,n) then x_r=swro_L;)     
     swro_b1 = H / swro_x_r;                           % H/swro_L ratio
     swro_b2 = swro_Z / swro_x_r;                      % Z/swro_L ratio
     J_r = sqrt(H^3 / swro_x_r * p_r * rho_r);         % flux [kg/s^2]
     swro_gamma = swro_x_r * p_r * swro_alpha / J_r;   % SWRO scaling factor - mass balance
     swro_gamma2 = J_r^2 / (swro_x_r^2 * p_r * rho_r); % SWRO scaling factor - momentum balance
-    swro_W_r = J_r * p_r;                     % net work [W/m^2]
+    swro_W_r = J_r * p_r;                             % net work [W/m^2]
     sigma = 0.999 ;                                   % Reflection coefficient
     swro_beta_fix = 4.43e-4;                          % value for fixed SWRO beta [kg/sm^2]
 
@@ -79,7 +79,7 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     beta_fix = 1.71e-4;                        % value for fixed PRO beta [kg/sm^2]
 
     %% Sea Water
-    cE = 0.031007751937984;%0.032 / C_r;                                 % salt concentration in seawater
+    cE =(32/(1-32/2165)/1000) / C_r;                  % salt concentration in seawater (32/(1-32/2165)/1000)
     pE = 1e5 / p_r;                                   % external pressure
     rho_E = (cE + 1) / (cE / ro_salt + 1 / ro_water); % density of incoming seawater
 
@@ -97,7 +97,7 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
 
     pd_0 = 14;       % pressure draw side at 0
     pd_L = 13.8;     % pressure of fresh side at 0
-    pf_0 = 1.01;      % pressure draw side at L 
+    pf_0 = 1.01;     % pressure draw side at L 
 
     %% ERD/Turbine/Pump parameters
     T_eff  = .95;               % turbine efficiency

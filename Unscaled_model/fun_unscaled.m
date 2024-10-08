@@ -141,11 +141,11 @@ swro_local_ro_f = (Y(:,3) + Y(:,4))./(Y(:,3)./ro_salt + Y(:,4)./ro_water);
     elseif version(7) == 0 % ICP
         J_cross = swro_alpha .* ((Y(:,5) - Y(:,6)) - sigma.*(swro_p_osm_d - swro_p_osm_f))./(1 + swro_alpha*swro_KK*sigma.*(swro_p_osm_d - swro_p_osm_f));
     else % ICP+ECP
-        J_cross = swro_alpha .* ((Y(:,5) - Y(:,6)) .* (1 + swro_beta .* (1 ./ swro_KD + swro_KK + 1 ./ swro_KF)) - sigma .* (swro_p_osm_d - swro_p_osm_f)) ./ (1 + swro_beta .* (1 ./ swro_KD + swro_KK + 1 ./ swro_KF) - swro_alpha .* sigma .* (swro_p_osm_d ./ swro_KD + swro_p_osm_f .* swro_KK + swro_p_osm_f ./ swro_KF));
+        J_cross = swro_alpha .* ((Y(:,5) - Y(:,6)) .* (1 + swro_beta .* (-1 ./ swro_KD + swro_KK + 1 ./ swro_KF)) - sigma .* (swro_p_osm_d - swro_p_osm_f)) ./ (1 + swro_beta .* (-1 ./ swro_KD + swro_KK + 1 ./ swro_KF) - swro_alpha .* sigma .* (-swro_p_osm_d ./ swro_KD + swro_p_osm_f .* swro_KK + swro_p_osm_f ./ swro_KF));
     end
     % Salt Permeate J_sin(x)
     if version(7) == 1 % ICP+ECP
-        J_sin = swro_beta .* ((C_d-C_f) - C_d .* J_cross ./ swro_KD - C_f .* J_cross .* (swro_KK + 1 ./ swro_KF)) ./ (1 + swro_beta .* (1 ./ swro_KD + swro_KK + 1 ./ swro_KF));
+        J_sin = swro_beta .* ((C_d-C_f) + C_d .* J_cross ./ swro_KD - C_f .* J_cross .* (swro_KK + 1 ./ swro_KF)) ./ (1 + swro_beta .* (-1 ./ swro_KD + swro_KK + 1 ./ swro_KF));
     else
         J_sin = swro_beta_fix.*(C_d-C_f);
     end
@@ -224,7 +224,7 @@ Permeate_outflow = swro_Z*J_f(end)/swro_local_ro_f(end); % in [m^3/s]
 Wastewater_inflow = NaN; % in [m^3/s]
 C_permeate = 10000*C_f(end); % in [ppm]
 C_brine = 100*C_d(end); % in [%]
-C_dilluted = NaN; % in [%]
+C_dilluted = P_d(end)/1e5; % in [%]
 
 output1 = [SEC_net, FW, Rev, SWRO_Recovery, PRO_Recovery, ...
            RO_inflow, Permeate_outflow, Wastewater_inflow, C_permeate, C_brine, C_dilluted, mix_M1...
