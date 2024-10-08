@@ -58,8 +58,8 @@ plot(XX, ZZZ, 'Color', rc, 'LineWidth',lw); ylabel('SEC (kWh/m^3)','Fontsize',10
 figure(1); set(gcf,'color','w'); f = gcf; exportgraphics(f,'Vergleich_Senthil.png');
 
 %% load/save data for plot
-%load("Output_DATA/Senthil_verleich.mat")
-save Output_DATA/Senthil_verleich.mat X Y Z XX YY ZZ YYY ZZZ
+load("Output_DATA/Vergleich_mit_Senthil.mat")
+%save Output_DATA/Vergleich_mit_Senthil.mat X Y Z XX YY ZZ YYY ZZZ
 
 
 
