@@ -265,11 +265,11 @@ switch (obj)
             end 
         case 'sol' 
             if sol.stats.maxerr > option_BVP
-            output1 = NaN(1,17);
+            output1 = NaN(1,18);
             end
     case 'fig' % case ends after the figures
             if sol.stats.maxerr > option_BVP
-            output1 = NaN(1,17);
+            output1 = NaN(1,18);
             else
 %% figure 1
 close all

@@ -4,146 +4,68 @@ addpath('Input_DATA','Scaled_model','Unscaled_model','Output_DATA')
 %% unscaeld test:
 clc,
 %
-[a1,b1]=fun_scaled([55.81;54.72],.2,'fig',1e4,1e-3);
-%[a2,b2] =fun_unscaled([55.81;54.72],.2,'fig',1e4,1e-3);
-ev(a1,1:4)
-ev(a2,1:4)
+%[a1,b1]=fun_scaled([-0.0544004*.99; 0; 20; 1.1],.3,'fig',1e4,1e-3);
+%ev(a1,[5 8 11])
 %
-%% PRO                                                  % ________________                     % ________________                     % ________________
-clc                                                     % PD_net     = 2.4286 [kWh/m^2]        % PD_net     = -4.1977 [kWh/m^2]       % PD_net     = -4.3313 [kWh/m^2]
-disp('________________')                                % REC_PRO =  66.4329 [%]               % REC_PRO =  9.2603 [%]                % REC_PRO =  7.5794 [%]
-[a1,b1]=fun_scaled([9.01;9;1.001],.3,'sol',1e4,1e-3);   % Wastewater_in = 0.00051111 [m^3/s]   % Wastewater_in = 0.00035743 [m^3/s]   % Wastewater_in = 0.00035438 [m^3/s]
-ev(a1,[5 8 11])                                         % ________________                     % ________________                     % ________________
-disp('________________')                                % PD_net     = 2.4785 [kWh/m^2]        % PD_net     = -4.1413 [kWh/m^2]       % PD_net     = -4.2751 [kWh/m^2]
-[a2,b2]=fun_scaled([9;9.01;1.001],.3,'sol',1e4,1e-3);   % REC_PRO =  67.706 [%]                % REC_PRO =  9.2621 [%]                % REC_PRO =  7.5807 [%]
-ev(a2,[5 8 11])                                         % Wastewater_in = 0.00050087 [m^3/s]   % Wastewater_in = 0.0003574 [m^3/s]    % Wastewater_in = 0.00035435 [m^3/s]
-disp('________________')                                % ________________                     % ________________                     % ________________
-
-%% hybrid system
-clc
-n=200; rng default
-P1=5*ones(1,n) + 10.*rand(1,n);
-P2=1*ones(1,n) + 0.01.*rand(1,n);
-parfor i=1:n
-a(i,:)=fun_scaled([55.81;54.72;P1(i);P2(i)],.4,'sol',1e4,1e-3);
+n=1000;
+TTT=linspace(1.000001,1.00005,n);
+Testt=zeros(n,18);
+parfor i = 1:n
+  Testt(i,:)=fun_scaled([-0.0544004*.99; 0; 15; TTT(i)],.3,'sol',1e4,1e-3);
 end
-[a1, b1] = max(a(:,5))
-ev(a1(b1,:))
-beep
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-%____________SWRO_comparison_____________________________________PRO_comparison________________
-%% ideal
-%             Scaled and unscaled
-% SEC_net     -3.4004    -3.4
-% FW           0.8095     0.7982
-% REC         48.9183    48.9253
-% C (in ppm)   0          0
-
-%% nonideal (fixed beta)
-%             Scaled and unscaled
-% SEC_net     -3.5037    -3.5037
-% FW           0.6716     0.6716 
-% REC         47.3632    47.3629
-% C (in ppm)  51.9032    51.9027
-
-%% ICP+ECP (fixed beta)
-% SEC_net     -3.5228    -3.5228
-% FW           0.6615     0.6615
-% REC         47.0657    47.0654
-% C (in ppm)  70.5322    70.5317
-
-%% testing unscaled SWRO with ERD
-clc
-[a1,b1,c1]=fun_scaled([45.81e5;44.72e5],.1,'fig',1e4,1e-4);
-[a2,b2] =fun_unscaled([45.81e5;44.72e5],.1,'fig',1e4,1e-3);
-[a,b]=fun_unscaled([45.81e5;44.72e5],.2,'fig',1e4,1e-4);
-disp('%             Scaled and unscaled')
-disp(['% SEC_net     ',num2str(round(1e4*a1(1))/1e4),'    ',num2str(a2(1)),'    ',num2str(a(1))])
-disp(['% FW           ',num2str(round(1e4*a1(2))/1e4),'     ',num2str(a2(2)),'     ',num2str(a(2))])
-disp(['% REC         ',num2str(round(1e4*a1(4))/1e4),'    ',num2str(a2(4)),'    ',num2str(a2(4))])
-disp(['% C (in ppm)  ',num2str(c1(4)),'    ',num2str(a2(9)),'    ',num2str(a2(9))])
-[a3,b3]=fun_scaled([45.81e5;44.72e5],.2,'fig',1e4,1e-4);
-round(1e4*a3(1))/1e4,
-round(1e4*a3(2))/1e4,
-round(1e4*a3(4))/1e4,
-c4(4),
-
-
-
-%simple RO
-%   -3.5228    0.6615    0.6239   47.0654
-%
-%SWRO+ERD
-%   -1.7865    0.6467    0.9468   46.3180
-%
-%SWRO+ERD with new mixing ratio:
-%   -1.7898    0.6475    0.9474   46.3603
-%
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-%% Senthil experimental data
+%% best Recovery
 clc,
-% test 1 
-[a,b,c]=fun_unscaled([50.47e5;48.23e5],0,'fig',1e4,1e-3);
-disp('----------------------------------------')
-disp('Our model:')
-disp(c)
-disp('Experimental data (Senthil):')
-disp('    0.2910    0.0934   33.1000   44.0000')
-disp(' ')
-disp('----------------------------------------')
-% test 2 
-[a,b,c]=fun_unscaled([55.81e5;54.72e5],0,'fig',1e4,1e-3);
-disp('Our model:')
-disp(c)
-disp('Experimental data (Senthil):')
-disp('    0.2910    0.1160   39.6000   49.0000')
-disp(' ')
-disp('----------------------------------------')
-% test 3 
-[a,b,c]=fun_unscaled([60.28e5;59.22e5],0,'fig',1e4,1e-3);
-disp('Our model:')
-disp(c)
-disp('Experimental data (Senthil):')
-disp('    0.2911    0.1295   44.5000   52.0000')
+[a,b]=max(Testt(:,5));
+disp('best opeating conditions:')
+format long
+disp([-0.0544004*.99; 0; 15; TTT(b)]')
+format short
+disp('Function result:')
+[c,d]=fun_scaled([-0.0544004*.99; 0; 15; TTT(b)],.3,'fig',1e4,1e-3);
+ev(c,[5 8 11])
+
+%% 
+
+%  -0.053856396000000                   0  20.000000000000000   1.000028908908909
+
+% PD_net     = -1.7127 [kWh/m^2]
+% REC_PRO =  36.3336 [%]
+% Wastewater_in = 1.9255e-05 [m^3/s]
+% C_dilluted    = 0.04644 [%]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

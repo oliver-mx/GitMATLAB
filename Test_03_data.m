@@ -18,8 +18,8 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     %% model versions
     version = zeros(1, 10);
     % version(1) = 0 if co-current, 1 otherwise
-    version(2) = input1(1);  % set PRO draw flow rate
-    version(3) = input1(2);  % set PRO fresh flow rate
+    version(2) = 0;  % <-- unscaled RO feed massflow rate 
+    version(3) = input1(1);  % <-- unscaled PRO feed massflow rate
     version(4) = 1;  % 0 = ideal SWRO
     version(5) = 1;  % 0 = ideal PRO
     % configuration:
@@ -79,7 +79,7 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     beta_fix = 1.71e-4;                        % value for fixed PRO beta [kg/sm^2]
 
     %% Sea Water
-    cE = 0.0558582;                                   % salt concentration in seawater
+    cE = 0.0478235;                                   % salt concentration in seawater
     pE = 1e5 / p_r;                                   % external pressure
     rho_E = (cE + 1) / (cE / ro_salt + 1 / ro_water); % density of incoming seawater
 
@@ -95,7 +95,7 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     Q_sf_0 = 0;              % salt flux in fresh side at 0
     pf_L = pE;               % pressure of fresh side at L
 
-    pd_0 = input1(5);     % pressure draw side at 0
+    pd_0 = input1(2);     % pressure draw side at 0
     pd_L = input1(3);     % pressure of fresh side at 0
     pf_0 = input1(4);     % pressure draw side at L 
 
@@ -129,5 +129,8 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
         Pd_0 = 55;
         Pd_L = 54;
     end
-    
+    % for initial guess
+    if pd_0 == 0
+        pd_0 = 0.95*pd_L;
+    end
 end

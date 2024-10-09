@@ -8,7 +8,7 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     %   option_data = -.2
     %
     %   Input:
-    %       input1        -   [Pd_0, Pd_L]
+    %       input1        -   [FlowRate, Pd_0, Pd_L] (if FlowRate==0 --> Pd_L can be set)
     %       input2        -    mix_M1
 
     if nargin == 1
@@ -19,7 +19,7 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     version = zeros(1, 10);
     % version(1) = 0 if co-current PRO, 1 otherwise
     version(2) = input1(1);  % <-- unscaled RO feed massflow rate 
-    version(3) = 0;  % -----------
+    version(3) = 0;  % <-- unscaled PRO feed massflow rate
     version(4) = 1;  % 0 = ideal SWRO
     version(5) = 0;  % 0 = ideal PRO
     % configuration:
@@ -88,8 +88,8 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     J_wf_0 = 0;              % water flux in fresh side at L               
     Pf_L = pE;               % pressure fresh side at L
 
-    Pd_0 =  input1(1); % pressure draw side at 0
-    Pd_L =  input1(2); % pressure draw side at L (not needed in the hybrid system)
+    Pd_0 =  input1(2); % pressure draw side at 0
+    Pd_L =  input1(3); % pressure draw side at L (not needed in the hybrid system)
 
     %% PRO operation conditions 
     Q_sf_0 = 0;              % salt flux in fresh side at 0
@@ -97,7 +97,7 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
 
     pd_0 = 14;       % pressure draw side at 0
     pd_L = 13.8;     % pressure of fresh side at 0
-    pf_0 = 1.01;      % pressure draw side at L 
+    pf_0 = 1.01;     % pressure draw side at L 
 
     %% ERD/Turbine/Pump parameters
     T_eff  = .95;               % turbine efficiency

@@ -11,8 +11,8 @@ for i=1:10000
 end
 %% Simulate the systems
 parfor i=1:10000
-    Y1(i,:)=fun_scaled(X0(:,i),-.1,'sol',1e4,1e-3);Y2(i,:)=fun_scaled(X0(:,i),-.2,'sol',1e4,1e-3);Y3(i,:)=fun_scaled(X0(:,i),-.3,'sol',1e4,1e-3);
-    Y4(i,:)=fun_scaled(X0(:,i),-.4,'sol',1e4,1e-3);Y5(i,:)=fun_scaled(X0(:,i),-.5,'sol',1e4,1e-3);Y6(i,:)=fun_scaled(X0(:,i),-.6,'sol',1e4,1e-3);
+    Y1(i,:)=fun_unscaled(X0(:,i),-.1,'sol',1e4,1e-3);Y2(i,:)=fun_unscaled(X0(:,i),-.2,'sol',1e4,1e-3);Y3(i,:)=fun_unscaled(X0(:,i),-.3,'sol',1e4,1e-3);
+    Y4(i,:)=fun_unscaled([0; X0(:,i)],-.4,'sol',1e4,1e-3);Y5(i,:)=fun_unscaled([0; X0(:,i)],-.5,'sol',1e4,1e-3);Y6(i,:)=fun_unscaled([0; X0(:,i)],-.6,'sol',1e4,1e-3);
     %Y7(i,:)=fun_scaled(X0_hybrid,-.7,'sol',1e4,1e-3);Y8(i,:)=fun_scaled(X0_hybrid,-.8,'sol',1e4,1e-3);Y9(i,:)=fun_scaled(X0_hybrid,-.9,'sol',1e4,1e-3);
 end
 save Output_DATA/Vergleich_mit_ideal X0 X0_hybrid Y1 Y2 Y3 Y4 Y5 Y6 Y7 Y8 Y9

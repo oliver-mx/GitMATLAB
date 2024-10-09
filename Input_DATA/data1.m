@@ -8,7 +8,7 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     %   option_data = -.1
     %
     %   Input:
-    %       input1        -   [Pd_0, Pd_L]
+    %       input1        -   [FlowRate, Pd_0, Pd_L] (if FlowRate==0 --> Pd_L can be set)
     %       input2        -    mix_M1
 
     if nargin == 1
