@@ -45,11 +45,13 @@ for i=1:n
 end
 %%
 results=zeros(18,n);
-parfor i=1:2
+parfor i=1:n
     results(:,i)=fun_scaled(init,.3,'fig',1e4,1e-3);
 end
 save PRO_TEST results init
-
+system('git add .');
+system(['git commit -m "finished PRO test"']);
+system('git push https://github.com/oliver-mx/GitMATLAB.git');
 
 
 %% Test evaluation 

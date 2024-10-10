@@ -44,10 +44,60 @@ for i=1:n
     init(:,i)=[0; Pd_0; Pd_L; Pf_0; 0.0823];
 end
 %%
-results=zeros(18,n)
-parfor i=1:2
-    results(:,i);
+results=zeros(18,n);
+parfor i=1:n
+    results(:,i)=fun_scaled(init,.3,'fig',1e4,1e-3);
 end
+save PRO_TEST results init
+system('git add .');
+system(['git commit -m "finished PRO test"']);
+system('git push https://github.com/oliver-mx/GitMATLAB.git');
+
+
+%% Test evaluation 
+load PRO_TEST
+close all; clc;
+ev(results(:,1)); userNumber = input('Please enter a number of the set {1,2,3,...,18}: ');
+f=figure(1);
+f.Position= [117.6667 334.3333 1.4200e+03 999.3334];
+% same colorbar
+all_vectors = [Y1(:,userNumber); Y2(:,userNumber); Y3(:,userNumber); Y4(:,userNumber); Y5(:,userNumber); Y6(:,userNumber)];
+cmap = jet(256); % Use the 'jet' colormap with 256 colors
+cmin = min(all_vectors(:));
+cmax = max(all_vectors(:));
+% size
+m_size=5;
+%
+scatter3(init(3,:), 10*(init(3,:)-init(2,:)),results(:,userNumber),m_size,results(:,userNumber),'filled');hold on; title('PRO test'); xlabel('Inlet pressure [bar]'); ylabel('Pressure drop [bar]'); axis equal;view(2); grid on;colormap(cmap);colorbar
+%xlim([31 70]);ylim([10*delta_p_min 33]);yticks(10:10:30);yticklabels({'\Delta P = 1','\Delta P = 2','\Delta P = 3'})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
