@@ -27,9 +27,12 @@ res =   [ % SWRO part:
           yb(11)- pd_L          % pressure draw side at L 
           yb(12)- pf_L];    	% pressure of fresh side at L
 if version(3)~=0
-    % only for counter current implemented!!!
     res(9)= yb(7)*yb(8)+yb(8)- version(3)/Q_r;
-    % with penalty term
-    %res(9)= abs(yb(7)*yb(8)+yb(8)-version(3)/Q_r) + abs(max([ya(6+5) yb(6+5)])-yb(6+5))
 end
+if version(1) == 0
+    res(6+1)= ya(7)-cE;
+    if version(3)~=0
+        res(9)= ya(7)*ya(8)+ya(8)- version(3)/Q_r;
+    end
+
 end

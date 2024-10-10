@@ -190,11 +190,6 @@ if version(6)==1
     W_p2 = 0; W_p4=0; W_t=0;
 end
 
-
-
-
-
-
 %% Version(6)=2 or higher
 if version(6) > 1; fprintf(2,' \nERROR: Unscaled model only supports SWRO with/without ERD! \n'); end
 

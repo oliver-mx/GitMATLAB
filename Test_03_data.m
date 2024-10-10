@@ -79,7 +79,7 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     beta_fix = 1.71e-4;                        % value for fixed PRO beta [kg/sm^2]
 
     %% Sea Water
-    cE = 0.0478235;                                   % salt concentration in seawater
+    cE = input1(5);                                   % salt concentration in seawater
     pE = 1e5 / p_r;                                   % external pressure
     rho_E = (cE + 1) / (cE / ro_salt + 1 / ro_water); % density of incoming seawater
 
@@ -126,6 +126,7 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     end            
     % no SWRO needed (--> use trivial data)
     if version(6) == 2
+        version(4)=0;version(7)=0;
         Pd_0 = 55;
         Pd_L = 54;
     end

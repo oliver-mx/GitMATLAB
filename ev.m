@@ -18,7 +18,13 @@ function ev(a,I)
             if i == 8;str1='Wastewater_in = ';str2=' [m^3/s]';end
             if i == 9;str1='C_permeate    = ';str2=' [ppm]';end
             if i == 10;str1='C_brine       = ';str2=' [%]';end
-            if i == 11;str1='C_dilluted    = ';str2=' [%]';end
+            if i == 11
+                if isnan(a(5))
+                    str1='P_d(L)        = ';str2=' [bar]';
+                else
+                    str1='C_dilluted    = ';str2=' [%]';
+                end
+            end
             if i == 12;str1='mix_M1        = ';str2=' ';end
             if i == 13;str1='W_net = ';str2=' [kWh]';end
             if i == 14;str1='W_p1  = ';str2=' [kWh]';end

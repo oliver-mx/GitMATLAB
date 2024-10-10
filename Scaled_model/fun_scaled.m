@@ -82,7 +82,7 @@ if version(6) == 2; sol = bvp5c(@(x,J_p)ODEsystem(x, J_p, DATA), @(ya,yb)Boundar
 if version(6) == 3; sol = bvp5c(@(x,J_p)ODEsystem(x, J_p, DATA), @(ya,yb)Boundary3(ya,yb, DATA),solinit,ode_options); end       
 if version(6) == 4; sol = bvp5c(@(x,J_p)ODEsystem(x, J_p, DATA), @(ya,yb)Boundary4(ya,yb, DATA),solinit,ode_options); end   
 
-if version(6)>0
+if version(6)>0 && version(6)~=2
     y = deval(sol,x); Y = y'; Y = real(Y);
     mix_M1 = ((Y(end,1).*Y(end,2)+Y(end,2))*(1-eta_ERD))/(Y(1,1).*Y(1,2)+Y(1,2));  
     % data with new mix_M1
@@ -363,15 +363,15 @@ SEC_net = W_net*(swro_local_ro_f(end)*rho_r)./(J_f(end)*J_r*swro_Z)/1000/3600; %
         fprintf(2,' \nWaring: SEC_net is positive! \n');
     end
 FW = (J_wf(end)*J_r*swro_Z/(swro_local_ro_f(end)*rho_r))*3600; % in [m^3/h] 
-    if FW < 0 && contains('solfig',obj)==1
+    if FW < 0 && contains('solfig',obj)==1 && version(6)~=2
         fprintf(2,' \nWaring: Freshwater production is negative! \n');
     end
 Rev= pw*FW + pe*SEC_net*FW; %in [$/h]
 SWRO_Recovery =(J_wf(end)./J_d(1))*100;     % in [%]
-    if SWRO_Recovery > 100 && contains('solfig',obj)==1
+    if SWRO_Recovery > 100 && contains('solfig',obj)==1 && version(6)~=2
         fprintf(2,' \nWaring: SWRO recovery is greater than 100 %% \n');
     end
-    if SWRO_Recovery < 0 && contains('solfig',obj)==1
+    if SWRO_Recovery < 0 && contains('solfig',obj)==1 && version(6)~=2
         fprintf(2,' \nWaring: SWRO recovery is negative! \n');
     end
 PRO_Recovery = NaN; % in [%]
@@ -402,7 +402,7 @@ C_dilluted = NaN; % in [%]
     end
 
 if version(6)==2
-    SEC_net=NaN;FW=NaN;Rev=NaN;SWRO_Recovery=NaN;RO_inflow=NaN;Permeate_outflow=NaN;C_permeate=NaN;C_brine=NaN;mix_M1=NaN;
+    SEC_net=NaN;FW=NaN;Rev=NaN;SWRO_Recovery=W_net./(Z*L);RO_inflow=NaN;Permeate_outflow=NaN;C_permeate=NaN;C_brine=NaN;mix_M1=NaN;
 end
 
 output1 = [SEC_net, FW, Rev, SWRO_Recovery, PRO_Recovery, ...
@@ -410,8 +410,8 @@ output1 = [SEC_net, FW, Rev, SWRO_Recovery, PRO_Recovery, ...
            W_net, W_p1, W_p2,  W_p3, W_p4, W_t]; % length(output1) = 5+7+6 = 18
 
 if version(6)==2
-    PD_net = W_net./(Z*L); %in [W/m^2]
-    disp(['PD_net     = ', num2str(PD_net), ' [kWh/m^2]'])
+%    PD_net = W_net./(Z*L); %in [W/m^2]
+%    disp(['PD_net     = ', num2str(PD_net), ' [kWh/m^2]'])
 %    if version(1)==0 
 %        SE_net = W_net./(Q_f(1)*Q_r*Z/(rho_r*local_ro_f(1)) + Q_d(1)*Q_r*Z/(rho_r*local_ro_d(1)))/1000/3600; %in [kWh/m^3] 
 %        SE_f   = W_net./(Q_f(1)*Q_r*Z/(rho_r*local_ro_f(1)))/1000/3600; %in [kWh/m^3]
@@ -504,7 +504,7 @@ plot(x2*L, 100*abs(c_f)*C_r,'Color', rc,'LineWidth',lw); ylabel('[%]','Fontsize'
 subplot(3,2,6);lc='#0072bD';rc='#77AC30';
 plot(x*L, p_d*p_r,'Color', lc,'LineWidth',lw);xlabel('x [m]','Fontsize',10); ylabel('[Pa]','Fontsize',10);ay=gca; ay.YAxis.Exponent = 5; hold on
 yyaxis right
-plot(x*L, p_f*p_r,'Color', rc,'LineWidth',lw); ylabel('[Pa]','Fontsize',10); legend('P_d^{PRO}(x)','P_f^{PRO}(x)','Location','best');xlim([0 L]);ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc;
+plot(x*L, p_f*p_r,'Color', rc,'LineWidth',lw); ylabel('[Pa]','Fontsize',10); legend('P_d^{PRO}(x)','P_f^{PRO}(x)','Location','best');xlim([0 L]);ay.YAxis(1).Color = lc; ay.YAxis(2).Exponent = 5; ay.YAxis(2).Color = rc;
 end
 %% figure 2
 if fig(2) == 1

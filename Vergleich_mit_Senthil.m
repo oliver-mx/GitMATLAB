@@ -72,7 +72,7 @@ figure(1); set(gcf,'color','w'); f = gcf; exportgraphics(f,'Vergleich_Senthil.pn
 
 %% load/save data for plot
 load("Output_DATA/Vergleich_mit_Senthil.mat")
-%save Output_DATA/Vergleich_mit_Senthil.mat X Y Z XX YY ZZ YYY ZZZ
+%save Output_DATA/Vergleich_mit_Senthil.mat X Y Z XX YY ZZ YYY ZZZ Q QQ QQQ
 
 
 
