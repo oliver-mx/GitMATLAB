@@ -277,6 +277,8 @@ if version(6)==3
         pERD = rho_ERD*(ERD_eff*(P_d(end)*J_d(end)*swro_b2*(1-eta_ERD)/swro_local_ro_d(end)-p_d(end)*qq*abs(Q_d(end))*b2/local_ro_d(end) - f_2/f_r) + pE*J_M1*swro_b2/rho_E*rho_r + f_1/f_r)/J_ERD/swro_b2;
         W_t = T_eff * (p_d(1)-pE)*(abs(Q_d(1))*Z)/local_ro_d(1)/rho_r; W_t = W_t*W_r;
     end
+    disp(f_2 - f_1)
+    disp(pERD)
     W_p3 = 1/HP_eff * (pERD - P_d(1))*(J_ERD*swro_Z)/rho_ERD/rho_r; W_p3 = W_p3*swro_W_r;
 end
 

@@ -16,13 +16,16 @@ PRO_brine = Z/swro_Z*Q_r/J_r*(yb(2))*(1-eta_ERD);
 else
 %% with Mixing i.e. V_m > 0
 % second ERD (i.e. index 2)
-if version(1)==0
-    rho_d2= real((yb(6+1)+1)./(yb(6+1)/ro_salt + 1/ro_water));
-else
-    rho_d2= real((ya(6+1)+1)./(ya(6+1)/ro_salt + 1/ro_water));
+if version(1)==0; rho_d2= real((yb(6+1)+1)./(yb(6+1)/ro_salt + 1/ro_water));
+else              rho_d2= real((ya(6+1)+1)./(ya(6+1)/ro_salt + 1/ro_water));
 end
 rho_ERD2 = V_m*(rho_d2 - rho_E)+rho_E;
 C_ERD2= -ro_salt*(rho_ERD2-ro_water)/(ro_water*(rho_ERD2-ro_salt));
+% actual seawater
+J_E2=(ya(1)*ya(2)+ya(2));
+J_ERD2 = J_E2;
+J_wE2 = J_E2/(cE+1);
+J_wERD2= J_ERD2/(C_ERD2+1);
 % first ERD (i.e. index 1)
 rho_d1= real((yb(1)+1)./(yb(1)/ro_salt + 1/ro_water));
 rho_ERD1= V_m*(rho_d1 - rho_ERD2) + rho_ERD2;
@@ -32,14 +35,30 @@ J_E1=(ya(1)*ya(2)+ya(2));
 J_ERD1 = J_E1*(1-mix_M1);
 J_wE1 = J_E1/(C_ERD2+1);
 J_wERD1= J_ERD1/(C_ERD1+1);
-% final calculations
-swroC_in = (C_ERD2*J_wE1*mix_M1 + C_ERD1*J_wERD1)/(J_wE1*mix_M1+J_wERD1);
 
-proC_in = (C_ERD2*J_ERD1 + C_ERD1*J_ERD1 - yb(1)*yb(2))/(J_wE + J_wERD - yb(2));
 
+swroC_in = (C_ERD2*J_wE1*mix_M1 + C_ERD1*J_wERD1)/(J_wE1*mix_M1+J_wERD);
+proC_in = (cE*J_ERD + C_ERD*J_ERD - yb(1)*yb(2))/(J_wE + J_wERD - yb(2));
 PRO_brine = (J_wE*J_r*swro_x_r + J_wERD*J_r*swro_x_r - yb(2)*J_r*swro_x_r)/Q_r/x_r;
 
 
+
+
+
+swro_rho_d1= (yb(1) + 1)./(ro_water*yb(1)/ro_salt + 1);
+rho_ERD= V_m*(swro_rho_d1 - rho_ERD2)+rho_ERD2;
+C_ERD= -ro_salt*(rho_ERD-1)/(rho_ERD*ro_water-ro_salt);
+J_E=(ya(1)*ya(2)+ya(2))/2; J_ERD = J_E;
+J_wE = J_E/(C_ERD2+1); J_wERD= J_ERD/(C_ERD+1);
+swroC_in = (C_ERD2*J_wE + C_ERD*J_wERD)/(J_wE+J_wERD);
+if version(1) ==0 % co-current    
+c_in = -(C_ERD * J_wERD * swro_Z * J_r + J_r * J_wE * yb(1) * swro_Z - C_ERD2 * J_wE * swro_Z * J_r - J_r * J_wERD * yb(1) * swro_Z - ya(8) * yb(1) * Q_r * Z) / Z / Q_r / ya(8);
+J_wd_out = (swro_Z*J_wERD+Z*Q_r/J_r*ya(2+6)-swro_Z*J_wE)/((1-eta_ERD)*swro_Z);
+end
+if version(1) ==1 % counter-current
+c_in = -(C_ERD * J_wERD * swro_Z * J_r + J_r * J_wE * yb(1) * swro_Z - C_ERD2 * J_wE * swro_Z * J_r - J_r * J_wERD * yb(1) * swro_Z - abs(yb(8)) * yb(1) * Q_r * Z) / Z / Q_r / abs(yb(8));
+J_wd_out = (swro_Z*J_wERD+Z*Q_r/J_r*abs(yb(2+6))-swro_Z*J_wE)/((1-eta_ERD)*swro_Z);    
+end 
 end
 
 %% define vector for residual error

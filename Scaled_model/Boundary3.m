@@ -10,12 +10,11 @@ function [ res ] = Boundary3(ya, yb, DATA)
 %% no Mixing i.e. V_m = 0
 if V_m ==0 
 swroC_in = cE;
-c_in = yb(1);
-if version(1)==0; J_wd_out = Z/swro_Z*Q_r/J_r*ya(6+2)*(c_in+1)/((1-eta_ERD)*(c_in+1)); end
-if version(1)==1; J_wd_out = Z/swro_Z*abs(Q_r/J_r*yb(6+2))*(c_in+1)/((1-eta_ERD)*(c_in+1)); end
+proC_in = yb(1);
+PRO_brine = Z/swro_Z*Q_r/J_r*(yb(2))*(1-eta_ERD);
 else
 %% with Mixing i.e. V_m > 0
-rho_d1= (yb(1) + 1)./(ro_water*yb(1)/ro_salt + 1);
+rho_d1= real((yb(1)+1)./(yb(1)/ro_salt + 1/ro_water));
 rho_ERD= V_m*(rho_d1 - rho_E)+rho_E;
 C_ERD= -ro_salt*(rho_ERD-ro_water)/(ro_water*(rho_ERD-ro_salt));
 J_E=(ya(1)*ya(2)+ya(2));
@@ -23,14 +22,8 @@ J_ERD = J_E*(1-mix_M1);
 J_wE = J_E/(cE+1);
 J_wERD= J_ERD/(C_ERD+1);
 swroC_in = (cE*J_wE*mix_M1 + C_ERD*J_wERD)/(J_wE*mix_M1+J_wERD);
-if version(1) ==0 % co-current
-c_in = -(C_ERD * J_wERD * swro_Z * J_r + J_r * J_wE * yb(1) * swro_Z - cE * J_wE * swro_Z * J_r - J_r * J_wERD * yb(1) * swro_Z - ya(8) * yb(1) * Q_r * Z) / Z / Q_r / ya(8);
-J_wd_out = (swro_Z*J_wERD+Z*Q_r/J_r*ya(2+6)-swro_Z*J_wE)/((1-eta_ERD)*swro_Z);
-end
-if version(1) ==1 % counter-current
-c_in = -(C_ERD * J_wERD * swro_Z * J_r + J_r * J_wE * yb(1) * swro_Z - cE * J_wE * swro_Z * J_r - J_r * J_wERD * yb(1) * swro_Z - abs(yb(8)) * yb(1) * Q_r * Z) / Z / Q_r / abs(yb(8));
-J_wd_out = (swro_Z*J_wERD+Z*Q_r/J_r*abs(yb(2+6))-swro_Z*J_wE)/((1-eta_ERD)*swro_Z);
-end 
+proC_in = (cE*J_ERD + C_ERD*J_ERD - yb(1)*yb(2))/(J_wE + J_wERD - yb(2));
+PRO_brine = (J_wE*J_r*swro_x_r + J_wERD*J_r*swro_x_r - yb(2)*J_r*swro_x_r)/Q_r/x_r;
 end
 
 %% define vector for residual error
@@ -43,14 +36,17 @@ res =   [ % SWRO part:
           yb(6)- Pf_L           % pressure fresh side at L
 
           % PRO part:
-          ya(7)-  c_in          % INCOMMING CONZENTRATION FROM ERD TO PRO
-          abs(yb(6+1)*yb(6+2)+yb(6+2) - (1-eta_ERD)*J_r/Q_r*(yb(1)*yb(2)+yb(2)))+abs(max([ya(6+5) yb(6+5)])-yb(6+5))
+          ya(7)-  proC_in       % INCOMMING CONZENTRATION FROM ERD TO PRO
+          yb(8) - PRO_brine
           ya(9)-  Q_sf_0       	% salt flux in fresh side at 0
           ya(12)- pf_0      	% pressure of fresh side at 0
           yb(11)- pd_L          % pressure draw side at L 
           yb(12)- pf_L];    	% pressure of fresh side at L
 	
 %% counter current (just that PRO model wont break)  
-if version(1) ==1; res(7)=yb(7) - cE; end 
+if version(1) ==1
+    res(7)=yb(7) - proC_in; 
+    res(8)=yb(6+2) + PRO_brine;
+end 
 
 end

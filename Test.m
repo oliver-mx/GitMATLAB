@@ -11,48 +11,116 @@ init=[0; 70; 67.2]; % 5% brine
 output=fun_unscaled(init,0,'fig',1e4,1e-3);
 ev(output)
 
-%%
+%% PRO test:
 clc
-% for ideal
-%init=[0; 4.99; 5; 1.002; 0.0823]; 
 %
-
-% for ICP+ECP
-%init=[0; 4.4; 5; 1.001; 0.0823]; 
-
-
-%init=[-0.0176; 0; 10; 1.00001; 0.0823]; 
-%init=[-0.0301; 0; 5; 1.0001; 0.0708]; 
-%init=[-0.0385; 0; 5; 1.0001; 0.0655]; 
-%init=[-0.0595; 0; 5; 1.0001; 0.0567]; 
+init=[-0.0595; 0; 5; 1.0003; 0.0567]; 
 %
-output=fun_scaled(init,.3,'fig',1e4,1e-3);
-ev(output,[5 8 11])
+output=fun_scaled(init,.3,'fig',1e4,1e-6);
+ev(output,[5 6 7 8 10 11])
 
 %init(1:3)=[-init(1); init(3); init(2)];
 %output=fun_scaled(init,.3,'fig',1e4,1e-3);
 %ev(output,[5 8 11])
 
+
+%% -------- hybrid I test ----------
+clc
+%
+init=[70; 67.2; 5; 1.0003]; 
+%
+output=fun_scaled(init,.4,'fig',1e4,1e-3);
+ev(output)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%% fmincon PRO pressure
+A= []; b= []; Aeq=[]; beq=[]; lb = [-0.0595; 0; 5; 1; 0.0567]; ub = [-0.0595; 0; 20; 5; 0.0567];
+foptions = optimoptions('fmincon','Display','iter','Algorithm','interior-point','StepTolerance', 1e-16, 'OptimalityTolerance',1e-6, 'MaxFunEvals',2000);
+rng default
+x0=[-0.0595; 0; 5.001; 1.0001; 0.0567]; 
+[x1, x2] = fmincon(@(x)fun_scaled(x,.3,'REC',1e4,1e-6),x0,A,b,Aeq,beq,lb,ub,[],foptions);
+%[x1, x2] = fmincon(@(x)fun_scaled(x,.3,'PD_net',1e4,1e-6),x0,A,b,Aeq,beq,lb,ub,[],foptions);
+format long
+disp(x1(3:4)')
+format short
+disp(-x2)
+
+%%
+output=fun_scaled(x1,.3,'fig',1e4,1e-6);
+%ev(output,[5 6 7 8 10 11])
+ev(output,[5 6])
+
+
+% L^{PRO} = 7 * 0.9626
+%
+% max PD_net
+% REC_PRO =  14.2838 [%]
+% PD_net  =  0.078084 [W^2/m^2]
+%
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 %% PRO simulation
 clc
+% [-0.0595; 0; 5; 1.0001; 0.0567]
 rng default
-n=100000;
+n=100;init=zeros(5,n);
 for i=1:n
-    Pd_L=5+15*rand();
-    Pd_0=Pd_L-3*rand();
-    Pf_0=1+.7*rand();
-    init(:,i)=[0; Pd_0; Pd_L; Pf_0; 0.0823];
+    Pd_L=4.9+1*rand();
+    Pf_0=1+.00001+ 0.001*rand();
+    init(:,i)=[-0.0595; 0; Pd_L; Pf_0; 0.0823];
 end
 %%
 results=zeros(18,n);
 parfor i=1:n
-    results(:,i)=fun_scaled(init,.3,'fig',1e4,1e-3);
+    results(:,i)=fun_scaled(init(:,i),.3,'fig',1e4,1e-6);
 end
-save PRO_TEST results init
-system('git add .');
-system(['git commit -m "finished PRO test"']);
-system('git push https://github.com/oliver-mx/GitMATLAB.git');
-
+save PRO_TEST results init p_drop
 
 %% Test evaluation 
 load PRO_TEST
@@ -61,15 +129,32 @@ ev(results(:,1)); userNumber = input('Please enter a number of the set {1,2,3,..
 f=figure(1);
 f.Position= [117.6667 334.3333 1.4200e+03 999.3334];
 % same colorbar
-all_vectors = [Y1(:,userNumber); Y2(:,userNumber); Y3(:,userNumber); Y4(:,userNumber); Y5(:,userNumber); Y6(:,userNumber)];
 cmap = jet(256); % Use the 'jet' colormap with 256 colors
-cmin = min(all_vectors(:));
-cmax = max(all_vectors(:));
 % size
 m_size=5;
 %
-scatter3(init(3,:), 10*(init(3,:)-init(2,:)),results(:,userNumber),m_size,results(:,userNumber),'filled');hold on; title('PRO test'); xlabel('Inlet pressure [bar]'); ylabel('Pressure drop [bar]'); axis equal;view(2); grid on;colormap(cmap);colorbar
-%xlim([31 70]);ylim([10*delta_p_min 33]);yticks(10:10:30);yticklabels({'\Delta P = 1','\Delta P = 2','\Delta P = 3'})
+scatter3(init(3,:), 10*p_drop^(-1).*(init(3,:)-init(2,:)),results(userNumber,:),m_size,results(userNumber,:),'filled');hold on; title('PRO test'); xlabel('Inlet pressure [bar]'); ylabel('Pressure drop [bar]'); axis equal;view(2); grid on;colormap(cmap);colorbar
+xlim([5 20]);
+
+%%
+clc
+[a,b1]=max(results(5,:));
+disp(['highest Recovery rate = ',num2str(a),' [%]'])
+[a,b2]=max(results(13,:));
+disp(['highest PD_net        = ',num2str(a/37.1612),' [kWh]'])
+disp(' ')
+disp(init(2,b1))
+disp(init(3,b1)-init(2,b1))
+disp(init(2,b2))
+disp(init(3,b2)-init(2,b2))
+
+
+
+
+
+
+
+
 
 
 
