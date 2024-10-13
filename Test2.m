@@ -2,12 +2,60 @@
 addpath('Input_DATA','Scaled_model','Unscaled_model','Output_DATA')
 
 %% SWRO with ERD:
-clc;[a1,b1]=fun_unscaled([55.81;54.72],.2,'fig',1e4,1e-3);
+clc;
+[a1,b1]=fun_unscaled([0;55.81;54.72],0,'fig',1e4,1e-3);
 ev(a1,[1 2 3 4 6 7 9 10 12])
 %
-% brine flow rate:    0.0266213 [kg/sm]
-% brine concentation: 0.0558582 [1]
+% SEC_net = -1.8039 [kWh/m^3]
+% FW      =  0.72397 [m^3/h]
+% REC_RO  =  49.7732 [%]
 %
+% brine flow rate: 0.026207454636712 [kg/sm] --> 0.025945380090345 [kg/sm]
+% brine concentation:  0.061717936011766 [1]
+%
+
+%% PRO 
+clc;
+[a2,b2]=fun_scaled([-0.025945380090345; 0 ; 5.4 ; 1.00003; 0.061717936011766],.3,'fig',1e4,1e-3);
+ev(a2,5)
+%
+% REC_PRO =  96.7568 [%]
+%
+
+%% hybrid system I:
+clc;
+[a3,b3]=fun_scaled([55.6,54.72,5.4,1.00003],.4,'fig',1e4,1e-3);
+ev(a3)
+%
+% SEC_net = -1.7836 [kWh/m^3]
+% FW      =  0.6003 [m^3/h]
+% REC_RO  =  49.6975 [%]
+% REC_PRO =  92.46 [%]
+%
+
+%% hybrid system II:
+clc;
+[a4,b4]=fun_scaled([55.6,54.72,5.4,1.00003],.5,'fig',1e4,1e-3);
+ev(a4)
+%
+% SEC_net = 
+% FW      =  
+% REC_RO  =  
+% REC_PRO = 
+%
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 %% test only (counter-current) PRO:
 %clc;[a2,b2]=fun_scaled([-0.0266213; 0 ; 5.4 ; 1.00002; 14.99],.3,'fig',1e4,1e-3);
@@ -24,6 +72,7 @@ clc,
 output=fun_scaled([55.81,54.72,5.485,1.00002],.4,'fig',1e4,1e-3);
 ev(output)
 
+%%
 
 
 

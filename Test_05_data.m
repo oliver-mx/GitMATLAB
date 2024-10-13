@@ -18,10 +18,10 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     %% model versions
     version = zeros(1, 10);
     % version(1) = 0 if co-current, 1 otherwise
-    %version(2) = 0;  % 0 = SWRO beta fixed
-    %version(3) = 0;  % 0 = PRO beta fixed
-    version(4) = 0;  % 0 = ideal SWRO
-    version(5) = 0;  % 0 = ideal PRO
+    version(2) = 0;  % <-- unscaled RO feed massflow rate 
+    version(3) = 0;  % <-- unscaled PRO feed massflow rate
+    version(4) = 1;  % 0 = ideal SWRO
+    version(5) = 1;  % 0 = ideal PRO
     % configuration:
     version(6) = 4;
     % version(6) = 0 --> only SWRO (no ERD)
@@ -29,8 +29,8 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     % version(6) = 2 --> only PRO
     % version(6) = 3 --> SWRO-PRO hybrid system (with one ERD)
     % version(6) = 4 --> SWRO-PRO hybrid system (with two ERDs) 
-    version(7) = 0; % 1 = ICP and ECP for SWRO enabled
-    version(8) = 0; % 1 = ICP and ECP for PRO enabled
+    version(7) = 1; % 1 = ICP and ECP for SWRO enabled
+    version(8) = 1; % 1 = ICP and ECP for PRO enabled
 
     %% Membrane unit properties
     H = 1e-3;           % height of the membrane [m]
@@ -64,7 +64,7 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
 
     %% PRO
     Z = 7.7210;         % width of the PRO membrane [m]
-    L = 5 * 0.9626;     % length of the PRO membrane [m]      
+    L = 7 * 0.9626;     % length of the PRO membrane [m]      
     alpha = 5.47e-9;    % water permeability coefficient [s/m]
     KK = 7.13e2;        % mass transfer coefficient [sm^2/kg]
     KD = 1 / KK;        % PRO ECP draw side mass transfer coefficient [sm^2/kg]
@@ -79,7 +79,7 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     beta_fix = 1.71e-4;                        % value for fixed PRO beta [kg/sm^2]
 
     %% Sea Water
-    cE = 0.032 / C_r;                                 % salt concentration in seawater
+    cE =(32/(1-32/2165)/1000) / C_r;                  % salt concentration in seawater (32/(1-32/2165)/1000)
     pE = 1e5 / p_r;                                   % external pressure
     rho_E = (cE + 1) / (cE / ro_salt + 1 / ro_water); % density of incoming seawater
 
@@ -88,8 +88,8 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     J_wf_0 = 0;              % water flux in fresh side at L               
     Pf_L = pE;               % pressure fresh side at L
 
-    Pd_0 =  input1(1); % pressure draw side at 0
-    Pd_L =  input1(2); % pressure draw side at L (not needed in the hybrid system)
+    Pd_0 =  input1(1);  % pressure draw side at 0
+    Pd_L =  input1(2);  % pressure draw side at L (not needed in the hybrid system)
 
     %% PRO operation conditions 
     Q_sf_0 = 0;              % salt flux in fresh side at 0
@@ -103,7 +103,7 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     T_eff  = .95;               % turbine efficiency
     HP_eff = .9;            	% high pressure pump efficiency
     LP_eff = .95;               % low pressure pump efficiency
-    V_m = 0.052;                % Volumetric mixing
+    V_m = 0;%0.052;                % Volumetric mixing
     ERD_eff = .96;              % ERD unit pressure efficiency
     ERD_fric = 5e-04;           % ERD friction coefficient
     A_ERD = H * swro_Z;         % cross-sectional area of ERD inflows/outflows
@@ -115,7 +115,7 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     mix_M3 = 1;        % spliting rate at M3 (if 0 --> all to ERD2)
 
     %% display figures
-    fig = [1, 1, 0, 0]; % f(i) = 1 --> figure i will be displayed
+    fig = [1, 1, 1, 0]; % f(i) = 1 --> figure i will be displayed
 
     %% automatic changes:
     % co-current
@@ -126,9 +126,12 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     end            
     % no SWRO needed (--> use trivial data)
     if version(6) == 2
-        version(4) = 0;
-        Pd_0 = 40;
-        Pd_L = 35;
+        version(4)=0;version(7)=0;
+        Pd_0 = 55;
+        Pd_L = 54;
     end
-    
+    % for initial guess
+    if pd_0 == 0
+        pd_0 = 0.95*pd_L;
+    end
 end
