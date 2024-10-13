@@ -22,8 +22,8 @@ J_ERD = J_E*(1-mix_M1);
 J_wE = J_E/(cE+1);
 J_wERD= J_ERD/(C_ERD+1);
 swroC_in = (cE*J_wE*mix_M1 + C_ERD*J_wERD)/(J_wE*mix_M1+J_wERD);
-proC_in = (cE*J_ERD + C_ERD*J_ERD - yb(1)*yb(2))/(J_wE + J_wERD - yb(2));
-PRO_brine = (J_wE*J_r*swro_x_r + J_wERD*J_r*swro_x_r - yb(2)*J_r*swro_x_r)/Q_r/x_r;
+proC_in = (cE*J_wE*(1-mix_M1) + yb(1)*yb(2)*(1-eta_ERD) - C_ERD*J_wERD )/(J_wE*(1-mix_M1) + yb(2)*(1-eta_ERD) - J_wERD);
+PRO_brine = J_r*swro_x_r*(J_wE*(1-mix_M1) + yb(2)*(1-eta_ERD) - J_wERD)/Q_r/x_r;
 end
 
 %% define vector for residual error

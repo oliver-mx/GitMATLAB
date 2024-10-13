@@ -25,28 +25,27 @@ ev(a2,5)
 %% hybrid system I:
 clc;
 [a3,b3]=fun_scaled([55.6,54.72,5.4,1.00003],.4,'fig',1e4,1e-3);
-ev(a3)
+ev(a3,[1 2 4 5 12])
+% no mixing:                        with mixing:
+% SEC_net = -1.7836 [kWh/m^3]         %SEC_net = -1.7871 [kWh/m^3]
+% FW      =  0.6003 [m^3/h]           %FW      =  0.58599 [m^3/h]
+% REC_RO  =  49.6975 [%]              %REC_RO  =  48.8871 [%]
+% REC_PRO =  92.46 [%]                %REC_PRO =  92.3555 [%]
+% mix_M1        = 0.49412             %mix_M1        = 0.50214 
 %
-% SEC_net = -1.7836 [kWh/m^3]
-% FW      =  0.6003 [m^3/h]
-% REC_RO  =  49.6975 [%]
-% REC_PRO =  92.46 [%]
-%
+
 
 %% hybrid system II:
 clc;
 [a4,b4]=fun_scaled([55.6,54.72,5.4,1.00003],.5,'fig',1e4,1e-3);
-ev(a4)
+ev(a4,[1 2 4 5 12])
+% no mixing:                         with mixing:
+% SEC_net = -1.7687 [kWh/m^3]
+% FW      =  0.6003 [m^3/h]
+% REC_RO  =  49.6975 [%]
+% REC_PRO =  92.46 [%]
+% mix_M1        = 0.49412 
 %
-% SEC_net = 
-% FW      =  
-% REC_RO  =  
-% REC_PRO = 
-%
-
-
-
-
 
 
 

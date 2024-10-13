@@ -103,7 +103,7 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     T_eff  = .95;               % turbine efficiency
     HP_eff = .9;            	% high pressure pump efficiency
     LP_eff = .95;               % low pressure pump efficiency
-    V_m = 0;%0.052;                % Volumetric mixing
+    V_m = 0.052;                % Volumetric mixing
     ERD_eff = .96;              % ERD unit pressure efficiency
     ERD_fric = 5e-04;           % ERD friction coefficient
     A_ERD = H * swro_Z;         % cross-sectional area of ERD inflows/outflows

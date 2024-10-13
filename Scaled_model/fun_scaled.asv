@@ -277,83 +277,76 @@ if version(6)==3
         pERD = rho_ERD*(ERD_eff*(P_d(end)*J_d(end)*swro_b2*(1-eta_ERD)/swro_local_ro_d(end)-p_d(end)*qq*abs(Q_d(end))*b2/local_ro_d(end) - f_2/f_r) + pE*J_M1*swro_b2/rho_E*rho_r + f_1/f_r)/J_ERD/swro_b2;
         W_t = T_eff * (p_d(1)-pE)*(abs(Q_d(1))*Z)/local_ro_d(1)/rho_r; W_t = W_t*W_r;
     end
-    disp(f_2 - f_1)
-    disp(pERD)
     W_p3 = 1/HP_eff * (pERD - P_d(1))*(J_ERD*swro_Z)/rho_ERD/rho_r; W_p3 = W_p3*swro_W_r;
 end
 
-    %% Version(6)=4 --> SWRO-PRO hybrid system (with two ERDs)
-    if version(6)==4 
-        if version(1) == 0; rho_ERD2= V_m*(local_ro_d(end) - rho_E)+rho_E; end
-        if version(1) == 1; rho_ERD2= V_m*(local_ro_d(1) - rho_E)+rho_E; end
-        C_ERD2= -ro_salt*(rho_ERD2-1)/(rho_ERD2*ro_water-ro_salt);
-        rho_ERD= V_m*(swro_local_ro_d(end) - rho_ERD2)+rho_ERD2;
-        C_ERD = -ro_salt*(rho_ERD-1)/(rho_ERD*ro_water-ro_salt);
-        J_E = (C_d(1)*J_wd(1)+J_wd(1))/2; J_ERD = J_E; %J_wE = J_E/(C_ERD2+1); J_wERD= J_ERD/(C_ERD+1);
-        qq=Q_r/J_r;
-        J_E_sea = 2*J_E;
-        J_wE_sea = J_E_sea/(cE+1);
-        if version(1) == 0
-            Q_exit = mixer_ERD*Q_d(end)*(1-eta_ERD);
-            c_exit = (c_d(end)*mixer_ERD*Q_wd(end)*(1 - eta_ERD)+cE*J_wE_sea-C_ERD2*2*J_E)/(mixer_ERD*Q_wd(end)*(1 - eta_ERD)+J_wE_sea-2*J_E);
-        end
-        if version(1) == 1
-            Q_exit = mixer_ERD*abs(Q_d(1))*(1-eta_ERD);
-            c_exit = (c_d(1)*mixer_ERD*abs(Q_wd(1))*(1 - eta_ERD)+cE*J_wE_sea-C_ERD2*2*J_E)/(mixer_ERD*abs(Q_wd(1))*(1 - eta_ERD)+J_wE_sea-2*J_E);
-        end
-        rho_exit= (ro_salt*(c_exit+1))/(c_exit*ro_water+ro_salt); p_exit=pE;
-        %calculation of Pressure P_ERD2
-            if version(1) == 0 %co-current
-                f_1= qq*Q_exit*Z/rho_exit*mix_density*(J_E_sea*swro_Z/rho_E/A_ERD)^2;  
-                f_2= J_E*swro_Z/rho_ERD2*mix_density*(qq*mixer_ERD*Q_d(end)*Z*(1-eta_ERD)/local_ro_d(end)/A_ERD)^2;  
-                f_ERD= ERD_fric*(ERD_eff*f_2 - f_1)/100;
-                pERD2 = rho_ERD2*(ERD_eff*( p_d(end)*qq*mixer_ERD*Q_d(end)*Z*(1-eta_ERD)/local_ro_d(end) - p_exit*qq*Q_exit*Z/rho_exit ) +  pE*J_E_sea*swro_Z/rho_E -f_ERD )/2/J_E/swro_Z;
-                pMax = rho_ERD2*(ERD_eff*( p_d(end)*qq*mixer_ERD*Q_d(end)*Z*(1-eta_ERD)/local_ro_d(end) - p_exit*qq*Q_exit*Z/rho_exit ) +  pE*J_E_sea*swro_Z/rho_E )/2/J_E/swro_Z;
-                if pERD2 > pMax; pERD2=pMax; end
-            end
-            if version (1) == 1 %counter-current 
-                f_1= qq*Q_exit*Z/rho_exit*mix_density*(J_E_sea*swro_Z/rho_E/A_ERD)^2;  
-                f_2= J_E*swro_Z/rho_ERD2*mix_density*(qq*mixer_ERD*abs(Q_d(1))*Z*(1-eta_ERD)/local_ro_d(1)/A_ERD)^2;  
-                f_ERD= ERD_fric*(ERD_eff*f_2 - f_1)/100;
-                pERD2 = rho_ERD2*(ERD_eff*( p_d(1)*qq*mixer_ERD*abs(Q_d(1))*Z*(1-eta_ERD)/local_ro_d(1) - p_exit*qq*Q_exit*Z/rho_exit ) +  pE*J_E_sea*swro_Z/rho_E -f_ERD )/2/J_E/swro_Z;            
-                pMax = rho_ERD2*(ERD_eff*( p_d(1)*qq*mixer_ERD*abs(Q_d(1))*Z*(1-eta_ERD)/local_ro_d(1) - p_exit*qq*Q_exit*Z/rho_exit ) +  pE*J_E_sea*swro_Z/rho_E )/2/J_E/swro_Z;            
-                if pERD2 > pMax; pERD2=pMax; end
-            end     
-            %calculation of Pressure P_ERD
-            if version(1) == 0 %co-current
-                f_1= qq*Q_d(1)*Z/local_ro_d(1)*mix_density*(J_E*swro_Z/rho_ERD2/A_ERD)^2;  
-                f_2= J_ERD*swro_Z/rho_ERD*mix_density*(J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end)/A_ERD)^2;  
-                f_ERD= ERD_fric*(ERD_eff*f_2 - f_1)/100;
-                pERD = rho_ERD*(ERD_eff*( P_d(end)*J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end) - p_d(1)*qq*Q_d(1)*Z/local_ro_d(1) ) +  pERD2*J_E*swro_Z/rho_ERD2 -f_ERD )/J_ERD/swro_Z;
-                pMax = rho_ERD*(ERD_eff*( P_d(end)*J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end) - p_d(1)*qq*Q_d(1)*Z/local_ro_d(1) ) +  pERD2*J_E*swro_Z/rho_ERD2 )/J_ERD/swro_Z;
-                if pERD > pMax; pERD=pMax; end
-                W_p3 = 1/HP_eff * (P_d(1)-pERD)*(J_ERD*swro_Z)/rho_ERD;
-                W_t = T_eff * (p_d(end)-pE)*((1-mixer_ERD)*Q_d(end)*Z)/local_ro_d(end); 
-            end
-            if version (1) == 1 %counter-current   
-                f_1= abs(qq*Q_d(end))*Z/local_ro_d(end)*mix_density*(J_E*swro_Z/rho_ERD2/A_ERD)^2  ;
-                f_2= J_ERD*swro_Z/rho_ERD*mix_density*(J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end)/A_ERD)^2  ;
-                f_ERD= ERD_fric*(ERD_eff*f_2 - f_1)/100;
-                pERD = rho_ERD*(ERD_eff*( P_d(end)*J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end) - p_d(end)*abs(qq*Q_d(end))*Z/local_ro_d(end) ) +  pERD2*J_E*swro_Z/rho_ERD2 -f_ERD )/J_ERD/swro_Z;            
-                pMax=rho_ERD*(ERD_eff*( P_d(end)*J_d(end)*swro_Z*(1-eta_ERD)/swro_local_ro_d(end) - p_d(end)*abs(qq*Q_d(end))*Z/local_ro_d(end) ) +  pERD2*J_E*swro_Z/rho_ERD2 )/J_ERD/swro_Z;            
-                if pERD > pMax; pERD=pMax; end 
-                W_p3 = 1/HP_eff * (P_d(1)-pERD)*(J_ERD*swro_Z)/rho_ERD;
-                W_t = T_eff * (p_d(1)-pE)*(abs((1-mixer_ERD)*Q_d(1))*Z)/local_ro_d(1);
-            end
-    % Recalculation for Pump 1
-    W_p1 = 1/HP_eff * (P_d(1)-pERD2)*(J_E *swro_Z)/rho_ERD2; W_p1 = W_p1*swro_W_r;
+%% Version(6)=4 --> SWRO-PRO hybrid system (with two ERDs)
+if version(6)==4 
+    % calculate concentration atand total flow at 2nd ERD
+    if version(1)==0
+        rho_d2= real((c_d(end)+1)./(c_d(end)/ro_salt + 1/ro_water));
+    else
+        rho_d2= real((c_d(1)+1)./(c_d(1)/ro_salt + 1/ro_water));
     end
-    
+    rho_ERD2 = V_m*(rho_d2 - rho_E)+rho_E;
+    C_ERD2= -ro_salt*(rho_ERD2-ro_water)/(ro_water*(rho_ERD2-ro_salt));
+    % at first ERD
+    rho_d1= real((C_d(1)+1)./(C_d(1)/ro_salt + 1/ro_water));
+    rho_ERD1= V_m*(rho_d1 - rho_ERD2) + rho_ERD2;
+    C_ERD1= -ro_salt*(rho_ERD1-ro_water)/(ro_water*(rho_ERD1-ro_salt));
+    % rescale density
+    rho_d1=rho_d1/rho_r;
+    rho_d2=rho_d2/rho_r;
+    rho_ERD1=rho_ERD1/rho_r;
+    rho_ERD2=rho_ERD2/rho_r;
+    % seawater after passing 2nd ERD 
+    J_E1 = J_d(1);
+    J_ERD1 = J_E1*(1-mix_M1);
+    J_wE1 = J_E1/(C_ERD2+1);
+    J_wERD1= J_ERD1/(C_ERD1+1);
+    % scaling factor
+    qq=Q_r/J_r;
+    % seawater before 2nd ERD
+    J_E2 = J_d(1);
+    J_wE2 = J_E1/(cE+1);
+    if version(1)==0
+        Q_exit = mix_M3*Q_d(end)*(1-eta_ERD);
+        c_exit = (cE*J_wE2 + qq*Q_sd(end)*(1-eta_ERD) - C_ERD2*J_wE2)/(J_wE2 + qq*Q_wd(end)*(1-eta_ERD) - J_wE2);
+    else
+        Q_exit = (1-mix_M3)*abs(Q_d(1))*(1-eta_ERD);
+        c_exit= (cE*J_wE2 + qq*Q_sd(1)*(1-eta_ERD) - C_ERD2*J_wE2)/(J_wE2 + qq*Q_wd(1)*(1-eta_ERD) - J_wE2);
+    end
+    rho_exit= (ro_salt*(c_exit+1))/(c_exit*ro_water+ro_salt); p_exit=pE;
+    % Calculation for 2nd ERD ---------------------------------------------
+    f_r= (J_r*p_r*swro_x_r/rho_r) / (J_r^3/rho_r^2/swro_x_r); % scaling factor between f and P*J*Z/rho 
+    W_p2 = 0;
+    W_p4= 1/LP_eff * (pE - p_f(1))*(Q_f(1)*Z)./local_ro_f(1)/rho_r; W_p4 = W_p4*W_r;
+    if version(6) == 0 % co-current
+        f_2 = ERD_fric * mix_density * (J_E1*swro_b2/rho_ERD2)*((qq*(1-mix_M3)*Q_d(end)*swro_b2)/(local_ro_d(end)*swro_b1*swro_b2))^2;
+        f_1 = ERD_fric * mix_density * (qq*Q_exit*swro_b2/rho_exit)*((J_E2*swro_b2)/(rho_E/rho_r*swro_b1*swro_b2))^2; 
+        pERD2 = rho_ERD2*(ERD_eff*(p_d(end)*qq*(1-mix_M3)*Q_d(end)*swro_b2*(1-eta_ERD)/local_ro_d(end)-pE*qq*Q_exit*swro_b2/rho_exit - f_2/f_r) + pE*J_E2*swro_b2/rho_E*rho_r + f_1/f_r)/J_E1/swro_b2;
+        W_t = T_eff * (p_d(end)-pE)*(mix_M3*Q_d(end)*Z)/local_ro_d(end)/rho_r; W_t = W_t*W_r;
+    else % counter-current
+        f_2 = ERD_fric * mix_density * (J_E1*swro_b2/rho_ERD2)*((qq*(1-mix_M3)*abs(Q_d(1))*swro_b2)/(local_ro_d(1)*swro_b1*swro_b2))^2;
+        f_1 = ERD_fric * mix_density * (qq*Q_exit*swro_b2/rho_exit)*((J_E2*swro_b2)/(rho_E/rho_r*swro_b1*swro_b2))^2; 
+        pERD2 = rho_ERD2*(ERD_eff*(p_d(1)*qq*(1-mix_M3)*abs(Q_d(1))*swro_b2*(1-eta_ERD)/local_ro_d(1)-pE*qq*abs(Q_exit)*swro_b2/rho_exit - f_2/f_r) + pE*J_E2*swro_b2/rho_E*rho_r + f_1/f_r)/J_E2/swro_b2;
+        W_t = T_eff * (p_d(1)-pE)*(mix_M3*abs(Q_d(1))*Z)/local_ro_d(1)/rho_r; W_t = W_t*W_r;
+    end
+    % Calculation for 1st ERD ---------------------------------------------
+    f_2 = ERD_fric * mix_density * (J_ERD1*swro_b2/rho_ERD1)*((J_d(end)*swro_b2)/(swro_local_ro_d(end)*swro_b1*swro_b2))^2;
+    if version(6) == 0 % co-current
+        f_1 = ERD_fric * mix_density * (qq*Q_d(1)*b2/local_ro_d(1))*((J_E1*swro_b2)/(rho_ERD2*swro_b1*swro_b2))^2; 
+        pERD = rho_ERD1*(ERD_eff*(P_d(end)*J_d(end)*swro_b2*(1-eta_ERD)/swro_local_ro_d(end)-p_d(1)*qq*Q_d(1)*b2/local_ro_d(1) - f_2/f_r) + pERD2*J_E1*swro_b2/rho_ERD2 + f_1/f_r)/J_E1/swro_b2;
+    else % counter-current
+        f_1 = ERD_fric * mix_density * (qq*abs(Q_d(end))*b2/local_ro_d(end))*((J_E1*swro_b2)/(rho_ERD2*swro_b1*swro_b2))^2; 
+        pERD = rho_ERD1*(ERD_eff*(P_d(end)*J_d(end)*swro_b2*(1-eta_ERD)/swro_local_ro_d(end)-p_d(end)*qq*abs(Q_d(end))*b2/local_ro_d(end) - f_2/f_r) + pERD2*J_E1*swro_b2/rho_ERD2 + f_1/f_r)/J_E1/swro_b2;
+    end
+    disp(f_1)
 
 
-
-
-
-
-
-
-
-
+    W_p3 = 1/HP_eff * (P_d(1)-pERD)*(J_ERD1*swro_Z)/rho_ERD1; W_p3 = W_p3*swro_W_r;
+    W_p1 = 1/HP_eff * (P_d(1)-pERD2)*(J_E1 *swro_Z)/rho_ERD2; W_p1 = W_p1*swro_W_r;
+end
 
 %% final output:
 W_net= W_p1 + W_p2 + W_p3 + W_p4 + W_t; % in [W]
@@ -559,10 +552,15 @@ vals1 = [pE*p_r; pERD*p_r; 0; P_d(end)*p_r; pE*p_r];
 vals2 = 100*[cE; C_ERD; 0; C_d(end); c_exit];
 vals3 = [J_M1*J_r; J_ERD*J_r; 0; J_d(end)*J_r; J_exit*J_r];
 end
-if version(6) > 2
+if version(6) == 3
 vals1 = [pE*p_r; pERD*p_r; 0; P_d(end)*p_r; max(p_d(1),p_d(end))*p_r];
 vals2 = 100*[cE; C_ERD; 0; C_d(end); max(c_d(1),c_d(end))];
 vals3 = [J_M1*J_r; J_ERD*J_r; 0; J_d(end)*J_r; min(abs(Q_d(1))*Q_r, abs(Q_d(end))*Q_r)];
+end
+if version(6) == 4
+vals1 = [pERD2*p_r; pERD*p_r; 0; P_d(end)*p_r; max(p_d(1),p_d(end))*p_r];
+vals2 = 100*[C_ERD2; C_ERD1; 0; C_d(end); max(c_d(1),c_d(end))];
+vals3 = [J_E1*(1-mix_M1)*J_r; J_ERD1*J_r; 0; J_d(end)*J_r; min(abs(Q_d(1))*Q_r, abs(Q_d(end))*Q_r)];
 end
 nexttile
 b = bar(1,vals1, 'FaceColor', 'b'); b(4).FaceColor = "#77AC30"; b(5).FaceColor = [.2 .6 .5]; b(1).FaceColor = '#0072bD';
@@ -594,11 +592,9 @@ if fig(3) == 1 && version(6) ==4
 f=figure(4);  % ERD quantities
 f.Position = [1497 210.3333 900 347.3334]; tiledlayout(1,4); 
 rot=0; rx=0; %rotation and shift of texts
-vals1 = [pE*p_r; pERD2*p_r; 0; p_d(end)*p_r; p_exit*p_r];
-vals2 = 100*[cE; C_ERD2; 0; c_d(end); c_exit];
-vals3 = [J_E_sea*J_r; 2*J_E*J_r; 0; mixer_ERD*Q_d(end)*Q_r; Q_exit*Q_r];
-%adjust for counter current
-if version(1)==1; vals1(4) = p_d(1)*p_r; vals2(4)=c_d(1)*100;vals3(4)=-mixer_ERD*Q_d(1)*Q_r; end
+vals1 = [pE*p_r; pERD2*p_r; 0; min(p_d(1),p_d(end))*p_r; p_exit*p_r];
+vals2 = 100*[cE; C_ERD2; 0; min(c_d(1),c_d(end)); c_exit];
+vals3 = [J_E2*J_r; J_E1*J_r; 0; (1-mix_M3)*max(abs(Q_d(1)),abs(Q_d(end)))*Q_r; abs(Q_exit)*Q_r];
 nexttile
 b = bar(1,vals1, 'FaceColor', 'b'); b(4).FaceColor = "#77AC30"; b(5).FaceColor = [.2 .6 .5]; b(1).FaceColor = '#0072bD';
 xticklabels({'[Pa]'}); ylim([0 1.1*max(vals1)]);ay=gca;ay.YAxis(1).Exponent=5;
