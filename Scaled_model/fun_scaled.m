@@ -261,7 +261,7 @@ if version(6)==3
     J_ERD = J_M1;
     J_wERD= J_ERD/(C_ERD+1);
     J_sERD= J_ERD - J_wERD;
-    qq=Q_r/J_r;
+    qq=J_r/Q_r;
     % not affected by co / counter
     f_2 = ERD_fric * mix_density * (J_ERD*swro_b2/rho_ERD)*((J_d(end)*swro_b2)/(swro_local_ro_d(end)*swro_b1*swro_b2))^2;
     f_r= (J_r*p_r*swro_x_r/rho_r) / (J_r^3/rho_r^2/swro_x_r); % scaling factor between f and P*J*Z/rho  
@@ -314,7 +314,7 @@ if version(6)==4
         c_exit = (cE*J_wE2 + qq*Q_sd(end)*(1-eta_ERD) - C_ERD2*J_wE2)/(J_wE2 + qq*Q_wd(end)*(1-eta_ERD) - J_wE2);
     else
         Q_exit = (1-mix_M3)*abs(Q_d(1))*(1-eta_ERD);
-        c_exit= (cE*J_wE2 + qq*Q_sd(1)*(1-eta_ERD) - C_ERD2*J_wE2)/(J_wE2 + qq*Q_wd(1)*(1-eta_ERD) - J_wE2);
+        c_exit= (cE*J_wE2 + qq*abs(Q_sd(1))*(1-eta_ERD) - C_ERD2*J_wE2)/(J_wE2 + qq*abs(Q_wd(1))*(1-eta_ERD) - J_wE2);
     end
     rho_exit= (ro_salt*(c_exit+1))/(c_exit*ro_water+ro_salt); p_exit=pE;
     % Calculation for 2nd ERD ---------------------------------------------
@@ -534,9 +534,9 @@ plot(x3*L, Q_sin2*p_r*alpha, 'Color', rc, 'LineWidth',lw); ylabel('[kg/sm^2]','F
 % Osmotic/ Hydraulic pressure difference
 subplot(2,2,4);lc='k';rc='#b81414';osm_diff=p_osm_d(2:end)-p_osm_f(2:end);
 a=min([(p_d-p_f).*p_r; osm_diff.*p_r]);b=max([(p_d-p_f).*p_r; osm_diff.*p_r]);
-plot(x*L, (p_d-p_f)*p_r,'Color', lc,'LineWidth',lw);xlabel('x [m]','Fontsize',10); ylabel('[Pa]','Fontsize',10); ay=gca; ay.YAxis.Exponent = 6;ylim([0.95*a 1.05*b]);hold on
+plot(x*L, (p_d-p_f)*p_r,'Color', lc,'LineWidth',lw);xlabel('x [m]','Fontsize',10); ylabel('[Pa]','Fontsize',10); ay=gca; ay.YAxis.Exponent = 6;ylim([0 1.05*b]);hold on
 yyaxis right; 
-plot(x2*L, osm_diff*p_r,'Color', rc,'LineWidth',lw); ylabel('[Pa]','Fontsize',10); legend('\Delta P^{PRO}(x)','\Delta \pi^{PRO}(x)','Location','SouthEast');xlim([0 L]); ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc; hold on
+plot(x2*L, osm_diff*p_r,'Color', rc,'LineWidth',lw); ylabel('[Pa]','Fontsize',10); legend('\Delta P^{PRO}(x)','\Delta \pi^{PRO}(x)','Location','NorthEast');xlim([0 L]);ylim([0 1.05*b]); ay.YAxis(1).Color = lc; ay.YAxis(2).Color = rc; hold on
 end
 
 %% figure 3

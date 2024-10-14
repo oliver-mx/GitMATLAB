@@ -9,7 +9,7 @@ system('git add .');
 system(['git commit -m "', msg, '"']);
 system('git push https://github.com/oliver-mx/GitMATLAB.git');
 
-%system('git add .'); system('git commit -m "Neue Simulationen"');system('git push https://github.com/oliver-mx/GitMATLAB.git');
+%system('git add .'); system('git commit -m "Neue Simulation"');system('git push https://github.com/oliver-mx/GitMATLAB.git');
 
 
 

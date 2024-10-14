@@ -11,7 +11,7 @@ function [ res ] = Boundary3(ya, yb, DATA)
 if V_m ==0 
 swroC_in = cE;
 proC_in = yb(1);
-PRO_brine = Z/swro_Z*Q_r/J_r*(yb(2))*(1-eta_ERD);
+PRO_brine = J_r/Q_r*(yb(2))*(1-eta_ERD);
 else
 %% with Mixing i.e. V_m > 0
 rho_d1= real((yb(1)+1)./(yb(1)/ro_salt + 1/ro_water));
@@ -23,7 +23,7 @@ J_wE = J_E/(cE+1);
 J_wERD= J_ERD/(C_ERD+1);
 swroC_in = (cE*J_wE*mix_M1 + C_ERD*J_wERD)/(J_wE*mix_M1+J_wERD);
 proC_in = (cE*J_wE*(1-mix_M1) + yb(1)*yb(2)*(1-eta_ERD) - C_ERD*J_wERD )/(J_wE*(1-mix_M1) + yb(2)*(1-eta_ERD) - J_wERD);
-PRO_brine = J_r*swro_x_r*(J_wE*(1-mix_M1) + yb(2)*(1-eta_ERD) - J_wERD)/Q_r/x_r;
+PRO_brine = J_r*(J_wE*(1-mix_M1) + yb(2)*(1-eta_ERD) - J_wERD)/Q_r;
 end
 
 %% define vector for residual error

@@ -1,5 +1,5 @@
-function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_r, C_r, swro_L, swro_alpha, swro_KK, swro_x_r, swro_b1, swro_b2, J_r, swro_gamma, swro_gamma2, swro_W_r, L, alpha, KK, x_r, b1, b2, Q_r, gamma, gamma2, W_r, cE, pE, rho_E, J_sf_0, J_wf_0, Pd_0, Pd_L, Pf_L, Q_sf_0, pd_0, pf_0, pd_L, pf_L, HP_eff, LP_eff, T_eff, V_m, ERD_eff, ERD_fric, A_ERD, eta_ERD, mix_density, pw, pe, swro_beta_fix, beta_fix, mix_M1, mix_M3, version, fig, swro_KF, swro_KD, KF, KD] = Test_05_data(input1, input2)
-    %%  Test_05_data(input)
+function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_r, C_r, swro_L, swro_alpha, swro_KK, swro_x_r, swro_b1, swro_b2, J_r, swro_gamma, swro_gamma2, swro_W_r, L, alpha, KK, x_r, b1, b2, Q_r, gamma, gamma2, W_r, cE, pE, rho_E, J_sf_0, J_wf_0, Pd_0, Pd_L, Pf_L, Q_sf_0, pd_0, pf_0, pd_L, pf_L, HP_eff, LP_eff, T_eff, V_m, ERD_eff, ERD_fric, A_ERD, eta_ERD, mix_density, pw, pe, swro_beta_fix, beta_fix, mix_M1, mix_M3, version, fig, swro_KF, swro_KD, KF, KD] = Test_04_data(input1, input2)
+    %%  Test_04_data(input)
     %
     %   Data for Test zwischen dem skalierten und unskalierten ODE system
     %
@@ -23,7 +23,7 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     version(4) = 1;  % 0 = ideal SWRO
     version(5) = 1;  % 0 = ideal PRO
     % configuration:
-    version(6) = 4;
+    version(6) = 3;
     % version(6) = 0 --> only SWRO (no ERD)
     % version(6) = 1 --> only SWRO (with ERD)
     % version(6) = 2 --> only PRO
@@ -64,7 +64,7 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
 
     %% PRO
     Z = 7.7210;         % width of the PRO membrane [m]
-    L = 7 * 0.9626;     % length of the PRO membrane [m]      
+    L = 5 * 0.9626;     % length of the PRO membrane [m]      
     alpha = 5.47e-9;    % water permeability coefficient [s/m]
     KK = 7.13e2;        % mass transfer coefficient [sm^2/kg]
     KD = 1 / KK;        % PRO ECP draw side mass transfer coefficient [sm^2/kg]
@@ -115,7 +115,7 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     mix_M3 = 0;        % spliting rate at M3 (if 0 --> all to ERD2)
 
     %% display figures
-    fig = [0, 0, 1, 1]; % f(i) = 1 --> figure i will be displayed
+    fig = [1, 1, 1, 0]; % f(i) = 1 --> figure i will be displayed
 
     %% automatic changes:
     % co-current

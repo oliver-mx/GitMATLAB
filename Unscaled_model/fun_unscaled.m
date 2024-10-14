@@ -156,7 +156,7 @@ swro_local_ro_f = (Y(:,3) + Y(:,4))./(Y(:,3)./ro_salt + Y(:,4)./ro_water);
 J_E = J_d(1);
 J_wE = J_E/(cE+1);
 J_sE = J_E-J_wE;
- 
+
 %% Version(6)=0 -->  only SWRO (no ERD)
 if version(6)==0
     W_p1 = 1/HP_eff * (1e5 - P_d(1))*(J_E *swro_Z)/rho_E;
@@ -220,6 +220,7 @@ Wastewater_inflow = NaN; % in [m^3/s]
 C_permeate = 10000*C_f(end); % in [ppm]
 C_brine = 100*C_d(end); % in [%]
 C_dilluted = P_d(end)/1e5; % in [%]
+if version(6)==0; mix_M1=NaN; end
 
 output1 = [SEC_net, FW, Rev, SWRO_Recovery, PRO_Recovery, ...
            RO_inflow, Permeate_outflow, Wastewater_inflow, C_permeate, C_brine, C_dilluted, mix_M1...
