@@ -28,13 +28,13 @@ end
 %Y1=zeros(n,18);Y2=zeros(n,18);Y3=zeros(n*h,18);Y4=zeros(n*h,18);
 load Output_DATA/Basic_Test_Output
 startTime=datetime("now");
-parfor i=2501:15000%n*h
+parfor i=2501:n %n*h
     if i<n+1
         Y1(i,:)=fun_unscaled([0; X0(:,i)],.1,'fig',1e4,1e-4);
         Y2(i,:)=fun_unscaled([0; X0(:,i)],.2,'fig',1e4,1e-4);
     end
-        Y3(i,:)=fun_scaled(X0h(:,i),.4,'fig',1e4,1e-6);
-        Y4(i,:)=fun_scaled(X0h(:,i),.5,'fig',1e4,1e-6);
+        Y3(i,:)=fun_scaled(X0h(:,i),.4,'fig',1e4,1e-6); %<--- problem i could run intio identical points !!!!!!!!!!!
+        Y4(i,:)=fun_scaled(X0h(:,i),.5,'fig',1e4,1e-6); %     idea: replace(X0) repmat with actual random data
 end
 endTime=datetime("now");
 time = endTime - startTime; % +3h 38min
