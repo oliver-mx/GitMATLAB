@@ -34,5 +34,7 @@ if version(1) == 0
     if version(3)~=0
         res(9)= ya(7)*ya(8)+ya(8)- version(3)/Q_r;
     end
-
+end
+if version(6)==2 %if SWRO not needed
+    res(1)=ya(1)- 0.0036;
 end

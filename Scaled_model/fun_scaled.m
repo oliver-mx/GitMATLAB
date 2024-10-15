@@ -49,6 +49,7 @@ if option_data == -.7; DATA = @(x)data7(input); end
 if option_data == -.8; DATA = @(x)data8(input); end
 if option_data == -.9; DATA = @(x)data9(input); end
 %
+if option_data == 0; DATA = @(x)Lee_data(input);end
 if option_data == 1; DATA = @(x)Case_1_data(input); end
 if option_data == 2; DATA = @(x)Case_2_data(input); end
 if option_data == 3; DATA = @(x)Case_3_data(input); end
@@ -102,6 +103,7 @@ if version(6)>0 && version(6)~=2
     if option_data == -.8; DATA = @(x)data8(input,mix_M1); end
     if option_data == -.9; DATA = @(x)data9(input,mix_M1); end
     %
+    %if option_data == 0; DATA = @(x)Lee_data(input,mix_M1);end
     if option_data == 1; DATA = @(x)Case_1_data(input,mix_M1); end
     if option_data == 2; DATA = @(x)Case_2_data(input,mix_M1); end
     if option_data == 3; DATA = @(x)Case_3_data(input,mix_M1); end
@@ -456,7 +458,7 @@ switch (obj)
             output1 = NaN(1,2); 
             else
                 output1 = [-SEC_net, -FW];
-                if FW < 0.15
+                if FW < 0.1
                     output1 = NaN(1,2); 
                 end
             end 

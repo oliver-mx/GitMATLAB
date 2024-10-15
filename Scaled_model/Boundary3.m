@@ -11,7 +11,7 @@ function [ res ] = Boundary3(ya, yb, DATA)
 if V_m ==0 
 swroC_in = cE;
 proC_in = yb(1);
-PRO_brine = J_r/Q_r*(yb(2))*(1-eta_ERD);
+PRO_brine = J_r/Q_r*(yb(1)*yb(2)+yb(2))*(1-eta_ERD);
 else
 %% with Mixing i.e. V_m > 0
 rho_d1= real((yb(1)+1)./(yb(1)/ro_salt + 1/ro_water));
@@ -37,7 +37,7 @@ res =   [ % SWRO part:
 
           % PRO part:
           ya(7)-  proC_in       % INCOMMING CONZENTRATION FROM ERD TO PRO
-          yb(8) - PRO_brine
+          ya(6-1)*ya(6-2)+ya(6+2) - PRO_brine
           ya(9)-  Q_sf_0       	% salt flux in fresh side at 0
           ya(12)- pf_0      	% pressure of fresh side at 0
           yb(11)- pd_L          % pressure draw side at L 
@@ -46,7 +46,7 @@ res =   [ % SWRO part:
 %% counter current (just that PRO model wont break)  
 if version(1) ==1
     res(7)=yb(7) - proC_in; 
-    res(8)=yb(6+2) + PRO_brine;
+    res(8)=yb(6-1)*yb(6-2)+yb(6+2) + PRO_brine;
 end 
 
 end

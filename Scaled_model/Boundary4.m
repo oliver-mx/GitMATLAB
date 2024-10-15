@@ -12,7 +12,7 @@ function [ res ] = Boundary4(ya, yb, DATA)
 if V_m ==0 
 swroC_in = cE;
 proC_in = yb(1);
-PRO_brine = Z/swro_Z*Q_r/J_r*(yb(2))*(1-eta_ERD);
+PRO_brine = Q_r/J_r*(yb(2))*(1-eta_ERD);
 else
 %% with Mixing i.e. V_m > 0
 % second ERD (i.e. index 2)
