@@ -95,9 +95,9 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     Q_sf_0 = 0;              % salt flux in fresh side at 0
     pf_L = pE;               % pressure of fresh side at L
 
-    pd_0 = 14;       % pressure draw side at 0
-    pd_L = 13.8;     % pressure of fresh side at 0
-    pf_0 = 1.01;     % pressure draw side at L 
+    pd_0 = 9.99952;       % pressure draw side at 0
+    pd_L = 10;     % pressure of fresh side at 0
+    pf_0 = 1.001;     % pressure draw side at L 
 
     %% ERD/Turbine/Pump parameters
     T_eff  = .95;               % turbine efficiency

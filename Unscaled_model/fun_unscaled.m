@@ -77,8 +77,8 @@ if version(6) > 1; fprintf(2,' \nERROR: Unscaled model only supports SWRO with/w
 
 %% Evaluate the solution and calculate new mixing ratio
 if version(6)>0
-    y = deval(sol,x); Y = y'; Y = real(Y);
-    mix_M1 = ((Y(end,1).*Y(end,2)+Y(end,2))*(1-eta_ERD))/(Y(1,1).*Y(1,2)+Y(1,2));  
+    y = deval(sol,x); Y = y'; Y = real(Y); 
+    mix_M1 = ((Y(end,1).*Y(end,2)+Y(end,2)))/(Y(1,1).*Y(1,2)+Y(1,2));  
     % data with new mix_M1
     if option_data == .1; DATA = @(x)Test_01_data(input,mix_M1); end
     if option_data == .2; DATA = @(x)Test_02_data(input,mix_M1); end
@@ -97,7 +97,7 @@ if version(6)>0
     if option_data == -.9; DATA = @(x)data9(input,mix_M1); end
     %
     if option_data == 0; DATA = @(x)Senthil_data(input,mix_M1);end
-    if option_data == 1; DATA = @(x)Case_1_data(input,mix_M1); end
+    %if option_data == 1; DATA = @(x)Case_1_data(input,mix_M1); end
     if option_data == 2; DATA = @(x)Case_2_data(input,mix_M1); end
     if option_data == 3; DATA = @(x)Case_3_data(input,mix_M1); end
     % solve with bvp
@@ -161,6 +161,7 @@ J_sE = J_E-J_wE;
 if version(6)==0
     W_p1 = 1/HP_eff * (1e5 - P_d(1))*(J_E *swro_Z)/rho_E;
     W_p2 = 0; W_p3=0; W_p4=0; W_t=0;
+    norm_f1=NaN;
 end 
 
 %% Version(6)=1 -->  only SWRO (with ERD)
@@ -184,6 +185,7 @@ if version(6)==1
     f_1 = ERD_fric * rho_r*mix_density * (J_exit*swro_Z/rho_exit)*((J_M1*swro_Z)/(rho_E*A_ERD))^2; 
     f_2 = ERD_fric * rho_r*mix_density * (J_ERD*swro_Z/rho_ERD)*((J_d(end)*swro_Z)/(swro_local_ro_d(end)*A_ERD))^2;
     pERD = rho_ERD*(ERD_eff*(P_d(end)*J_d(end)*(1-eta_ERD)*swro_Z/swro_local_ro_d(end)-1e5*J_exit*swro_Z/rho_exit - f_2) + 1e5*J_M1*swro_Z/rho_E + f_1)/J_ERD/swro_Z;
+    norm_f1=min(abs(f_1-f_2),abs(f_2-f_1)); % dimensions: J_r*p_r*swro_x_r*/rho_r [W]; 
     % pumps
     W_p1 = 1/HP_eff * (1e5 - P_d(1))*((J_E-J_M1)*swro_Z)/rho_E;
     W_p3 = 1/HP_eff * (pERD - P_d(1))*(J_ERD*swro_Z)/rho_ERD; 
@@ -220,11 +222,15 @@ Wastewater_inflow = NaN; % in [m^3/s]
 C_permeate = 10000*C_f(end); % in [ppm]
 C_brine = 100*C_d(end); % in [%]
 C_dilluted = P_d(end)/1e5; % in [%]
+norm_f3=NaN; % 
+mix_M3=NaN;
+
 if version(6)==0; mix_M1=NaN; end
 
 output1 = [SEC_net, FW, Rev, SWRO_Recovery, PRO_Recovery, ...
-           RO_inflow, Permeate_outflow, Wastewater_inflow, C_permeate, C_brine, C_dilluted, mix_M1...
-           W_net, W_p1, W_p2,  W_p3, W_p4, W_t]; % length(output1) = 5+7+6 = 18
+           RO_inflow, Permeate_outflow, Wastewater_inflow, C_permeate, C_brine, C_dilluted, ...
+           W_net, W_p1, W_p2,  W_p3, W_p4, W_t, ...
+           mix_M1, norm_f1, mix_M3, norm_f3]; % length(output1) = 5+6+6+4 = 21
 
 %% output, if BVP-solver fails
 catch
@@ -255,17 +261,17 @@ switch (obj)
             output1 = NaN(1,2); 
             else
                 output1 = [-SEC_net, -FW];
-                if FW < 0.15
+                if FW < 0.1
                     output1 = NaN(1,2); 
                 end
             end 
         case 'sol' 
             if sol.stats.maxerr > option_BVP
-            output1 = NaN(1,18);
+            output1 = NaN(1,21);
             end
     case 'fig' % case ends after the figures
             if sol.stats.maxerr > option_BVP
-            output1 = NaN(1,18);
+            output1 = NaN(1,21);
             else
 %% figure 1
 close all

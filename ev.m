@@ -24,13 +24,16 @@ function ev(a,I)
             if i == 9;str1='C_permeate    = ';str2=' [ppm]';end
             if i == 10;str1='C_brine       = ';str2=' [%]';end
             if i == 11; str1='C_dilluted    = ';str2=' [%]';end
-            if i == 12;str1='mix_M1        = ';str2=' ';end
-            if i == 13;str1='W_net = ';str2=' [kWh]';end
-            if i == 14;str1='W_p1  = ';str2=' [kWh]';end
-            if i == 15;str1='W_p2  = ';str2=' [kWh]';end
-            if i == 16;str1='W_p3  = ';str2=' [kWh]';end
-            if i == 17;str1='W_p4  = ';str2=' [kWh]';end
-            if i == 18;str1='W_t   = ';str2=' [kWh]';end
+            if i == 12;str1='W_net = ';str2=' [kWh]';end
+            if i == 13;str1='W_p1  = ';str2=' [kWh]';end
+            if i == 14;str1='W_p2  = ';str2=' [kWh]';end
+            if i == 15;str1='W_p3  = ';str2=' [kWh]';end
+            if i == 16;str1='W_p4  = ';str2=' [kWh]';end
+            if i == 17;str1='W_t   = ';str2=' [kWh]';end
+            if i == 18;str1='mix_M1  =  ';str2=' ';end
+            if i == 19;str1='F_1-F_2 =  ';str2=' [kg m^2/s^3]';end % [kg m^2/s^3] = [W]
+            if i == 20;str1='mix_M2  =  ';str2=' ';end
+            if i == 21;str1='f_1-f_2 =  ';str2=' [kg m^2/s^3]';end
             disp([str1, num2str(a(i)), str2])
         end
     end

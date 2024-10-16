@@ -2,17 +2,25 @@
 % press [ctrl]+[enter] to run code sections
 addpath('Input_DATA','Scaled_model','Unscaled_model','Output_DATA')
 
-%% test inital data
-% random initial data
-rng default
-X_init = 31.*ones(1,200) + 39.*rand(2,200);
-X_init(2,:) = X_init(1,:) - .1.*ones(1,200) - 3.3.*rand(1,200);
-X_init(2,:) = max(X_init(2,:), 30*ones(1,200));
-% test if initial data works
-Y=zeros(200,2);
-parfor i=1:200
-    Y(i,:)=fun_unscaled(X_init(:,i),1,'Pareto',1e4,1e-3);
+%% find initial data
+% based on simulation results from "Basic_test_2.m"
+load Output_DATA/Basic_Test_Output
+close all; clc;
+f=figure(1); f.Position= [823.6667 167.6667 989.3333 483.3333];
+Fmax=max(Y1(:,2));Fmin=min(Y1(:,2));
+F=linspace(Fmin,Fmax,200);
+Y1_init=zeros(200,2);X1_init=zeros(200,2);
+for i=1:200
+    index=find(Y1(:,2)>=[F(i)]);
+    a=max(Y1(index,1));
+    Y1_init(i,1)=a;
+    b=find(Y1(:,1)==a);
+    Y1_init(i,2)=Y1(b,2);
+    X1_init(i,:)=X0(:,b);
 end
+%scatter3(Y1(:,1),Y1(:,2),1:n,'r','filled');hold on; title('simple SWRO'); xlabel('SEC_{net} [kWh/m^3]'); ylabel('FW [m^3/h]');
+scatter3(Y1_init(:,1),Y1_init(:,2),1:200,'k','filled');hold on; 
+xlim([-6 -1]);ylim([.1 1.4]);view(2)
 
 %% Paretosearch - Case1
 load("Output_DATA/DATA_Case_1.mat");clc
@@ -20,17 +28,12 @@ disp('___________________________________________________________')
 disp('Starting Pareto front calculation for the single SWRO unit.')
 %
 startTime=datetime("now");
-% initial data
-rng default; 
-X1_init = 31.*ones(1,200) + 39.*rand(2,200);
-X1_init(2,:) = X1_init(1,:) - .1.*ones(1,200) - 3.3.*rand(1,200);
-X1_init(2,:) = max(X1_init(2,:), 30*ones(1,200));
 % constraints
 A= [-1 1; 1 -1]; b= [0; 3.4]; Aeq=[]; beq=[]; lb = [30;30]; ub = [70;70];
-option_mesh = 1e5; option_BVP = 1e-6; option_data = 1; % <---IMPORTANT
+option_mesh = 1e4; option_BVP = 1e-4; option_data = 1;
 % paretosearch
-options = optimoptions('paretosearch','ParetoSetSize',200, 'InitialPoints',X1_init','Display','iter','MaxFunctionEvaluations',10000, 'ParetoSetChangeTolerance',1e-5,'UseParallel', true);
-X = paretosearch(@(x)fun_unscaled(x,option_data,'Pareto',option_mesh,option_BVP),2,A,b,Aeq,beq,lb,ub,@(x)nonlcon(x,'default'),options);
+options = optimoptions('paretosearch','ParetoSetSize',200, 'InitialPoints',X1_init','Display','iter','MaxFunctionEvaluations',10000, 'ParetoSetChangeTolerance',1e-6,'UseParallel', true);
+X = paretosearch(@(x)fun_unscaled(x,option_data,'Pareto',option_mesh,option_BVP),2,A,b,Aeq,beq,lb,ub,[],options);
 % evaluate optimal points
 X1_pareto=X';Y1_pareto=zeros(200,18);
 parfor i=1:200
@@ -41,8 +44,44 @@ t1_pareto = endTime - startTime;
 save Output_DATA/DATA_Case_1.mat X1_init X1_pareto Y1_pareto t1_pareto
 disp('Finished calculating the Pareto front for the single SWRO unit.')
 disp('_______________________________________________________________')
+%
+%% Compare initial data to Pareto curve
+scatter(Y1_init(:,1),Y1_init(:,2),'k','filled');hold on;xlabel('SEC_{net} [kWh/m^3]'); ylabel('FW [m^3/h]');
+scatter(Y1_pareto(:,1),Y1_pareto(:,2),'r','filled');hold on;
+xlim([-10 0]);ylim([0 2.2]);
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 %% Paretosearch - Case2
 load("Output_DATA/DATA_Case_2.mat");clc
 disp('Starting Pareto front calculation for the SWRO unit with ERD.')

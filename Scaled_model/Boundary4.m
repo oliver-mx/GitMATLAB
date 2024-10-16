@@ -12,7 +12,7 @@ function [ res ] = Boundary4(ya, yb, DATA)
 if V_m ==0 
 swroC_in = cE;
 proC_in = yb(1);
-PRO_brine = Q_r/J_r*(yb(2))*(1-eta_ERD);
+PRO_brine = J_r/Q_r*(yb(1)*yb(2)+yb(2))*(1-eta_ERD);
 else
 %% with Mixing i.e. V_m > 0
 % second ERD (i.e. index 2)
@@ -35,7 +35,7 @@ J_wERD1= J_ERD1/(C_ERD1+1);
 % final calculations
 swroC_in = (C_ERD2*J_wE1*mix_M1 + C_ERD1*J_wERD1)/(J_wE1*mix_M1+J_wERD1);
 proC_in = (C_ERD2*J_wE1*(1-mix_M1) + yb(1)*yb(2)*(1-eta_ERD) - C_ERD1*J_wERD1 )/(J_wE1*(1-mix_M1) + yb(2)*(1-eta_ERD) - J_wERD1);
-PRO_brine = J_r*swro_x_r*(J_wE1*(1-mix_M1) + yb(2)*(1-eta_ERD) - J_wERD1)/Q_r/x_r;
+PRO_brine = J_r*( (yb(1)*yb(2)+yb(2))*(1-eta_ERD) )/Q_r;
 end
 
 %% define vector for residual error
@@ -58,6 +58,6 @@ res =   [ % SWRO part:
 %% counter current (just that PRO model wont break)  
 if version(1) ==1
     res(7)=yb(7) - proC_in; 
-    res(8)=yb(6+2) + PRO_brine;
+    res(8)=yb(6+1)*yb(6+2)+yb(6+2) + PRO_brine;
 end 
 end

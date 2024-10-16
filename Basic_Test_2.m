@@ -56,10 +56,10 @@ nexttile
 scatter3(X0(1,:), 10*(X0(1,:)-X0(2,:)),Y2(:,userNumber),sz,Y2(:,userNumber),'filled');hold on; title('SWRO with ERD'); xlabel('P_{d;0}^{RO} [bar]'); axis equal;view(2); grid on;colormap(cmap);colorbar
 xlim([30.7 70]);ylim([1.1 33]);yticks(10:10:30);yticklabels({'\DeltaP^{RO} = 1','\DeltaP^{RO} = 2','\DeltaP^{RO} = 3'})
 nexttile
-scatter3(X0h(1,:), 10*(X0h(1,:)-X0h(2,:)),Y3(:,userNumber),sz,Y3(:,userNumber),'filled');hold on; title('Hybrid I'); xlabel('P_{d;0}^{RO} [bar]');axis equal;view(2); grid on;colormap(cmap);colorbar
+scatter3(X0h(1,1:n), 10*(X0h(1,1:n)-X0h(2,1:n)),Y3(1:n,userNumber),sz,Y3(1:n,userNumber),'filled');hold on; title('Hybrid I'); xlabel('P_{d;0}^{RO} [bar]');axis equal;view(2); grid on;colormap(cmap);colorbar
 xlim([30.7 70]);ylim([1.1 33]);yticks(10:10:30);yticklabels({'\DeltaP^{RO} = 1','\DeltaP^{RO} = 2','\DeltaP^{RO} = 3'})
 nexttile
-scatter3(X0h(1,:), 10*(X0h(1,:)-X0h(2,:)),Y4(:,userNumber),sz,Y4(:,userNumber),'filled');hold on; title('Hybrid II'); xlabel('P_{d;0}^{RO} [bar]');axis equal;view(2); grid on;colormap(cmap);colorbar
+scatter3(X0h(1,1:n), 10*(X0h(1,1:n)-X0h(2,1:n)),Y4(1:n,userNumber),sz,Y4(1:n,userNumber),'filled');hold on; title('Hybrid II'); xlabel('P_{d;0}^{RO} [bar]');axis equal;view(2); grid on;colormap(cmap);colorbar
 xlim([30.7 70]);ylim([1.1 33]);yticks(10:10:30);yticklabels({'\DeltaP^{RO} = 1','\DeltaP^{RO} = 2','\DeltaP^{RO} = 3'})
 
 %% Expected Pareto Fronts
@@ -85,7 +85,13 @@ scatter(Y4(:,1),Y4(:,2),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',[0.9290 0.69
 xlim([-10 0]);ylim([0 2.2]);
 
 %evtl one figure that combines them
-
+f=figure(2);f.Position= [823.6667 167.6667 989.3333 483.3333];
+scatter(Y1(:,1),Y1(:,2),'r','filled');hold on;xlabel('SEC_{net} [kWh/m^3]'); ylabel('FW [m^3/h]');
+scatter(Y2(:,1),Y2(:,2),'b','filled');hold on; title('SWRO with ERD'); xlabel('SEC_{net} [kWh/m^3]'); ylabel('FW [m^3/h]');
+scatter(Y3(:,1),Y3(:,2),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',[0.8500 0.3250 0.0980]);hold on; title('Hybrid I'); xlabel('SEC_{net} [kWh/m^3]'); ylabel('FW [m^3/h]');
+scatter(Y4(:,1),Y4(:,2),'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',[0.9290 0.6940 0.1250]);hold on; title('Hybrid II'); xlabel('SEC_{net} [kWh/m^3]'); ylabel('FW [m^3/h]');
+xlim([-10 0]);ylim([0 2.2]);
+%scatter(-1.7763,0.56987,'yellow','filled')
 
 
 

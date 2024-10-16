@@ -49,7 +49,8 @@ if option_data == -.7; DATA = @(x)data7(input); end
 if option_data == -.8; DATA = @(x)data8(input); end
 if option_data == -.9; DATA = @(x)data9(input); end
 %
-if option_data == 0; DATA = @(x)Lee_data(input);end
+%if option_data == 0; DATA = @(x)Lee_data(input);end
+if option_data == 0; DATA = @(x)Senthil_data(input);end
 if option_data == 1; DATA = @(x)Case_1_data(input); end
 if option_data == 2; DATA = @(x)Case_2_data(input); end
 if option_data == 3; DATA = @(x)Case_3_data(input); end
@@ -85,7 +86,7 @@ if version(6) == 4; sol = bvp5c(@(x,J_p)ODEsystem(x, J_p, DATA), @(ya,yb)Boundar
 
 if version(6)>0 && version(6)~=2
     y = deval(sol,x); Y = y'; Y = real(Y);
-    mix_M1 = ((Y(end,1).*Y(end,2)+Y(end,2))*(1-eta_ERD))/(Y(1,1).*Y(1,2)+Y(1,2));  
+    mix_M1 = ((Y(end,1).*Y(end,2)+Y(end,2)))/(Y(1,1).*Y(1,2)+Y(1,2));  
     % data with new mix_M1
     if option_data == .1; DATA = @(x)Test_01_data(input,mix_M1); end
     if option_data == .2; DATA = @(x)Test_02_data(input,mix_M1); end
@@ -104,6 +105,7 @@ if version(6)>0 && version(6)~=2
     if option_data == -.9; DATA = @(x)data9(input,mix_M1); end
     %
     %if option_data == 0; DATA = @(x)Lee_data(input,mix_M1);end
+    if option_data == 0; DATA = @(x)Senthil_data(input,mix_M1);end
     if option_data == 1; DATA = @(x)Case_1_data(input,mix_M1); end
     if option_data == 2; DATA = @(x)Case_2_data(input,mix_M1); end
     if option_data == 3; DATA = @(x)Case_3_data(input,mix_M1); end
@@ -151,11 +153,11 @@ swro_local_ro_f = (Y(:,3) + Y(:,4))./(Y(:,3)./ro_salt + Y(:,4)./ro_water)/rho_r;
     elseif version(7) == 0 % ICP
         J_cross = ((Y(:,5) - Y(:,6)) - sigma.*(swro_p_osm_d - swro_p_osm_f))./(1 + p_r*swro_alpha*swro_KK*sigma.*(swro_p_osm_d - swro_p_osm_f));
     else % ICP+ECP
-        J_cross = ((Y(:,5) - Y(:,6)) .* (ones(n,1) + swro_beta_fix.*ones(n,1).* (1 ./ swro_KD + 1.*swro_KK + 1 ./ swro_KF)) - sigma .* (swro_p_osm_d - swro_p_osm_f)) ./ (ones(n,1) + swro_beta_fix.*ones(n,1) .* (1 / swro_KD + swro_KK + 1 / swro_KF) - p_r .* swro_alpha .*sigma .* (swro_p_osm_d ./ swro_KD + swro_p_osm_f .* swro_KK + swro_p_osm_f ./ swro_KF));
+        J_cross = ((Y(:,5) - Y(:,6)) .* (ones(n,1) + swro_beta_fix.*ones(n,1).* (-1 ./ swro_KD + 1.*swro_KK + 1 ./ swro_KF)) - sigma .* (swro_p_osm_d - swro_p_osm_f)) ./ (ones(n,1) + swro_beta_fix.*ones(n,1) .* (-1 / swro_KD + swro_KK + 1 / swro_KF) - p_r .* swro_alpha .*sigma .* (-swro_p_osm_d ./ swro_KD + swro_p_osm_f .* swro_KK + swro_p_osm_f ./ swro_KF));
     end
     % Salt Permeate J_sin(x)
     if version(7) == 1 % ICP+ECP
-        J_sin = swro_beta .* ((C_d - C_f) - C_d .* J_cross.*p_r.*swro_alpha ./ swro_KD - (C_f) .* J_cross.*p_r.*swro_alpha .* (swro_KK + ones(n,1) ./ swro_KF)) ./ (ones(n,1) + swro_beta_fix.*ones(n,1) .* (1 ./ swro_KD + swro_KK + 1 ./ swro_KF));
+        J_sin = swro_beta .* ((C_d - C_f) + C_d .* J_cross.*p_r.*swro_alpha ./ swro_KD - (C_f) .* J_cross.*p_r.*swro_alpha .* (swro_KK + ones(n,1) ./ swro_KF)) ./ (ones(n,1) + swro_beta_fix.*ones(n,1) .* (-1 ./ swro_KD + swro_KK + 1 ./ swro_KF));
     else
         J_sin=swro_beta_fix.*(C_d-C_f);
     end
@@ -232,6 +234,7 @@ if version(6)==1
     f_2 = ERD_fric * mix_density * (J_ERD*swro_b2/rho_ERD)*((J_d(end)*swro_b2)/(swro_local_ro_d(end)*swro_b1*swro_b2))^2;
     f_r= (J_r*p_r*swro_x_r/rho_r) / (J_r^3/rho_r^2/swro_x_r); % scaling factor between f and P*J*Z/rho
     pERD = rho_ERD*(ERD_eff*(P_d(end)*J_d(end)*swro_b2*(1-eta_ERD)/swro_local_ro_d(end)-pE*J_exit*swro_b2/rho_exit - f_2/f_r) + pE*J_M1*swro_b2/rho_E*rho_r + f_1/f_r)/J_ERD/swro_b2;
+    norm_f1=min(abs(f_1-f_2),abs(f_2-f_1))/J_r/p_r/swro_x_r*rho_r; % dimensions: J_r*p_r*swro_x_r*/rho_r [W];
     % pumps
     W_p1 = 1/HP_eff * (pE - P_d(1))*((J_E-J_M1) *swro_Z)/rho_E; W_p1 = W_p1*swro_W_r;
     W_p3 = 1/HP_eff * (pERD - P_d(1))*(J_ERD*swro_Z)/rho_ERD/rho_r; W_p3 = W_p3*swro_W_r;
@@ -279,6 +282,7 @@ if version(6)==3
         pERD = rho_ERD*(ERD_eff*(P_d(end)*J_d(end)*swro_b2*(1-eta_ERD)/swro_local_ro_d(end)-p_d(end)*qq*abs(Q_d(end))*b2/local_ro_d(end) - f_2/f_r) + pE*J_M1*swro_b2/rho_E*rho_r + f_1/f_r)/J_ERD/swro_b2;
         W_t = T_eff * (p_d(1)-pE)*(abs(Q_d(1))*Z)/local_ro_d(1)/rho_r; W_t = W_t*W_r;
     end
+    norm_f1=min(abs(f_1-f_2),abs(f_2-f_1))/J_r/p_r/swro_x_r*rho_r; % dimensions: J_r*p_r*swro_x_r*/rho_r [W];
     W_p3 = 1/HP_eff * (pERD - P_d(1))*(J_ERD*swro_Z)/rho_ERD/rho_r; W_p3 = W_p3*swro_W_r;
 end
 
@@ -334,6 +338,7 @@ if version(6)==4
         pERD2 = rho_ERD2*(ERD_eff*(p_d(1)*qq*(1-mix_M3)*abs(Q_d(1))*swro_b2*(1-eta_ERD)/local_ro_d(1)-pE*qq*abs(Q_exit)*swro_b2/rho_exit - f_2/f_r) + pE*J_E2*swro_b2/rho_E*rho_r + f_1/f_r)/J_E2/swro_b2;
         W_t = T_eff * (p_d(1)-pE)*(mix_M3*abs(Q_d(1))*Z)/local_ro_d(1)/rho_r; W_t = W_t*W_r;
     end
+    norm_f3=min(abs(f_1-f_2),abs(f_2-f_1))/J_r/p_r/swro_x_r*rho_r; % dimensions: J_r*p_r*swro_x_r*/rho_r [W];
     % Calculation for 1st ERD ---------------------------------------------
     f_2 = ERD_fric * mix_density * (J_ERD1*swro_b2/rho_ERD1)*((J_d(end)*swro_b2)/(swro_local_ro_d(end)*swro_b1*swro_b2))^2;
     if version(6) == 0 % co-current
@@ -343,6 +348,7 @@ if version(6)==4
         f_1 = ERD_fric * mix_density * (qq*abs(Q_d(end))*b2/local_ro_d(end))*((J_E1*(1-mix_M1)*swro_b2)/(rho_ERD2*swro_b1*swro_b2))^2; 
         pERD = rho_ERD1*(ERD_eff*(P_d(end)*J_d(end)*swro_b2*(1-eta_ERD)/swro_local_ro_d(end)-p_d(end)*qq*abs(Q_d(end))*b2/local_ro_d(end) - f_2/f_r) + pERD2*J_E1*(1-mix_M1)*swro_b2/rho_ERD2 + f_1/f_r)/J_ERD1/swro_b2;
     end
+    norm_f1=min(abs(f_1-f_2),abs(f_2-f_1))/J_r/p_r/swro_x_r*rho_r; % dimensions: J_r*p_r*swro_x_r*/rho_r [W]; 
     W_p3 = 1/HP_eff * (pERD-P_d(1))*(J_ERD1*swro_Z)/rho_ERD1/rho_r; W_p3 = W_p3*swro_W_r;
     W_p1 = 1/HP_eff * (pERD2-P_d(1))*(J_E1*mix_M1*swro_Z)/rho_ERD2/rho_r; W_p1 = W_p1*swro_W_r;
 end
@@ -396,6 +402,9 @@ C_dilluted = NaN; % in [%]
         end
     end
 
+if version(6)==0; mix_M1=NaN; norm_f1=NaN; end
+if version(6)==2; mix_M1=NaN; norm_f1=NaN; end
+if version(6)<4; mix_M3=NaN; norm_f3=NaN; end
 if version(6)==2
     SEC_net=NaN;FW=NaN;Rev=NaN;SWRO_Recovery=NaN;C_permeate=NaN;mix_M1=NaN;
     RO_inflow=W_net./(Z*L); 
@@ -403,8 +412,9 @@ if version(6)==2
 end
 
 output1 = [SEC_net, FW, Rev, SWRO_Recovery, PRO_Recovery, ...
-           RO_inflow, Permeate_outflow, Wastewater_inflow, C_permeate, C_brine, C_dilluted, mix_M1...
-           W_net, W_p1, W_p2,  W_p3, W_p4, W_t]; % length(output1) = 5+7+6 = 18
+           RO_inflow, Permeate_outflow, Wastewater_inflow, C_permeate, C_brine, C_dilluted, ...
+           W_net, W_p1, W_p2,  W_p3, W_p4, W_t, ...
+           mix_M1, norm_f1, mix_M3, norm_f3]; % length(output1) = 5+6+6+4 = 21
 
 if version(6)==2
 %    PD_net = W_net./(Z*L); %in [W/m^2]

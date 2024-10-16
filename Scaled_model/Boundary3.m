@@ -23,7 +23,7 @@ J_wE = J_E/(cE+1);
 J_wERD= J_ERD/(C_ERD+1);
 swroC_in = (cE*J_wE*mix_M1 + C_ERD*J_wERD)/(J_wE*mix_M1+J_wERD);
 proC_in = (cE*J_wE*(1-mix_M1) + yb(1)*yb(2)*(1-eta_ERD) - C_ERD*J_wERD )/(J_wE*(1-mix_M1) + yb(2)*(1-eta_ERD) - J_wERD);
-PRO_brine = J_r*(J_wE*(1-mix_M1) + yb(2)*(1-eta_ERD) - J_wERD)/Q_r;
+PRO_brine = J_r*( (yb(1)*yb(2)+yb(2))*(1-eta_ERD) )/Q_r;
 end
 
 %% define vector for residual error
@@ -37,7 +37,7 @@ res =   [ % SWRO part:
 
           % PRO part:
           ya(7)-  proC_in       % INCOMMING CONZENTRATION FROM ERD TO PRO
-          ya(6-1)*ya(6-2)+ya(6+2) - PRO_brine
+          ya(6+1)*ya(6+2)+ya(6+2) - PRO_brine
           ya(9)-  Q_sf_0       	% salt flux in fresh side at 0
           ya(12)- pf_0      	% pressure of fresh side at 0
           yb(11)- pd_L          % pressure draw side at L 
@@ -46,7 +46,7 @@ res =   [ % SWRO part:
 %% counter current (just that PRO model wont break)  
 if version(1) ==1
     res(7)=yb(7) - proC_in; 
-    res(8)=yb(6-1)*yb(6-2)+yb(6+2) + PRO_brine;
+    res(8)=yb(6+1)*yb(6+2)+yb(6+2) + PRO_brine;
 end 
 
 end

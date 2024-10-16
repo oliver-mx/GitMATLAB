@@ -70,10 +70,6 @@ plot(XX, ZZZ, 'Color', rc, 'LineWidth',lw); ylabel('SEC (kWh/m^3)','Fontsize',10
 %% save figure
 figure(1); set(gcf,'color','w'); f = gcf; exportgraphics(f,'Vergleich_Senthil.png');
 
-%% load/save data for plot
-load("Output_DATA/Vergleich_mit_Senthil.mat")
-%save Output_DATA/Vergleich_mit_Senthil.mat X Y Z XX YY ZZ YYY ZZZ Q QQ QQQ
-
 
 
 
@@ -90,7 +86,7 @@ for x=1:length(X)
     out=fun_unscaled([XX(x); 50.47; 0],0,'sol',1e4,1e-3);
     YYY(x)= out(9); ZZZ(x)=-out(1);QQQ(x)=out(13);
 end
-
+save Output_DATA/Vergleich_mit_Senthil.mat X Y Z XX YY ZZ YYY ZZZ Q QQ QQQ
 
 
 
