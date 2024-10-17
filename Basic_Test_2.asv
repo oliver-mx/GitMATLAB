@@ -28,7 +28,7 @@ end
 Y1=zeros(n,21);Y2=zeros(n,21);Y3=zeros(n*h,21);Y4=zeros(n*h,21);
 %load Output_DATA/Basic_Test_Output
 startTime=datetime("now");
-parfor i=1:n % n*h
+parfor i=2501:n %n*h
     if i<n+1
         Y1(i,:)=fun_unscaled([0; X0(:,i)],.1,'fig',1e4,1e-4);
         Y2(i,:)=fun_unscaled([0; X0(:,i)],.2,'fig',1e4,1e-4);
@@ -37,7 +37,7 @@ parfor i=1:n % n*h
         Y4(i,:)=fun_scaled(X0h(:,i),.5,'fig',1e4,1e-6); %     idea: replace(X0) repmat with actual random data
 end
 endTime=datetime("now");
-time = endTime - startTime; %
+time = endTime - startTime; % +3h 38min
 save Output_DATA/Basic_Test_Output X0 X0h Y1 Y2 Y3 Y4 n h time
 
 system('git add .'); system('git commit -m "Neue Simulation"');system('git push https://github.com/oliver-mx/GitMATLAB.git');

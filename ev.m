@@ -14,7 +14,7 @@ function ev(a,I)
             if i == 4;str1='REC_RO  =  ';str2=' [%]';end
             if i == 5;str1='REC_PRO =  ';str2=' [%]';end
                 if isnan(a(4))
-                    if i == 6;str1='PD_net  =  ';str2=' [W^2/m^2]';end
+                    if i == 6;str1='PD_net  =  ';str2=' [W/m^2]';end
                     if i == 7;str1='P_d_out =   ';str2=' [bar]';end
                 else
                     if i == 6;str1='RO_draw_in    = ';str2=' [m^3/s]';end

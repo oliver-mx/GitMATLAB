@@ -15,7 +15,7 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
         input2=.5;
     end
 
-     %% model versions
+    %% model versions
     version = zeros(1, 10);
     % version(1) = 0 if co-current PRO, 1 otherwise
     version(2) = input1(1);  % <-- unscaled RO feed massflow rate 
@@ -95,9 +95,9 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     Q_sf_0 = 0;              % salt flux in fresh side at 0
     pf_L = pE;               % pressure of fresh side at L
 
-    pd_0 = 5.4;       % pressure draw side at 0
-    pd_L = 5.3995;     % pressure of fresh side at 0
-    pf_0 = 1.00003;     % pressure draw side at L 
+    pd_0 = 9.99952;       % pressure draw side at 0
+    pd_L = 10;     % pressure of fresh side at 0
+    pf_0 = 1.001;     % pressure draw side at L 
 
     %% ERD/Turbine/Pump parameters
     T_eff  = .95;               % turbine efficiency

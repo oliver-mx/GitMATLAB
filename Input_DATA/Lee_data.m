@@ -8,7 +8,7 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     %   option_data = 0.3
     %
     %   Input:
-    %       input1        -   [flow_d_in, P_d_0, P_d_L, P_f_in]
+    %       input1        -   [flow_d_in, P_d_L, P_d_f, C_d_in]
     %       input2        -    mix_M1
 
     if nargin == 1
@@ -64,7 +64,7 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
 
     %% PRO
     Z = 17.7165;   % width of the PRO membrane [m]
-    L = 60*1.016;     % length of the PRO membrane [m]      
+    L = 1*1.016;     % length of the PRO membrane [m]      
     alpha = 5.47e-9;    % water permeability coefficient [s/m]
     KK = 7.13e2;        % mass transfer coefficient [sm^2/kg]
     KD = 1 / KK;        % PRO ECP draw side mass transfer coefficient [sm^2/kg]
@@ -79,7 +79,7 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     beta_fix = 1.71e-4;                        % value for fixed PRO beta [kg/sm^2]
 
     %% Sea Water
-    cE = input1(5);                                   % salt concentration in seawater
+    cE = input1(4);                                   % salt concentration in seawater
     pE = 1e5 / p_r;                                   % external pressure
     rho_E = (cE + 1) / (cE / ro_salt + 1 / ro_water); % density of incoming seawater
 
@@ -95,9 +95,9 @@ function [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_
     Q_sf_0 = 0;              % salt flux in fresh side at 0
     pf_L = pE;               % pressure of fresh side at L
 
-    pd_0 = input1(2);     % pressure draw side at 0
-    pd_L = input1(3);     % pressure of fresh side at 0
-    pf_0 = input1(4);     % pressure draw side at L 
+    pd_0 = input1(2)-.1;     % pressure draw side at 0
+    pd_L = input1(2);     % pressure of fresh side at 0
+    pf_0 = input1(3);     % pressure draw side at L 
 
     %% ERD/Turbine/Pump parameters
     T_eff  = .95;               % turbine efficiency

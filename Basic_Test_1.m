@@ -4,18 +4,18 @@ addpath('Input_DATA','Scaled_model','Unscaled_model','Output_DATA')
 %% single SWRO:
 clc;
 [a1,b1]=fun_unscaled([0;55.6;54.72],.1,'fig',1e4,1e-4);
-ev(a1,[1 2 4 5 12])
+%[a1,b1]=fun_scaled([0;55.6;54.72],.1,'fig',1e4,1e-4);
+ev(a1,[1 2 4])
 %
 % SEC_net = -3.0825 [kWh/m^3]
 % FW      =  0.68044 [m^3/h]
-% REC_RO  =  53.5756 [%]
-% REC_PRO =  NaN [%]
-% mix_M1  =  NaN 
+% REC_RO  =  53.5759 [%]
 %
 
 %% SWRO with ERD:
 clc;
 [a2,b2]=fun_unscaled([0;55.6;54.72],.2,'fig',1e4,1e-4);
+%[a2,b2]=fun_scaled([0;55.6;54.72],.2,'fig',1e4,1e-4);
 ev(a2,[1 2 4 5 18 19])
 %
 % SEC_net = -1.7798 [kWh/m^3]
@@ -25,18 +25,10 @@ ev(a2,[1 2 4 5 18 19])
 % mix_M1  = 0.47003 
 % F_1-F_2 = 2.2852e-10 [kg m^2/s^3]
 
-%%
-clc
-[a2,b2]=fun_scaled([0;55.6;54.72],.2,'fig',1e4,1e-4);
-ev(a2,[1 2 4 5 18 19])
-%
-% SEC_net = -1.7975 [kWh/m^3]
-% FW      =  0.5834 [m^3/h]
-% REC_RO  =  48.3691 [%]
-% REC_PRO =  NaN [%]
-% mix_M1  =  0.51449 
-% F_1-F_2 =  0.012534 [kg m^2/s^3]
-
+%% PRO 
+clc;
+[a3,b3]=fun_scaled([-0.0024; 0 ; 5 ; 1.00003; 0.05],.3,'fig',1e4,1e-3);
+ev(a3,[5 6])
 
 %% PRO 
 clc;

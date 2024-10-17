@@ -4,26 +4,26 @@ addpath('Input_DATA','Scaled_model','Unscaled_model','Output_DATA')
 %% single SWRO:
 clc;
 [a1,b1]=fun_unscaled([0;55.6;54.72],.1,'fig',1e4,1e-4);
-ev(a1,[1 2 4 5 12])
+%[a1,b1]=fun_scaled([0;55.6;54.72],.1,'fig',1e4,1e-4);
+ev(a1,[1 2 4])
 %
 % SEC_net = -3.0825 [kWh/m^3]
 % FW      =  0.68044 [m^3/h]
-% REC_RO  =  53.5756 [%]
-% REC_PRO =  NaN [%]
-% mix_M1  =  NaN 
+% REC_RO  =  53.5759 [%]
 %
 
 %% SWRO with ERD:
 clc;
 [a2,b2]=fun_unscaled([0;55.6;54.72],.2,'fig',1e4,1e-4);
+%[a2,b2]=fun_scaled([0;55.6;54.72],.2,'fig',1e4,1e-4);
 ev(a2,[1 2 4 5 18 19])
 %
 % SEC_net = -1.7798 [kWh/m^3]
 % FW      =  0.66103 [m^3/h]
 % REC_RO  =  52.5707 [%]
 % REC_PRO =  NaN [%]
-%  mix_M1   = 0.47003 
-% |F_1-F_2| = 2.2852e-10 [kg m^2/s^3]
+% mix_M1  = 0.47003 
+% F_1-F_2 = 2.2852e-10 [kg m^2/s^3]
 
 %% PRO 
 clc;
@@ -36,30 +36,30 @@ ev(a3,[5 6])
 
 %% hybrid system I:
 clc;
-[a4,b4]=fun_scaled([55.6,54.72,10,1.001],.4,'fig',1e4,1e-6);
+[a4,b4]=fun_scaled([55.6,54.72,10,1.001],.4,'fig',1e4,1e-4);
 ev(a4,[1 2 4 5 18 19])
 %
 % SEC_net = -1.7746 [kWh/m^3]
 % FW      =  0.58614 [m^3/h]
 % REC_RO  =  48.8954 [%]
 % REC_PRO =  9.0944 [%]
-%  mix_M1   = 0.50721 
-% |F_1-F_2| = 0.0082248 [kg m^2/s^3]
+% mix_M1  = 0.50721 
+% F_1-F_2 = 0.0082248 [kg m^2/s^3]
 %
 
 %% hybrid system II:
 clc;
-[a5,b5]=fun_scaled([55.6,54.72,10,1.001],.5,'fig',1e4,1e-6);
+[a5,b5]=fun_scaled([55.6,54.72,10,1.001],.5,'fig',1e4,1e-4);
 ev(a5,[1 2 4 5 18 19 20 21])
-% no mixing:                          % with mixing:
-% SEC_net = -1.8298 [kWh/m^3]           SEC_net = -1.8417 [kWh/m^3]
-% FW      =  0.6003 [m^3/h]             FW      =  0.57007 [m^3/h]
-% REC_RO  =  49.6975 [%]                REC_RO  =  47.9708 [%]
-% REC_PRO =  92.1988 [%]                REC_PRO =  92.0996 [%]
-%  mix_M1   = 0.49911               
-% |F_1-F_2| = 0.68641 [kg m^2/s^3]
-%  mix_M2   = 0 
-% |f_1-f_2| = 3.2727 [kg m^2/s^3]
+% 
+% SEC_net = -1.8681 [kWh/m^3]
+% FW      =  0.57091 [m^3/h]
+% REC_RO  =  48.0191 [%]
+% REC_PRO =  9.1264 [%]
+% mix_M1  = 0.51605 
+% F_1-F_2 = 0.52522 [kg m^2/s^3]
+% mix_M2  = 0 
+% f_1-f_2 = 3.0622 [kg m^2/s^3]
 %
 
 

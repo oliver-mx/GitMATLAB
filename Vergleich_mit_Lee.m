@@ -2,12 +2,109 @@
 % press [ctrl]+[enter] to run code sections
 addpath('Input_DATA','Scaled_model','Unscaled_model','Output_DATA')
 
-%% quick test
-clc;
-%[a3,b3]=fun_scaled([-0.335; 0 ; 10 ; 1.000009; 0.063],0,'fig',1e4,1e-6);
-[a3,b3]=fun_scaled([-0.335; 0 ; 5 ; 1.05; 0.063],0,'sol',1e4,1e-6);
+%% test
+% flow rates bei C=0%
+%
+% [9 10 12 13 14].*(1000/60/17.7165/3600)
+% = 0.0024    0.0026    0.0031    0.0034    0.0037 [kg/ms]
+%
+clc,
+[a,b]=fun_scaled([-0.0024, 5, 1.000003, 0.05],-1,'fig',1e4,1e-4);
+ev(a,[5 6 12 17])
 
-ev(a3,[5 6])
+%% Plot figure 10
+close all;f=figure(1);f.Position = [597 635 1024 604.6667];
+load Output_DATA/Vergleich_mit_Lee.mat
+lw=1.3;ms=9;
+plot([9 10 12 13 14],Y(1,:)./100,'k-o','Linewidth',lw,'MarkerSize',ms,'MarkerFaceColor','black'); hold on % 5 bar
+plot([9 10 12 13 14],Y(2,:)./100,'k-o','Linewidth',lw,'MarkerSize',ms,'MarkerFaceColor','white'); hold on % 10 bar
+plot([9 10 12 13 14],Y(3,:)./100,'k-v','Linewidth',lw,'MarkerSize',ms,'MarkerFaceColor','black'); hold on % 15 bar
+plot([9 10 12 13 14],Y(4,:)./100,'k-^','Linewidth',lw,'MarkerSize',ms,'MarkerFaceColor','white'); hold on % 20 bar
+xlim([8 15]);ylim([0 1]);
+yticks([0 0.2 0.4 0.6 0.8 1]);yticklabels({'0.0','0.2','0.4','0.6','0.8','1.0'})
+xlabel('PRO feed flow rate (m^3/h)','Fontsize',14);ylabel('PRO recovery','Fontsize',14)
+lgd = legend('5 bar','10 bar','15 bar','20 bar', 'Location','eastoutside');
+set(lgd,'FontSize',12);
+%figure(1); set(gcf,'color','w'); f = gcf; exportgraphics(f,'Vergleich_Lee.png');
+
+%% Calculation for Fig 10
+P = [5 10 15 20];
+total_flow = [-0.0024 -0.0026 -0.0031 -0.0034 -0.0037]; % [9 10 12 13 14] m^3/h --> kg/s/m
+C=0.06;
+Y=zeros(4,5); YY=zeros(20,21);
+X=1.000003.*ones(4,5); % 1.000003 works well
+k=0;
+for i=1:5
+    for j=1:4
+        k=k+1;
+        out=fun_scaled([total_flow(i), P(j), X(j,i), C],-1,'sol',1e4,1e-4);
+        YY(k,:)=out;
+        Y(j,i)=out(5);
+    end
+end
+disp(Y)
+save Output_DATA/Vergleich_mit_Lee.mat X Y YY
+
+%% PROBLEM with PRO fresh side pressure
+P = [5 10 15 20]; C=0.06; total_flow = [-0.0024 -0.0026 -0.0031 -0.0034 -0.0037];
+Y=zeros(4,5); YY=zeros(20,21);close all;clc
+f=figure(1);f.Position = [692.3333 273 1.6879e+03 1.0574e+03]; tiledlayout(2,2)
+load Output_DATA/Vergleich_mit_Lee.mat
+nexttile; lw=1.1;ms=7;
+plot([9 10 12 13 14],Y(1,:)./100,'k-o','Linewidth',lw,'MarkerSize',ms,'MarkerFaceColor','black'); hold on % 5 bar
+plot([9 10 12 13 14],Y(2,:)./100,'k-o','Linewidth',lw,'MarkerSize',ms,'MarkerFaceColor','white'); hold on % 10 bar
+plot([9 10 12 13 14],Y(3,:)./100,'k-v','Linewidth',lw,'MarkerSize',ms,'MarkerFaceColor','black'); hold on % 15 bar
+plot([9 10 12 13 14],Y(4,:)./100,'k-^','Linewidth',lw,'MarkerSize',ms,'MarkerFaceColor','white'); hold on % 20 bar
+xlim([8 15]);ylim([0 1]); yticks([0 0.2 0.4 0.6 0.8 1]);yticklabels({'0.0','0.2','0.4','0.6','0.8','1.0'})
+xlabel('PRO feed flow rate (m^3/h)','Fontsize',14);ylabel('PRO recovery','Fontsize',14);lgd = legend('5 bar','10 bar','15 bar','20 bar', 'Location','eastoutside');set(lgd,'FontSize',12);
+lgd.Title.String = 'Pd_f(0)=100000.3 Pa'; lgd.Title.FontSize = 12;
+% _______________________________________________________________
+nexttile
+X=1.000001.*ones(4,5);
+for i=1:5
+    for j=1:4
+        out=fun_scaled([total_flow(i), P(j), X(j,i), C],-1,'sol',1e4,1e-4);Y(j,i)=out(5);
+    end
+end
+plot([9 10 12 13 14],Y(1,:)./100,'k-o','Linewidth',lw,'MarkerSize',ms,'MarkerFaceColor','black'); hold on % 5 bar
+plot([9 10 12 13 14],Y(2,:)./100,'k-o','Linewidth',lw,'MarkerSize',ms,'MarkerFaceColor','white'); hold on % 10 bar
+plot([9 10 12 13 14],Y(3,:)./100,'k-v','Linewidth',lw,'MarkerSize',ms,'MarkerFaceColor','black'); hold on % 15 bar
+plot([9 10 12 13 14],Y(4,:)./100,'k-^','Linewidth',lw,'MarkerSize',ms,'MarkerFaceColor','white'); hold on % 20 bar
+xlim([8 15]);ylim([0 1]); yticks([0 0.2 0.4 0.6 0.8 1]);yticklabels({'0.0','0.2','0.4','0.6','0.8','1.0'})
+xlabel('PRO feed flow rate (m^3/h)','Fontsize',14);ylabel('PRO recovery','Fontsize',14);lgd = legend('5 bar','10 bar','15 bar','20 bar', 'Location','eastoutside');set(lgd,'FontSize',12);
+lgd.Title.String = 'Pd_f(0)=100000.1 Pa'; lgd.Title.FontSize = 12;
+% _______________________________________________________________
+nexttile
+X=1.00001.*ones(4,5);
+for i=1:5
+    for j=1:4
+        out=fun_scaled([total_flow(i), P(j), X(j,i), C],-1,'sol',1e4,1e-4);Y(j,i)=out(5);
+    end
+end
+plot([9 10 12 13 14],Y(1,:)./100,'k-o','Linewidth',lw,'MarkerSize',ms,'MarkerFaceColor','black'); hold on % 5 bar
+plot([9 10 12 13 14],Y(2,:)./100,'k-o','Linewidth',lw,'MarkerSize',ms,'MarkerFaceColor','white'); hold on % 10 bar
+plot([9 10 12 13 14],Y(3,:)./100,'k-v','Linewidth',lw,'MarkerSize',ms,'MarkerFaceColor','black'); hold on % 15 bar
+plot([9 10 12 13 14],Y(4,:)./100,'k-^','Linewidth',lw,'MarkerSize',ms,'MarkerFaceColor','white'); hold on % 20 bar
+xlim([8 15]);ylim([0 1]); yticks([0 0.2 0.4 0.6 0.8 1]);yticklabels({'0.0','0.2','0.4','0.6','0.8','1.0'})
+xlabel('PRO feed flow rate (m^3/h)','Fontsize',14);ylabel('PRO recovery','Fontsize',14);lgd = legend('5 bar','10 bar','15 bar','20 bar', 'Location','eastoutside');set(lgd,'FontSize',12);
+lgd.Title.String = 'Pd_f(0)=100001 Pa'; lgd.Title.FontSize = 12;
+% _______________________________________________________________
+nexttile
+X=1.00005.*ones(4,5);
+for i=1:5
+    for j=1:4
+        out=fun_scaled([total_flow(i), P(j), X(j,i), C],-1,'sol',1e4,1e-4);Y(j,i)=out(5);
+    end
+end
+plot([9 10 12 13 14],Y(1,:)./100,'k-o','Linewidth',lw,'MarkerSize',ms,'MarkerFaceColor','black'); hold on % 5 bar
+plot([9 10 12 13 14],Y(2,:)./100,'k-o','Linewidth',lw,'MarkerSize',ms,'MarkerFaceColor','white'); hold on % 10 bar
+plot([9 10 12 13 14],Y(3,:)./100,'k-v','Linewidth',lw,'MarkerSize',ms,'MarkerFaceColor','black'); hold on % 15 bar
+plot([9 10 12 13 14],Y(4,:)./100,'k-^','Linewidth',lw,'MarkerSize',ms,'MarkerFaceColor','white'); hold on % 20 bar
+xlim([8 15]);ylim([0 1]); yticks([0 0.2 0.4 0.6 0.8 1]);yticklabels({'0.0','0.2','0.4','0.6','0.8','1.0'})
+xlabel('PRO feed flow rate (m^3/h)','Fontsize',14);ylabel('PRO recovery','Fontsize',14);lgd = legend('5 bar','10 bar','15 bar','20 bar', 'Location','eastoutside');set(lgd,'FontSize',12);
+lgd.Title.String = 'Pd_f(0)=100005 Pa'; lgd.Title.FontSize = 12;
+%
+%figure(1); set(gcf,'color','w'); f = gcf; exportgraphics(f,'Vergleich_Lee2.png');
 
 
 
@@ -16,39 +113,10 @@ ev(a3,[5 6])
 
 
 
-%% Vergleich mit Senthil Table 2
-clc
-output=fun_unscaled([0; 50.47; 48.23],0,'fig',1e4,1e-3);
-disp('Operating cond:  P_d(0) = 50.47 bar      P_d(L) = 48.23 bar')
-disp(' ')
-disp('Experiment:      Recovery = 33.1 %       C_Permeate = 44 ppm')
-disp(['Our model:       Recovery = ',num2str(output(4)),' %    C_Permeate = ',num2str(output(9)),' ppm   ==>   J_d(0) = ',num2str(131.7146216211166*output(6)),' kg/sm'])
-str1=100*(output(4)-33.1)/33.1;str2=100*(output(9)-44)/44;
-if str1 > 0; str1=['+',num2str(str1)]; else str1=num2str(str1); end
-if str2 > 0; str2=['+',num2str(str2)]; else str2=num2str(str2); end
-warning(['                   ',str1,' %                ',str2,' %'])
-disp('_______________')
-J_d_in=131.7146216211166*output(6);
-output=fun_unscaled([J_d_in; 55.81; 0],0,'sol',1e4,1e-3);
-disp(['Operating cond:  P_d(0) = 55.81 bar      J_d(0) = ',num2str(131.7146216211166*output(6)),' kg/sm'] )
-disp(' ')
-disp('Experiment:      Recovery = 39.6 %       C_Permeate = 49 ppm         P_d(L) = 54.72')
-disp(['Our model:       Recovery = ',num2str(output(4)),' %     C_Permeate = ',num2str(output(9)),' ppm    P_d(L) = ',num2str(output(11)),' bar'])
-str1=100*(output(4)-39.6)/39.6;str2=100*(output(9)-49)/49;str3=100*(output(11)-54.72)/54.72;
-if str1 > 0; str1=['+',num2str(str1)]; else str1=num2str(str1); end
-if str2 > 0; str2=['+',num2str(str2)]; else str2=num2str(str2); end
-if str3 > 0; str3=['+',num2str(str3)]; else str3=num2str(str3); end
-warning(['                   ',str1,' %                 ',str2,' %               ',str3,' %'])
-disp('_______________')
-output=fun_unscaled([J_d_in; 60.28; 0],0,'sol',1e4,1e-3);
-disp(['Operating cond:  P_d(0) = 60.28 bar      J_d(0) = ',num2str(131.7146216211166*output(6)),' kg/sm'] )
-disp(' ')
-disp('Experiment:      Recovery = 44.5 %       C_Permeate = 52 ppm         P_d(L) = 59.22')
-disp(['Our model:       Recovery = ',num2str(output(4)),' %    C_Permeate = ',num2str(output(9)),' ppm    P_d(L) = ',num2str(output(11)),' bar'])
-str1=100*(output(4)-44.5)/44.5;str2=100*(output(9)-52)/52;str3=100*(output(11)-59.22)/59.22;
-if str1 > 0; str1=['+',num2str(str1)]; else str1=num2str(str1); end
-if str2 > 0; str2=['+',num2str(str2)]; else str2=num2str(str2); end
-if str3 > 0; str3=['+',num2str(str3)]; else str3=num2str(str3); end
-warning(['                   ',str1,' %                 ',str2,' %               ',str3,' %'])
-disp('_______________')
+
+
+
+
+
+
 
