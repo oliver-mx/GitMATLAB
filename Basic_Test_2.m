@@ -1,44 +1,27 @@
-%% Basic simulations for singleSWRO/SWRO+ERD/HybridI/HybridII
+%% Basic simulations for singleSWRO/SWRO+ERD
 % press [ctrl]+[enter] to run code sections
 addpath('Input_DATA','Scaled_model','Unscaled_model','Output_DATA')
 
 %% test random data
 rng default
+clear all; close all; clc,
 n=10000;
 X0=zeros(2,n); % <-- only SWRO
 for i=1:n
     X0(1,i)= 31+39*rand();
     X0(2,i)= X0(1,i) - .1 - 3.3*rand();
 end
-h=1; % <-- for hybrid
-X0h=[repmat(X0,1,h); zeros(2,n*h)];
-for i=1:n*h
-    % PRO draw inlet pressure
-    X0h(3,i)= 5+15*rand(); 
-    % PRO fresh inlet pressure
-    m=mod(i,h);
-    if m==0
-        X0h(4,i)= 1.1 + .9*rand();
-    else
-        X0h(4,i)= 1 + 1*10^(-m) + 9*rand()*10^(-m);
-    end
-end
 
 %% Simulations
-Y1=zeros(n,21);Y2=zeros(n,21);Y3=zeros(n*h,21);Y4=zeros(n*h,21);
-%load Output_DATA/Basic_Test_Output
+Y1=zeros(n,28);Y2=zeros(n,28);
 startTime=datetime("now");
-parfor i=1:n % n*h
-    if i<n+1
-        Y1(i,:)=fun_unscaled([0; X0(:,i)],.1,'fig',1e4,1e-4);
-        Y2(i,:)=fun_unscaled([0; X0(:,i)],.2,'fig',1e4,1e-4);
-    end
-        Y3(i,:)=fun_scaled(X0h(:,i),.4,'fig',1e4,1e-6); %<--- problem i could run intio identical points !!!!!!!!!!!
-        Y4(i,:)=fun_scaled(X0h(:,i),.5,'fig',1e4,1e-6); %     idea: replace(X0) repmat with actual random data
+parfor i=1:n
+        Y1(i,:)=fun_unscaled([0; X0(:,i)],.1,'sol',1e4,1e-4);
+        Y2(i,:)=fun_unscaled([0; X0(:,i)],.2,'sol',1e4,1e-4);
 end
 endTime=datetime("now");
 time = endTime - startTime; %
-save Output_DATA/Basic_Test_Output X0 X0h Y1 Y2 Y3 Y4 n h time
+save Output_DATA/Test2_Output X0 Y1 Y2 n time
 
 system('git add .'); system('git commit -m "Neue Simulation"');system('git push https://github.com/oliver-mx/GitMATLAB.git');
 
@@ -46,7 +29,7 @@ system('git add .'); system('git commit -m "Neue Simulation"');system('git push 
 load Output_DATA/Basic_Test_Output
 close all; clc;
 ev(Y1(1,:)); userNumber = input('Please enter a number of the set {1,2,3,...,18}: ');
-f=figure(1); f.Position= [12.3333 685.6667 2546 648];tiledlayout(1,4);
+f=figure(1); f.Position= [619 609.6667 1.5473e+03 648.0000];tiledlayout(1,2);
 % same colorbar
 cmap = jet(256); % Use the 'jet' colormap with 256 colors
 sz=2.5; % size of points
@@ -57,12 +40,10 @@ xlim([30.7 70]);ylim([1.1 33]);yticks(10:10:30);yticklabels({'\DeltaP^{RO} = 1',
 nexttile
 scatter3(X0(1,:), 10*(X0(1,:)-X0(2,:)),Y2(:,userNumber),sz,Y2(:,userNumber),'filled');hold on; title('SWRO with ERD'); xlabel('P_{d;0}^{RO} [bar]'); axis equal;view(2); grid on;colormap(cmap);colorbar
 xlim([30.7 70]);ylim([1.1 33]);yticks(10:10:30);yticklabels({'\DeltaP^{RO} = 1','\DeltaP^{RO} = 2','\DeltaP^{RO} = 3'})
-nexttile
-scatter3(X0h(1,1:n), 10*(X0h(1,1:n)-X0h(2,1:n)),Y3(1:n,userNumber),sz,Y3(1:n,userNumber),'filled');hold on; title('Hybrid I'); xlabel('P_{d;0}^{RO} [bar]');axis equal;view(2); grid on;colormap(cmap);colorbar
-xlim([30.7 70]);ylim([1.1 33]);yticks(10:10:30);yticklabels({'\DeltaP^{RO} = 1','\DeltaP^{RO} = 2','\DeltaP^{RO} = 3'})
-nexttile
-scatter3(X0h(1,1:n), 10*(X0h(1,1:n)-X0h(2,1:n)),Y4(1:n,userNumber),sz,Y4(1:n,userNumber),'filled');hold on; title('Hybrid II'); xlabel('P_{d;0}^{RO} [bar]');axis equal;view(2); grid on;colormap(cmap);colorbar
-xlim([30.7 70]);ylim([1.1 33]);yticks(10:10:30);yticklabels({'\DeltaP^{RO} = 1','\DeltaP^{RO} = 2','\DeltaP^{RO} = 3'})
+
+%% find good PRO operating conditions
+
+
 
 %% Expected Pareto Fronts
 load Output_DATA/Basic_Test_Output
