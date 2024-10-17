@@ -161,7 +161,7 @@ J_sE = J_E-J_wE;
 if version(6)==0
     W_p1 = 1/HP_eff * (1e5 - P_d(1))*(J_E *swro_Z)/rho_E;
     W_p2 = 0; W_p3=0; W_p4=0; W_t=0;
-    norm_f1=NaN;
+    %norm_f1=NaN;
 end 
 
 %% Version(6)=1 -->  only SWRO (with ERD)
@@ -185,7 +185,7 @@ if version(6)==1
     f_1 = ERD_fric * rho_r*mix_density * (J_exit*swro_Z/rho_exit)*((J_M1*swro_Z)/(rho_E*A_ERD))^2; 
     f_2 = ERD_fric * rho_r*mix_density * (J_ERD*swro_Z/rho_ERD)*((J_d(end)*swro_Z)/(swro_local_ro_d(end)*A_ERD))^2;
     pERD = rho_ERD*(ERD_eff*(P_d(end)*J_d(end)*(1-eta_ERD)*swro_Z/swro_local_ro_d(end)-1e5*J_exit*swro_Z/rho_exit - f_2) + 1e5*J_M1*swro_Z/rho_E + f_1)/J_ERD/swro_Z;
-    norm_f1=min(abs(f_1-f_2),abs(f_2-f_1)); % dimensions: J_r*p_r*swro_x_r*/rho_r [W]; 
+    %norm_f1=min(abs(f_1-f_2),abs(f_2-f_1)); % dimensions: J_r*p_r*swro_x_r*/rho_r [W]; 
     % pumps
     W_p1 = 1/HP_eff * (1e5 - P_d(1))*((J_E-J_M1)*swro_Z)/rho_E;
     W_p3 = 1/HP_eff * (pERD - P_d(1))*(J_ERD*swro_Z)/rho_ERD; 
@@ -215,22 +215,13 @@ SWRO_Recovery =(J_wf(end)./J_d(1))*100;     % in [%]
     if SWRO_Recovery < 0 && contains('solfig',obj)==1
         fprintf(2,' \nWaring: SWRO recovery is negative! \n');
     end
-PRO_Recovery = NaN; % in [%]
-RO_inflow = swro_Z*J_d(1)/swro_local_ro_d(1); % in [m^3/s]
-Permeate_outflow = swro_Z*J_f(end)/swro_local_ro_f(end); % in [m^3/s]
-Wastewater_inflow = NaN; % in [m^3/s]
-C_permeate = 10000*C_f(end); % in [ppm]
-C_brine = 100*C_d(end); % in [%]
-C_dilluted = P_d(end)/1e5; % in [%]
-norm_f3=NaN; % 
-mix_M3=NaN;
 
 if version(6)==0; mix_M1=NaN; end
 
-output1 = [SEC_net, FW, Rev, SWRO_Recovery, PRO_Recovery, ...
-           RO_inflow, Permeate_outflow, Wastewater_inflow, C_permeate, C_brine, C_dilluted, ...
-           W_net, W_p1, W_p2,  W_p3, W_p4, W_t, ...
-           mix_M1, norm_f1, mix_M3, norm_f3]; % length(output1) = 5+6+6+4 = 21
+output1 = [SEC_net, FW, Rev, SWRO_Recovery, NaN, NaN ...
+           mix_M1, NaN, W_net, W_p1, W_p2,  W_p3, W_p4, W_t, ...
+           J_d(1), 100*C_d(1), J_d(end), 100*C_d(end), J_f(end), 10000*C_f(end), ...
+           NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN]; 
 
 %% output, if BVP-solver fails
 catch
@@ -267,11 +258,11 @@ switch (obj)
             end 
         case 'sol' 
             if sol.stats.maxerr > option_BVP
-            output1 = NaN(1,21);
+            output1 = NaN(1,28);
             end
     case 'fig' % case ends after the figures
             if sol.stats.maxerr > option_BVP
-            output1 = NaN(1,21);
+            output1 = NaN(1,28);
             else
 %% figure 1
 close all
