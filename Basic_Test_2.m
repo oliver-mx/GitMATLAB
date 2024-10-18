@@ -85,13 +85,12 @@ save Output_DATA/Test3_Output X0 Y1 Y2 n time
 
 %%
 clc,PP=[5 10 15 20];
-k=1;
+k=2;
 i=sample(k);p=1; 
 out1=fun_unscaled([0; X0(:,i)],.2,'sol',1e4,1e-4);
 ev(out1,[1 2 4 5 7])
-[X0(:,i);PP(p);P(p,k)]
-
-out2=fun_scaled([X0(:,i);PP(p);P(p,k)],.4,'sol',1e4,1e-3);
+%[X0(:,i);PP(p);P(p,k)];
+out2=fun_scaled([X0(:,i);PP(p);P(p,k)],.4,'fig',1e4,1e-5);
 ev(out2,[1 2 4 5 7])
 
 
