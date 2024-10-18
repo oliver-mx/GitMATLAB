@@ -41,7 +41,7 @@ else
             if i == 7;str1='mix_M1  =  ';str2=' ';end
             if i == 8;str1='mix_M2  =  ';str2=' ';end
             %--------------------------------------------------------------
-            if i == 9;str1='W_net   = ';str2=' [kWh]';end
+            if i == 9;str1='W_net = ';str2=' [kWh]';end
             if i == 10;str1='W_p1  = ';str2=' [kWh]';end
             if i == 11;str1='W_p2  = ';str2=' [kWh]';end
             if i == 12;str1='W_p3  = ';str2=' [kWh]';end

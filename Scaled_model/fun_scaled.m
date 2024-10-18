@@ -234,7 +234,7 @@ if version(6)==1
     f_2 = ERD_fric * mix_density * (J_ERD*swro_b2/rho_ERD)*((J_d(end)*swro_b2)/(swro_local_ro_d(end)*swro_b1*swro_b2))^2;
     f_r= (J_r*p_r*swro_x_r/rho_r) / (J_r^3/rho_r^2/swro_x_r); % scaling factor between f and P*J*Z/rho
     pERD = rho_ERD*(ERD_eff*(P_d(end)*J_d(end)*swro_b2*(1-eta_ERD)/swro_local_ro_d(end)-pE*J_exit*swro_b2/rho_exit - f_2/f_r) + pE*J_M1*swro_b2/rho_E*rho_r + f_1/f_r)/J_ERD/swro_b2;
-    norm_f1=min(abs(f_1-f_2),abs(f_2-f_1))/J_r/p_r/swro_x_r*rho_r; % dimensions: J_r*p_r*swro_x_r*/rho_r [W];
+    %norm_f1=min(abs(f_1-f_2),abs(f_2-f_1))/J_r/p_r/swro_x_r*rho_r; % dimensions: J_r*p_r*swro_x_r*/rho_r [W];
     % pumps
     W_p1 = 1/HP_eff * (pE - P_d(1))*((J_E-J_M1) *swro_Z)/rho_E; W_p1 = W_p1*swro_W_r;
     W_p3 = 1/HP_eff * (pERD - P_d(1))*(J_ERD*swro_Z)/rho_ERD/rho_r; W_p3 = W_p3*swro_W_r;
@@ -282,7 +282,7 @@ if version(6)==3
         pERD = rho_ERD*(ERD_eff*(P_d(end)*J_d(end)*swro_b2*(1-eta_ERD)/swro_local_ro_d(end)-p_d(end)*qq*abs(Q_d(end))*b2/local_ro_d(end) - f_2/f_r) + pE*J_M1*swro_b2/rho_E*rho_r + f_1/f_r)/J_ERD/swro_b2;
         W_t = T_eff * (p_d(1)-pE)*(abs(Q_d(1))*Z)/local_ro_d(1)/rho_r; W_t = W_t*W_r;
     end
-    norm_f1=min(abs(f_1-f_2),abs(f_2-f_1))/J_r/p_r/swro_x_r*rho_r; % dimensions: J_r*p_r*swro_x_r*/rho_r [W];
+    %norm_f1=min(abs(f_1-f_2),abs(f_2-f_1))/J_r/p_r/swro_x_r*rho_r; % dimensions: J_r*p_r*swro_x_r*/rho_r [W];
     W_p3 = 1/HP_eff * (pERD - P_d(1))*(J_ERD*swro_Z)/rho_ERD/rho_r; W_p3 = W_p3*swro_W_r;
 end
 
@@ -338,7 +338,7 @@ if version(6)==4
         pERD2 = rho_ERD2*(ERD_eff*(p_d(1)*qq*(1-mix_M3)*abs(Q_d(1))*swro_b2*(1-eta_ERD)/local_ro_d(1)-pE*qq*abs(Q_exit)*swro_b2/rho_exit - f_2/f_r) + pE*J_E2*swro_b2/rho_E*rho_r + f_1/f_r)/J_E2/swro_b2;
         W_t = T_eff * (p_d(1)-pE)*(mix_M3*abs(Q_d(1))*Z)/local_ro_d(1)/rho_r; W_t = W_t*W_r;
     end
-    norm_f3=min(abs(f_1-f_2),abs(f_2-f_1))/J_r/p_r/swro_x_r*rho_r; % dimensions: J_r*p_r*swro_x_r*/rho_r [W];
+    %norm_f3=min(abs(f_1-f_2),abs(f_2-f_1))/J_r/p_r/swro_x_r*rho_r; % dimensions: J_r*p_r*swro_x_r*/rho_r [W];
     % Calculation for 1st ERD ---------------------------------------------
     f_2 = ERD_fric * mix_density * (J_ERD1*swro_b2/rho_ERD1)*((J_d(end)*swro_b2)/(swro_local_ro_d(end)*swro_b1*swro_b2))^2;
     if version(6) == 0 % co-current
@@ -348,7 +348,7 @@ if version(6)==4
         f_1 = ERD_fric * mix_density * (qq*abs(Q_d(end))*b2/local_ro_d(end))*((J_E1*(1-mix_M1)*swro_b2)/(rho_ERD2*swro_b1*swro_b2))^2; 
         pERD = rho_ERD1*(ERD_eff*(P_d(end)*J_d(end)*swro_b2*(1-eta_ERD)/swro_local_ro_d(end)-p_d(end)*qq*abs(Q_d(end))*b2/local_ro_d(end) - f_2/f_r) + pERD2*J_E1*(1-mix_M1)*swro_b2/rho_ERD2 + f_1/f_r)/J_ERD1/swro_b2;
     end
-    norm_f1=min(abs(f_1-f_2),abs(f_2-f_1))/J_r/p_r/swro_x_r*rho_r; % dimensions: J_r*p_r*swro_x_r*/rho_r [W]; 
+    %norm_f1=min(abs(f_1-f_2),abs(f_2-f_1))/J_r/p_r/swro_x_r*rho_r; % dimensions: J_r*p_r*swro_x_r*/rho_r [W]; 
     W_p3 = 1/HP_eff * (pERD-P_d(1))*(J_ERD1*swro_Z)/rho_ERD1/rho_r; W_p3 = W_p3*swro_W_r;
     W_p1 = 1/HP_eff * (pERD2-P_d(1))*(J_E1*mix_M1*swro_Z)/rho_ERD2/rho_r; W_p1 = W_p1*swro_W_r;
 end
@@ -374,6 +374,8 @@ SWRO_Recovery =(J_wf(end)./J_d(1))*100;     % in [%]
         fprintf(2,' \nWaring: SWRO recovery is negative! \n');
     end
 PRO_Recovery = NaN; % in [%]
+PD_net=NaN;
+%--------------------------------------------------------------------------
     if version(6) > 1
         PRO_Recovery = (1-Q_f(end)/Q_f(1))*100;
         if PRO_Recovery > 100 && contains('solfig',obj)==1
@@ -383,51 +385,21 @@ PRO_Recovery = NaN; % in [%]
             fprintf(2,' \nWaring: PRO recovery is negative! \n');
         end
     end
-RO_inflow = swro_Z*J_d(1)*J_r/swro_local_ro_d(1)/rho_r; % in [m^3/s]
-Permeate_outflow = swro_Z*J_f(end)*J_r/swro_local_ro_f(end)/rho_r; % in [m^3/s]
-Wastewater_inflow = NaN; % in [m^3/s]
-    if version(6) > 1
-        Wastewater_inflow = Z*Q_f(1)*Q_r/local_ro_f(1)/rho_r; % in [m^3/s]
-    end
-C_permeate = 10000*C_f(end); % in [ppm]
-C_brine = 100*C_d(end); % in [%]
-C_dilluted = NaN; % in [%]
-    if version(6) > 1
-        if version(1)==1
-            C_brine=c_d(end);
-            C_dilluted =c_d(1);
-        else
-            C_brine=c_d(1);
-            C_dilluted =c_d(end);
-        end
-    end
-
-if version(6)==0; mix_M1=NaN; norm_f1=NaN; end
-if version(6)==2; mix_M1=NaN; norm_f1=NaN; end
-if version(6)<4; mix_M3=NaN; norm_f3=NaN; end
+%--------------------------------------------------------------------------
 if version(6)==2
-    SEC_net=NaN;FW=NaN;Rev=NaN;SWRO_Recovery=NaN;C_permeate=NaN;mix_M1=NaN;
-    RO_inflow=W_net./(Z*L); 
-    if version(6)==0; Permeate_outflow=p_d(end); else; Permeate_outflow=p_d(1); end
+    SEC_net=NaN;FW=NaN;Rev=NaN;SWRO_Recovery=NaN;mix_M1=NaN;
+    PD_net =  W_net./(Z*L);
 end
+if version(6)==0; mix_M1=NaN; end
+if version(6)<4; mix_M3=NaN; end
 
-output1 = [SEC_net, FW, Rev, SWRO_Recovery, PRO_Recovery, ...
-           RO_inflow, Permeate_outflow, Wastewater_inflow, C_permeate, C_brine, C_dilluted, ...
-           W_net, W_p1, W_p2,  W_p3, W_p4, W_t, ...
-           mix_M1, norm_f1, mix_M3, norm_f3]; % length(output1) = 5+6+6+4 = 21
+output1 = [SEC_net, FW, Rev, SWRO_Recovery, PRO_Recovery, PD_net, ...
+           mix_M1, mix_M3, W_net, W_p1, W_p2,  W_p3, W_p4, W_t, ...
+           J_d(1)*J_r, 100*C_d(1), J_d(end)*J_r, 100*C_d(end), J_f(end)*J_r, 10000*C_f(end), ...
+           Q_d(end)*Q_r, 100*c_d(end), Q_d(1)*Q_r, 100*c_d(1), Q_f(1)*Q_r, 10000*c_f(1), Q_d(end)*Q_r, 10000*c_f(end)]; 
 
-if version(6)==2
-%    PD_net = W_net./(Z*L); %in [W/m^2]
-%    disp(['PD_net     = ', num2str(PD_net), ' [kWh/m^2]'])
-%    if version(1)==0 
-%        SE_net = W_net./(Q_f(1)*Q_r*Z/(rho_r*local_ro_f(1)) + Q_d(1)*Q_r*Z/(rho_r*local_ro_d(1)))/1000/3600; %in [kWh/m^3] 
-%        SE_f   = W_net./(Q_f(1)*Q_r*Z/(rho_r*local_ro_f(1)))/1000/3600; %in [kWh/m^3]
-%    else 
-%        SE_net = W_net./(Q_f(1)*Q_r*Z/(rho_r*local_ro_f(1)) + abs(Q_d(end))*Q_r*Z/(rho_r*local_ro_d(end)))/1000/3600; %in [kWh/m^3] 
-%        SE_f   = W_net./(Q_f(1)*Q_r*Z/(rho_r*local_ro_f(1)))/1000/3600; %in [kWh/m^3]
-%    end 
-end
-
+if version(6)==2; output1(15:20)=NaN(1,6); end
+if version(6) <2; output1(21:28)=NaN(1,8); end
 
 %% output, if BVP-solver fails
 catch
@@ -474,11 +446,11 @@ switch (obj)
             end 
         case 'sol' 
             if sol.stats.maxerr > option_BVP
-            output1 = NaN(1,21);
+            output1 = NaN(1,28);
             end
     case 'fig' % case ends after the figures
             if sol.stats.maxerr > option_BVP
-            output1 = NaN(1,21);
+            output1 = NaN(1,28);
             else
 
 %% figure 1
