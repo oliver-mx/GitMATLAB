@@ -42,6 +42,54 @@ nexttile
 scatter3(X0(1,:), 10*(X0(1,:)-X0(2,:)),Y2(:,userNumber),sz,Y2(:,userNumber),'filled');hold on; title('SWRO with ERD'); xlabel('P_{d;0}^{RO} [bar]'); axis equal;view(2); grid on;colormap(cmap);colorbar
 xlim([30.7 70]);ylim([1.1 33]);yticks(10:10:30);yticklabels({'\DeltaP^{RO} = 1','\DeltaP^{RO} = 2','\DeltaP^{RO} = 3'})
 
+%% Plot Expected Pareto Fronts
+load Output_DATA/Test2_Output
+close all; clc;
+f=figure(1); f.Position= [619 609.6667 1.5473e+03 648.0000];tiledlayout(1,2);
+%for i=1:10000 %evtl kick out wrong data
+%    if X0(1,i)-X0(2,i)>4 || X0(1,i)-X0(2,i)<.1
+%        Y1(i,1)=-1;Y1(i,2)=-1;Y2(i,1)=-1;Y2(i,2)=-1;Y3(i,1)=-1;Y3(i,2)=-1;Y4(i,1)=-1;Y4(i,2)=-1;Y5(i,1)=-1;Y5(i,2)=-1;Y6(i,1)=-1;Y6(i,2)=-1;
+%    end
+%end
+nexttile
+scatter3(Y1(:,1),Y1(:,2),1:n,'r','filled');hold on; title('simple SWRO'); xlabel('SEC_{net} [kWh/m^3]'); ylabel('FW [m^3/h]');
+xlim([-10 0]);ylim([0 2.2]);view(2)
+
+nexttile
+scatter3(Y2(:,1),Y2(:,2),1:n,'b','filled');hold on; title('SWRO with ERD'); xlabel('SEC_{net} [kWh/m^3]'); ylabel('FW [m^3/h]');
+xlim([-10 0]);ylim([0 2.2]);view(2)
+
+%% Simulation part 2
+load Output_DATA/Test2_Output
+close all;clc
+Y3=zeros(n,28);Y4=zeros(n,28);X03=zeros(4,n);
+startTime=datetime("now");
+for i=10:10
+    % first find input data
+    PP=5; %1
+    test=[1.1 1.07 1.05 1.03 1.01 1.007 1.005 1.003 1.001 1.0007 1.0005 1.0003 1.0001 1.00007 1.00005 1.00003 1.00001 1.000007 1.000005 1.000003 1.000001]; %11
+    m1=[];m2=[];m3=[];
+    for j=1:1
+        P=PP(j);
+        for i2=1:length(test)
+            tP=test(i2);
+            a=fun_scaled([-.99*Y2(i,17); 0 ; P ; tP; Y2(i,18)],.3,'sol',1e3,1e-3);
+            m1=[m1 a(4)];m2=[m2 P];m3=[m3 tP];
+        end
+    end
+        x=X0(:,i);
+        [a,b]=max(m1);
+        % final calculation
+        X03(:,i)=[x(1), x(2), m2(b), m3(b)];
+        Y3(i,:)=fun_scaled(X03(:,i),.4,'sol',1e4,1e-4);
+        Y4(i,:)=fun_scaled(X03(:,i),.5,'sol',1e4,1e-4);
+end
+endTime=datetime("now");
+time3 = endTime - startTime; %
+save Output_DATA/Test3_Output X03 Y3 Y4 n time3
+% github and shutdown
+
+
 %% overview rejected brine (flow rate+concentration)
 % .99*Y2(17) und Y2(18)
 load Output_DATA/Test2_Output
