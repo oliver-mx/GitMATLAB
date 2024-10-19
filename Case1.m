@@ -29,14 +29,14 @@ startTime=datetime("now");
 A= [-1 1; 1 -1]; b= [0; 3.4]; Aeq=[]; beq=[]; lb = [30;30]; ub = [70;70];
 option_mesh = 1e4; option_BVP = 1e-4; option_data = 1;
 %initial
-X1_init=repmat(X0(:,I1),1,10);X1_inti=X1_init(:,1:100);
+X1_init=repmat(X0(:,I1),1,10);X1_inti=X1_init(:,1:200);
 % paretosearch
-options = optimoptions('paretosearch','ParetoSetSize',100, 'InitialPoints',X1_init','Display','iter','MaxFunctionEvaluations',10000, 'ParetoSetChangeTolerance',1e-6,'UseParallel', true);
+options = optimoptions('paretosearch','ParetoSetSize',200, 'InitialPoints',X1_init','Display','iter','MaxFunctionEvaluations',10000, 'ParetoSetChangeTolerance',1e-6,'UseParallel', true);
 X = paretosearch(@(x)fun_unscaled(x,option_data,'Pareto',option_mesh,option_BVP),2,A,b,Aeq,beq,lb,ub,[],options);
 % evaluate optimal points
 X1_pareto=X';Y1_pareto=zeros(100,28);
 %
-parfor i=1:100
+parfor i=1:200
     Y1_pareto(i,:)=fun_unscaled(X(i,:),option_data,'sol',option_mesh,option_BVP);
 end
 endTime=datetime("now");
@@ -46,18 +46,18 @@ disp('Finished calculating the Pareto front for the single SWRO unit.')
 disp('_______________________________________________________________')
 %
 
-%% plot in comparison with initial data
-close all;
-load("Output_DATA/Test2_Output.mat")
-load("Output_DATA/DATA_Case_1.mat")
+% plot in comparison with initial data
+%close all;
+%load("Output_DATA/Test2_Output.mat")
+%load("Output_DATA/DATA_Case_1.mat")
 % single SWRO (30)
-I1=[2149 9496 8081 3672 5328 8689 1426 6115 3555 3599 7754 1405 2218 7312 6803 3651 9305 6154 6184 4618 4331 5493 230 3089 5762 7449 6353 791 9175 4379];
-scatter(Y1(I1,1),Y1(I1,2),'k','filled');hold on; title('simple SWRO'); xlabel('SEC_{net} [kWh/m^3]'); ylabel('FW [m^3/h]');
+%I1=[2149 9496 8081 3672 5328 8689 1426 6115 3555 3599 7754 1405 2218 7312 6803 3651 9305 6154 6184 4618 4331 5493 230 3089 5762 7449 6353 791 9175 4379];
+%scatter(Y1(I1,1),Y1(I1,2),'k','filled');hold on; title('simple SWRO'); xlabel('SEC_{net} [kWh/m^3]'); ylabel('FW [m^3/h]');
 % Paretosearch
-scatter(Y1_pareto(:,1),Y1_pareto(:,2),'r','filled');hold on; title('simple SWRO'); xlabel('SEC_{net} [kWh/m^3]'); ylabel('FW [m^3/h]');
-xlim([-6 0]);ylim([0.05 1.5]);view(2)
+%scatter(Y1_pareto(:,1),Y1_pareto(:,2),'r','filled');hold on; title('simple SWRO'); xlabel('SEC_{net} [kWh/m^3]'); ylabel('FW [m^3/h]');
+%xlim([-6 0]);ylim([0.05 1.5]);view(2)
 
-%% Paretosearch - Case2
+% Paretosearch - Case2
 load Output_DATA/Test2_Output % data from simulation
 load("Output_DATA/DATA_Case_2.mat");clc
 disp('_____________________________________________________________')
@@ -71,14 +71,14 @@ startTime=datetime("now");
 A= [-1 1; 1 -1]; b= [0; 3.4]; Aeq=[]; beq=[]; lb = [30;30]; ub = [70;70];
 option_mesh = 1e4; option_BVP = 1e-4; option_data = 2;
 %initial
-X1_init=repmat(X0(:,I2),1,10);X2_inti=X2_init(:,1:100);
+X1_init=repmat(X0(:,I2),1,10);X2_inti=X2_init(:,1:200);
 % paretosearch
-options = optimoptions('paretosearch','ParetoSetSize',100, 'InitialPoints',X2_init','Display','iter','MaxFunctionEvaluations',10000, 'ParetoSetChangeTolerance',1e-6,'UseParallel', true);
+options = optimoptions('paretosearch','ParetoSetSize',200, 'InitialPoints',X2_init','Display','iter','MaxFunctionEvaluations',10000, 'ParetoSetChangeTolerance',1e-6,'UseParallel', true);
 X = paretosearch(@(x)fun_unscaled(x,option_data,'Pareto',option_mesh,option_BVP),2,A,b,Aeq,beq,lb,ub,[],options);
 % evaluate optimal points
-X2_pareto=X';Y2_pareto=zeros(100,28);
+X2_pareto=X';Y2_pareto=zeros(200,28);
 %
-parfor i=1:100
+parfor i=1:200
     Y2_pareto(i,:)=fun_unscaled(X(i,:),option_data,'sol',option_mesh,option_BVP);
 end
 endTime=datetime("now");
@@ -87,6 +87,8 @@ save Output_DATA/DATA_Case_2.mat X2_init X2_pareto Y2_pareto t2_pareto
 disp('Finished calculating the Pareto front for the SWRO+ERD case.')
 disp('_________________________________________________________________')
 %
+system('git add .'); system('git commit -m "Neue Simulation"');system('git push https://github.com/oliver-mx/GitMATLAB.git');
+system('')
 
 %% plot in comparison with initial data
 close all;
