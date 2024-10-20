@@ -54,6 +54,7 @@ if option_data == 0; DATA = @(x)Senthil_data(input);end
 if option_data == 1; DATA = @(x)Case_1_data(input); end
 if option_data == 2; DATA = @(x)Case_2_data(input); end
 if option_data == 3; DATA = @(x)Case_3_data(input); end
+if option_data == 4; DATA = @(x)Case_4_data(input); end
 %
 
 [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_r, C_r, swro_L, swro_alpha, swro_KK, swro_x_r, swro_b1, swro_b2, J_r, swro_gamma, swro_gamma2, swro_W_r, L, alpha, KK, x_r, b1, b2, Q_r, gamma, gamma2, W_r, cE, pE, rho_E, J_sf_0, J_wf_0, Pd_0, Pd_L, Pf_L, Q_sf_0, pd_0, pf_0, pd_L, pf_L, HP_eff, LP_eff, T_eff, V_m, ERD_eff, ERD_fric, A_ERD, eta_ERD, mix_density, pw, pe, swro_beta_fix, beta_fix, mix_M1, mix_M3, version, fig, swro_KF, swro_KD, KF, KD]...
@@ -109,6 +110,7 @@ if version(6)>0 && version(6)~=2
     if option_data == 1; DATA = @(x)Case_1_data(input,mix_M1); end
     if option_data == 2; DATA = @(x)Case_2_data(input,mix_M1); end
     if option_data == 3; DATA = @(x)Case_3_data(input,mix_M1); end
+    if option_data == 4; DATA = @(x)Case_4_data(input,mix_M1); end
     % solve with bvp
     if version(6) == 0; sol = bvp5c(@(x,J_p)ODEsystem(x, J_p, DATA), @(ya,yb)Boundary1(ya,yb, DATA),solinit,ode_options); end
     if version(6) == 1; sol = bvp5c(@(x,J_p)ODEsystem(x, J_p, DATA), @(ya,yb)Boundary2(ya,yb, DATA),solinit,ode_options); end
@@ -443,12 +445,15 @@ switch (obj)
                 if FW < 0.1
                     output1 = NaN(1,2); 
                 end
+                if PRO_Recovery < 70
+                    output1 = NaN(1,2); 
+                end
             end 
         case 'sol' 
             if sol.stats.maxerr > option_BVP
             output1 = NaN(1,28);
             end
-    case 'fig' % case ends after the figures
+        case 'fig' % case ends after the figures
             if sol.stats.maxerr > option_BVP
             output1 = NaN(1,28);
             else
