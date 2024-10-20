@@ -87,8 +87,11 @@ save Output_DATA/DATA_Case_2.mat X2_init X2_pareto Y2_pareto t2_pareto
 disp('Finished calculating the Pareto front for the SWRO+ERD case.')
 disp('_________________________________________________________________')
 %
-system('git add .'); system('git commit -m "Neue Simulation"');system('git push https://github.com/oliver-mx/GitMATLAB.git');
-system('')
+system('git status');
+system('git add .');
+system('git commit -m "Paretosearch Case 1+2"');
+system('git push https://github.com/oliver-mx/GitMATLAB.git');
+system('shutdown /s /t 30');
 
 %% plot in comparison with initial data
 close all;
