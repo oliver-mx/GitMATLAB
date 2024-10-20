@@ -20,10 +20,10 @@ end
 % plot
 f=figure(1);f.Position=[1000 727.6667 1207 510.0000];tiledlayout(1,2);nexttile
 scatter(Y1_init(1,:),Y1_init(2,:),'m');hold on; scatter(Y2_init(1,:),Y2_init(2,:),'c');hold on;
-xlim([-6 0]);ylim([0 1.5]);title('Paretosearch - initial data','FontSize',14);xlabel('SEC_{net} [kWh/m^3]','FontSize',12);ylabel('FW [m^3/h]','FontSize',12)
+xlim([-5.5 0]);ylim([0.1 1.45]);grid on;title('Paretosearch - initial data','FontSize',14);xlabel('SEC_{net} [kWh/m^3]','FontSize',12);ylabel('FW [m^3/h]','FontSize',12)
 nexttile;
 scatter(X1_init(1,:),X1_init(2,:),'m');hold on; scatter(X2_init(1,:),X2_init(2,:),'c');hold on;
-title('SWRO operating pressures','FontSize',14);xlabel('P_d(0) [bar]','FontSize',12);ylabel('P_d(L) [bar]','FontSize',12)
+xlim([29.4 70.6]);ylim([29.4 70.6]);grid on;title('operating pressures','FontSize',14);xlabel('P_d(0) [bar]','FontSize',12);ylabel('P_d(L) [bar]','FontSize',12)
 
 %% Paretosearch - Case1
 clc;close all
@@ -51,15 +51,14 @@ system('git add .'); system('git commit -m "Case1-paretosearch"');system('git pu
 
 %% Plot the pareto front 
 clc;close all
-load("Output_DATA/DATA_Case_1.mat");clc
+load("Output_DATA/DATA_Case_1.mat");
 % plot
 f=figure(1);f.Position=[1000 727.6667 1207 510.0000];tiledlayout(1,2);nexttile
-scatter(Y1_pareto(:,1),Y1_pareto(:,2),'red');hold on;scatter(Y1_init(1,:),Y1_init(2,:),'m');hold on
-xlim([-6 0]);ylim([0 1.5]);title('Paretofront','FontSize',14);xlabel('SEC_{net} [kWh/m^3]','FontSize',12);ylabel('FW [m^3/h]','FontSize',12)
+scatter(Y1_pareto(:,1),Y1_pareto(:,2),'red');hold on;
+xlim([-5.5 0]);ylim([0.1 1.45]);grid on;title('Pareto front','FontSize',14);xlabel('SEC_{net} [kWh/m^3]','FontSize',12);ylabel('FW [m^3/h]','FontSize',12);legend('Case1: SWRO','Location', 'best');
 nexttile;
-scatter(X1_pareto(1,:),X1_pareto(2,:),'red');hold on;scatter(X1_init(1,:),X1_init(2,:),'m');hold on;
-title('SWRO operating pressures','FontSize',14);xlabel('P_d(0) [bar]','FontSize',12);ylabel('P_d(L) [bar]','FontSize',12)
-legend('Case1: SWRO','Case1: Initial data','Location', 'best'); %'Case2: SWRO with ERD','Case3: SWRO-PRO hybrid'
+scatter(X1_pareto(1,:),X1_pareto(2,:),'red');hold on;
+xlim([29.4 70.6]);ylim([29.4 70.6]);grid on;title('Pareto front - operating pressures','FontSize',14);xlabel('P_d(0) [bar]','FontSize',12);ylabel('P_d(L) [bar]','FontSize',12);legend('Case1: SWRO','Location', 'best');
 
 
 
@@ -79,16 +78,6 @@ legend('Case1: SWRO','Case1: Initial data','Location', 'best'); %'Case2: SWRO wi
 
 
 
-%% plot in comparison with initial data
-%close all;
-%load("Output_DATA/Test2_Output.mat")
-%load("Output_DATA/DATA_Case_1.mat")
-% single SWRO (30)
-%I1=[2149 9496 8081 3672 5328 8689 1426 6115 3555 3599 7754 1405 2218 7312 6803 3651 9305 6154 6184 4618 4331 5493 230 3089 5762 7449 6353 791 9175 4379];
-%scatter(Y1(I1,1),Y1(I1,2),'k','filled');hold on; title('simple SWRO'); xlabel('SEC_{net} [kWh/m^3]'); ylabel('FW [m^3/h]');
-% Paretosearch
-%scatter(Y1_pareto(:,1),Y1_pareto(:,2),'r','filled');hold on; title('simple SWRO'); xlabel('SEC_{net} [kWh/m^3]'); ylabel('FW [m^3/h]');
-%xlim([-6 0]);ylim([0.05 1.5]);view(2)
 
 %% Paretosearch - Case2
 load Output_DATA/Test2_Output % data from simulation

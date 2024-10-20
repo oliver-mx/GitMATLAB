@@ -20,12 +20,13 @@ end
 % plot
 f=figure(1);f.Position=[1000 727.6667 1207 510.0000];tiledlayout(1,2);nexttile
 scatter(Y1_init(1,:),Y1_init(2,:),'m');hold on; scatter(Y2_init(1,:),Y2_init(2,:),'c');hold on;
-xlim([-6 0]);ylim([0 1.5]);title('Paretosearch - initial data','FontSize',14);xlabel('SEC_{net} [kWh/m^3]','FontSize',12);ylabel('FW [m^3/h]','FontSize',12)
+xlim([-5.5 0]);ylim([0.1 1.45]);title('Paretosearch - initial data','FontSize',14);xlabel('SEC_{net} [kWh/m^3]','FontSize',12);ylabel('FW [m^3/h]','FontSize',12)
 nexttile;
 scatter(X1_init(1,:),X1_init(2,:),'m');hold on; scatter(X2_init(1,:),X2_init(2,:),'c');hold on;
-title('Paretosearch - initial data','FontSize',14);xlabel('P_d(0) [bar]','FontSize',12);ylabel('P_d(L) [bar]','FontSize',12)
+title('operating pressures','FontSize',14);xlabel('P_d(0) [bar]','FontSize',12);ylabel('P_d(L) [bar]','FontSize',12)
 
 %% Paretosearch - Case1
+clc;close all
 load("Output_DATA/DATA_Case_1.mat");clc
 disp('___________________________________________________________')
 disp('Starting Pareto front calculation for the single SWRO unit.')
@@ -45,16 +46,19 @@ t1_pareto = endTime - startTime;
 save Output_DATA/DATA_Case_1.mat X1_init Y1_init X1_pareto Y1_pareto t1_pareto X0 n
 disp('Finished calculating the Pareto front for the single SWRO unit.')
 disp('_______________________________________________________________')
+system('git add .'); system('git commit -m "Case1-paretosearch"');system('git push https://github.com/oliver-mx/GitMATLAB.git');
 %
 
 %% Plot the pareto front 
+clc;close all
+load("Output_DATA/DATA_Case_1.mat");clc
 % plot
 f=figure(1);f.Position=[1000 727.6667 1207 510.0000];tiledlayout(1,2);nexttile
 scatter(Y1_pareto(:,1),Y1_pareto(:,2),'red');hold on;
-xlim([-6 0]);ylim([0 1.5]);title('Paretofront','FontSize',14);xlabel('SEC_{net} [kWh/m^3]','FontSize',12);ylabel('FW [m^3/h]','FontSize',12)
+xlim([-5.5 0]);ylim([0.1 1.45]);grid on;title('Pareto front','FontSize',14);xlabel('SEC_{net} [kWh/m^3]','FontSize',12);ylabel('FW [m^3/h]','FontSize',12);legend('Case1: SWRO','Location', 'best');
 nexttile;
 scatter(X1_pareto(1,:),X1_pareto(2,:),'red');hold on;
-title('Operating conditions','FontSize',14);xlabel('P_d(0) [bar]','FontSize',12);ylabel('P_d(L) [bar]','FontSize',12)
+xlim([29.4 70.6]);ylim([29.4 70.4]);grid on;title('Pareto front - operating pressures','FontSize',14);xlabel('P_d(0) [bar]','FontSize',12);ylabel('P_d(L) [bar]','FontSize',12);legend('Case1: SWRO','Location', 'best');
 
 
 
