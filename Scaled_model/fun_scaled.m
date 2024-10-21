@@ -38,6 +38,7 @@ if option_data == .2; DATA = @(x)Test_02_data(input); end
 if option_data == .3; DATA = @(x)Test_03_data(input); end
 if option_data == .4; DATA = @(x)Test_04_data(input); end
 if option_data == .5; DATA = @(x)Test_05_data(input); end
+if option_data == .6; DATA = @(x)Test_06_data(input); end
 %
 if option_data == -.1; DATA = @(x)data1(input); end
 if option_data == -.2; DATA = @(x)data2(input); end
@@ -94,6 +95,7 @@ if version(6)>0 && version(6)~=2
     if option_data == .3; DATA = @(x)Test_03_data(input,mix_M1); end
     if option_data == .4; DATA = @(x)Test_04_data(input,mix_M1); end
     if option_data == .5; DATA = @(x)Test_05_data(input,mix_M1); end
+    if option_data == .6; DATA = @(x)Test_06_data(input,mix_M1); end
     %
     if option_data == -.1; DATA = @(x)data1(input,mix_M1); end
     if option_data == -.2; DATA = @(x)data2(input,mix_M1); end
