@@ -33,29 +33,15 @@ if nargout>2
 end
 
 %% Read data
-if option_data == .1; DATA = @(x)Test_01_data(input); end
-if option_data == .2; DATA = @(x)Test_02_data(input); end
-if option_data == .3; DATA = @(x)Test_03_data(input); end
-if option_data == .4; DATA = @(x)Test_04_data(input); end
-if option_data == .5; DATA = @(x)Test_05_data(input); end
-if option_data == .6; DATA = @(x)Test_06_data(input); end
-%
-if option_data == -.1; DATA = @(x)data1(input); end
-if option_data == -.2; DATA = @(x)data2(input); end
-if option_data == -.3; DATA = @(x)data3(input); end
-if option_data == -.4; DATA = @(x)data4(input); end
-if option_data == -.5; DATA = @(x)data5(input); end
-if option_data == -.6; DATA = @(x)data6(input); end
-if option_data == -.7; DATA = @(x)data7(input); end
-if option_data == -.8; DATA = @(x)data8(input); end
-if option_data == -.9; DATA = @(x)data9(input); end
-%
+% Test data .x
+if option_data == .1; DATA = @(x)Test_01_data(input); elseif option_data == .2; DATA = @(x)Test_02_data(input); elseif option_data == .3; DATA = @(x)Test_03_data(input); elseif option_data == .4; DATA = @(x)Test_04_data(input); elseif option_data == .5; DATA = @(x)Test_05_data(input); elseif option_data == .6; DATA = @(x)Test_06_data(input); elseif option_data == .7; DATA = @(x)Test_07_data(input); elseif option_data == .8; DATA = @(x)Test_08_data(input); elseif option_data == .9; DATA = @(x)Test_09_data(input); end
+% data -.x
+if option_data == -.1; DATA = @(x)data1(input); elseif option_data == -.2; DATA = @(x)data2(input); elseif option_data == -.3; DATA = @(x)data3(input); elseif option_data == -.4; DATA = @(x)data4(input); elseif option_data == -.5; DATA = @(x)data5(input); elseif option_data == -.6; DATA = @(x)data6(input); elseif option_data == -.7; DATA = @(x)data7(input); elseif option_data == -.8; DATA = @(x)data8(input); elseif option_data == -.9; DATA = @(x)data9(input); end
+% Case_data x
+if option_data == 1; DATA = @(x)Case_1_data(input); elseif option_data == 2; DATA = @(x)Case_2_data(input); elseif option_data == 3; DATA = @(x)Case_3_data(input);elseif option_data == 4; DATA = @(x)Case_4_data(input); elseif option_data == 5; DATA = @(x)Case_5_data(input); elseif option_data == 6; DATA = @(x)Case_6_data(input); elseif option_data == 7; DATA = @(x)Case_7_data(input); elseif option_data == 8; DATA = @(x)Case_8_data(input); elseif option_data == 9; DATA = @(x)Case_9_data(input); end
+% spezial -x
 if option_data == -1; DATA = @(x)Lee_data(input);end
 if option_data == 0; DATA = @(x)Senthil_data(input);end
-if option_data == 1; DATA = @(x)Case_1_data(input); end
-if option_data == 2; DATA = @(x)Case_2_data(input); end
-if option_data == 3; DATA = @(x)Case_3_data(input); end
-if option_data == 4; DATA = @(x)Case_4_data(input); end
 %
 
 [H, Z, swro_Z, ro_water, ro_salt, Mw, Ms, Rw, T0, eta, sigma, p_r, rho_r, C_r, swro_L, swro_alpha, swro_KK, swro_x_r, swro_b1, swro_b2, J_r, swro_gamma, swro_gamma2, swro_W_r, L, alpha, KK, x_r, b1, b2, Q_r, gamma, gamma2, W_r, cE, pE, rho_E, J_sf_0, J_wf_0, Pd_0, Pd_L, Pf_L, Q_sf_0, pd_0, pf_0, pd_L, pf_L, HP_eff, LP_eff, T_eff, V_m, ERD_eff, ERD_fric, A_ERD, eta_ERD, mix_density, pw, pe, swro_beta_fix, beta_fix, mix_M1, mix_M3, version, fig, swro_KF, swro_KD, KF, KD]...
@@ -90,29 +76,12 @@ if version(6)>0 && version(6)~=2
     y = deval(sol,x); Y = y'; Y = real(Y);
     mix_M1 = ((Y(end,1).*Y(end,2)+Y(end,2)))/(Y(1,1).*Y(1,2)+Y(1,2));  
     % data with new mix_M1
-    if option_data == .1; DATA = @(x)Test_01_data(input,mix_M1); end
-    if option_data == .2; DATA = @(x)Test_02_data(input,mix_M1); end
-    if option_data == .3; DATA = @(x)Test_03_data(input,mix_M1); end
-    if option_data == .4; DATA = @(x)Test_04_data(input,mix_M1); end
-    if option_data == .5; DATA = @(x)Test_05_data(input,mix_M1); end
-    if option_data == .6; DATA = @(x)Test_06_data(input,mix_M1); end
-    %
-    if option_data == -.1; DATA = @(x)data1(input,mix_M1); end
-    if option_data == -.2; DATA = @(x)data2(input,mix_M1); end
-    if option_data == -.3; DATA = @(x)data3(input,mix_M1); end
-    if option_data == -.4; DATA = @(x)data4(input,mix_M1); end
-    if option_data == -.5; DATA = @(x)data5(input,mix_M1); end
-    if option_data == -.6; DATA = @(x)data6(input,mix_M1); end
-    if option_data == -.7; DATA = @(x)data7(input,mix_M1); end
-    if option_data == -.8; DATA = @(x)data8(input,mix_M1); end
-    if option_data == -.9; DATA = @(x)data9(input,mix_M1); end
-    %
+    if option_data == .1; DATA = @(x)Test_01_data(input,mix_M1);elseif option_data == .2; DATA = @(x)Test_02_data(input,mix_M1);elseif option_data == .3; DATA = @(x)Test_03_data(input,mix_M1);elseif option_data == .4; DATA = @(x)Test_04_data(input,mix_M1);elseif option_data == .5; DATA = @(x)Test_05_data(input,mix_M1);elseif option_data == .6; DATA = @(x)Test_06_data(input,mix_M1);elseif option_data == .7; DATA = @(x)Test_07_data(input,mix_M1);elseif option_data == .8; DATA = @(x)Test_08_data(input,mix_M1);elseif option_data == .9; DATA = @(x)Test_09_data(input,mix_M1);end
+    if option_data == -.1; DATA = @(x)data1(input,mix_M1); elseif option_data == -.2; DATA = @(x)data2(input,mix_M1); elseif option_data == -.3; DATA = @(x)data3(input,mix_M1); elseif option_data == -.4; DATA = @(x)data4(input,mix_M1); elseif option_data == -.5; DATA = @(x)data5(input,mix_M1); elseif option_data == -.6; DATA = @(x)data6(input,mix_M1); elseif option_data == -.7; DATA = @(x)data7(input,mix_M1); elseif option_data == -.8; DATA = @(x)data8(input,mix_M1); elseif option_data == -.9; DATA = @(x)data9(input,mix_M1); end
+    if option_data == 1; DATA = @(x)Case_1_data(input,mix_M1); elseif option_data == 2; DATA = @(x)Case_2_data(input,mix_M1); elseif option_data == 3; DATA = @(x)Case_3_data(input,mix_M1); elseif option_data == 4; DATA = @(x)Case_4_data(input,mix_M1); elseif option_data == 5; DATA = @(x)Case_5_data(input,mix_M1); elseif option_data == 6; DATA = @(x)Case_6_data(input,mix_M1); elseif option_data == 7; DATA = @(x)Case_7_data(input,mix_M1); elseif option_data == 8; DATA = @(x)Case_8_data(input,mix_M1); elseif option_data == 9; DATA = @(x)Case_9_data(input,mix_M1); end
     %if option_data == -1; DATA = @(x)Lee_data(input,mix_M1);end
     if option_data == 0; DATA = @(x)Senthil_data(input,mix_M1);end
-    if option_data == 1; DATA = @(x)Case_1_data(input,mix_M1); end
-    if option_data == 2; DATA = @(x)Case_2_data(input,mix_M1); end
-    if option_data == 3; DATA = @(x)Case_3_data(input,mix_M1); end
-    if option_data == 4; DATA = @(x)Case_4_data(input,mix_M1); end
+
     % solve with bvp
     if version(6) == 0; sol = bvp5c(@(x,J_p)ODEsystem(x, J_p, DATA), @(ya,yb)Boundary1(ya,yb, DATA),solinit,ode_options); end
     if version(6) == 1; sol = bvp5c(@(x,J_p)ODEsystem(x, J_p, DATA), @(ya,yb)Boundary2(ya,yb, DATA),solinit,ode_options); end
@@ -441,7 +410,9 @@ switch (obj)
             end
         case 'Pareto' % SEC_net and FW maximization  -->  output1 = [-SEC_net, -FW]
             if sol.stats.maxerr > option_BVP    
-            output1 = NaN(1,2); 
+            output1 = NaN(1,2);
+            elseif PRO_Recovery < 35
+            output1 = NaN(1,2);
             else
                 output1 = [-SEC_net, -FW];
                 if FW < 0.1

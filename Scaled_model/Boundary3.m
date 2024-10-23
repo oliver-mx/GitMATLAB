@@ -47,6 +47,6 @@ res =   [ % SWRO part:
 if version(1) ==1
     res(7)=yb(7) - proC_in; 
     res(8)=yb(6+1)*yb(6+2)+yb(6+2) + PRO_brine;
-end 
+end
 
 end
