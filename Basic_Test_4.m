@@ -57,7 +57,8 @@ f=figure(1);f.Position=[1.0183e+03 349.6667 1.1887e+03 888.0000];
 Color=turbo(30);
 Color=flipud(Color());
 % remove some PRO lengths from the plot
-R=[];r=0;
+R=[2,3,4,6,8,9,11,12,13,14,16,17,18,19];r=0;
+%R=[1:22];r=0;
 % scatter plots
 for i=1:23
     if any(R==i)
@@ -65,6 +66,8 @@ for i=1:23
     else
         index=find(X_test(5,:)==L(i));
         farbe=Color(i,:);
+        %if i==20;farbe='yellow';end
+        if i==23;farbe='black';end
         scatter(Y_test(1,index),Y_test(2,index),'MarkerEdgeColor','none','MarkerFaceColor',farbe);hold on
     end
 end
@@ -76,7 +79,16 @@ grid on;title('Pareto front','FontSize',14);
 xlabel('SEC_{net} [kWh/m^3]','FontSize',12);ylabel('FW [m^3/h]','FontSize',12);
 % create legend
 if r==0
-legend('L^{PRO} = 0.9626m \times 1',' ',' ',' ',' ',' ',' ',' ',' ','L^{PRO} = 0.9626m \times 10',' ',' ',' ',' ','L^{PRO} = 0.9626m \times 20',' ',' ',' ',' ','L^{PRO} = 0.9626m \times 30','L^{PRO} = 0.9626m \times 40','L^{PRO} = 0.9626m \times 50','L^{PRO} = 0.9626m \times 60','Case1: SWRO','Case2: SWRO+ERD','Location', 'bestoutside');
+lgd=legend('L^{PRO} = 0.9626m \times 1',' ',' ',' ',' ',' ',' ',' ',' ','L^{PRO} = 0.9626m \times 10',' ',' ',' ',' ','L^{PRO} = 0.9626m \times 20',' ',' ',' ',' ','L^{PRO} = 0.9626m \times 30','L^{PRO} = 0.9626m \times 40','L^{PRO} = 0.9626m \times 50','L^{PRO} = 0.9626m \times 60','Case1: SWRO','Case2: SWRO+ERD','Location', 'bestoutside');
+title(lgd,'Legend')
+end
+if sum(R)==152
+lgd=legend('L^{PRO} = 0.9626m \times 1','L^{PRO} = 0.9626m \times 5','L^{PRO} = 0.9626m \times 7','L^{PRO} = 0.9626m \times 10','L^{PRO} = 0.9626m \times 20','L^{PRO} = 0.9626m \times 30','L^{PRO} = 0.9626m \times 40','L^{PRO} = 0.9626m \times 50','L^{PRO} = 0.9626m \times 60','Case1: SWRO','Case2: SWRO+ERD','Location', 'bestoutside');
+title(lgd,'Legend')
+end
+if sum(R)==253
+lgd=legend('Hybrid: L^{RO} \approx 6.7m,  L^{PRO} \approx 57.7m','SWRO: L^{RO} \approx 6.7m','SWRO+ERD L^{RO} \approx 6.7m','Location', 'bestoutside');
+title(lgd,'Legend')
 end
 figure(1); set(gcf,'color','w'); f = gcf; exportgraphics(f,'PRO_length_test.png');
 
